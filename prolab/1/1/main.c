@@ -3,6 +3,7 @@
 #include <dirent.h>
 #include <string.h>
 #include <sys/types.h>
+#include <math.h>
 
 /*
     sources:
@@ -14,17 +15,19 @@
         
         * read file line by line
             https://stackoverflow.com/a/3501681/8993088
+
+        * fflush alternative [void clean_stdin(void)]
+            https://stackoverflow.com/a/17319153/8993088
+*/
+
+/*
+    TO DO:
+        en kısa noktaları bulurken karşılaştırmada daha hızlı bi algoritma gerek
 */
 
 /*
     TO LEARN:  
         strtok, strrchr, pointer ->, dirent, readdir
-*/
-
-/*
-    TO DO:
-        remove saving r g b to float array since they are not used. they are needed only when checking errors
-        save error to Dosya struct as char array
 */
 
 // nokta
@@ -38,6 +41,14 @@
     int g;
     int b;
 };*/
+
+void clean_stdin(void)
+{
+    int c;
+    do {
+        c = getchar();
+    } while (c != '\n' && c != EOF);
+}
 
 static char NOKTAVERILERI[6] = {
     'x', 'y', 'z', 'r', 'g', 'b'
@@ -119,14 +130,56 @@ void LogHata(char **hatalar, const char *hata)
     memcpy(*hatalar+strlen(*hatalar)*sizeof(char),hata,strlen(hata));
 }
 
+float NoktaMesafe(float a[3], float b[3])
+{
+    return sqrtf(powf(a[0]-b[0],2.0f)+powf(a[1]-b[1],2.0f)+powf(a[2]-b[2],2.0f));
+}
+
+// özellik 2
+void EnYakinNoktalarHesapla(float noktalar[], int alantip, int count, int *to_write)
+{
+    // initial olarak 0. ve 1. noktayı en yakın olarak belirliyoruz
+    // sonrasında bu 2sinin mesafesinden kısa ise karşılaştırılan herhangi 2 nokta
+    // bunları değiştiricez basit en küçük bulma mantığı
+    to_write[0] = 0;
+    to_write[1] = 1;
+
+    int alanboyut = (alantip==ALANTIP_XYZ ? 3 : 6);
+
+    // tüm noktaları birbiriyle karşılaştırıyoruz
+    // daha hızlı bi algoritma gerek
+    for(int i=0; i<count; i++)
+    {
+        for(int j=i+1; j<=count-1; j++)
+        {
+            printf("%d %d\n",i,j);
+            if(NoktaMesafe(&noktalar[i*alanboyut],&noktalar[j*alanboyut])<NoktaMesafe(&noktalar[to_write[0]*alanboyut],&noktalar[to_write[1]*alanboyut]))
+            {
+                to_write[0] = i;
+                to_write[1] = j;
+            }      
+        }
+    }
+}
+
+// özellik 2
+void EnUzakNoktalarHesapla(float noktalar[], int alantip, int count, int *to_write)
+{
+    // en yakını bulmanın benzeri ama şimdilik yapmak istemiyorum en yakın-daki
+    // karşılaştırma algoritması çok yavaş olduğu için hoşuma gitmedi
+}
+
 int main(void)
 {
     // dosyaların bilgilerini içerecek struct
     // boyutu dinamik
     struct Dosya *Dosyalar;
+    // initial olarak rastgele bir boyut atıyoruz
     Dosyalar = (struct Dosya *)malloc(sizeof(struct Dosya));
 
+    // hataları içerecek pointer
     char *hatalar = NULL;
+    // initial olarak rastgele bir boyut atıyoruz
     hatalar = (char *)malloc(sizeof(char));
    
     struct dirent *de; // Pointer for directory entry
@@ -260,7 +313,7 @@ int main(void)
             }
 
             // başlık okumayı bitirdik, nokta okumaya başlıyoruz
-
+                
             // en son nokta indisini dolayısıyla nokta sayısını tutacak değişken
             int noktacount = 0;
 
@@ -336,9 +389,7 @@ int main(void)
                                 goto end_reading;
                             }
 
-                            // 6 lı 6 lı artan bir nokta arrayı olduğu için şuanki offseti bulmak için
-                            // noktacount*6 yapıyoruz ve x y z r g b değerleri içinde i ekliyoruz
-                            Dosyalar[dosyaindex].Noktalar[noktacount*6+i] = atof(token);    
+                            Dosyalar[dosyaindex].Noktalar[noktacount*6+i] = atof(token);
 
                             token = strtok(NULL, ayrac);
                         }
@@ -346,7 +397,17 @@ int main(void)
 
                     noktacount++;
                 }
+                
+                if(noktacount!=Dosyalar[dosyaindex].Baslik.NOKTALAR)
+                {
+                    char hatabuffer[128];
+                    sprintf(hatabuffer,"[%s] isimli dosyadan okunan nokta sayisi [%d] dosya basligindaki nokta sayisiyla [%d] uyusmuyor.\n", de->d_name, noktacount, Dosyalar[dosyaindex].Baslik.NOKTALAR);
+                    LogHata(&hatalar,hatabuffer);
+                    dosyaindex--;
+                    goto end_reading;
+                }
                 Dosyalar[dosyaindex].OkunanNokta = noktacount;
+
             }
             // binary şeklinde oku
             else if (Dosyalar[dosyaindex].Baslik.DATA == DATATIP_BINARY)
@@ -360,22 +421,73 @@ int main(void)
         }
     }
 
+    int secim = 1;
+    // input
     while(1)
     {
-        int secim;
         printf("Secim yapiniz: ");
-        scanf("%d",&secim);
+        scanf(" %d",&secim);
+        clean_stdin();
 
         switch(secim)
         {
+            case 0:
+            {
+                printf("Secenekler:\n");
+                printf("\t-1) Cikis\n");
+                printf("\t0) Secenekler\n");
+                printf("\t1) Dosya Kontrolu\n");
+                printf("\t2) En Yakin/Uzak Noktalar\n");
+                printf("\t3) Kup\n");
+                printf("\t4) Kure\n");
+                printf("\t5) Nokta Uzakliklari\n");
+                break;
+            }
+            case -1:
+            {
+                printf("Cikis yapiliyor..\n");
+                goto end;
+                break;
+            }
             case 1:
             {
-                printf("%s\n",hatalar);
+                if(strlen(hatalar)==0)
+                {
+                    printf("Tum dosyalar uyumludur.\n");
+                }
+                else
+                {
+                    printf("%s\n",hatalar);
+                }
+                break;
+            }
+            case 2:
+            {
+                for(int i=0; i<dosyaindex; i++)
+                {
+                    // indis tutuyorlar 2 şer nokta indisi
+                    int enyakin_noktalar[2];
+                    int enuzak_noktalar[2];
+
+                    EnYakinNoktalarHesapla(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta, &enyakin_noktalar);
+                    printf("%d %d\n",enyakin_noktalar[0],enyakin_noktalar[1]);
+
+                    EnUzakNoktalarHesapla(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta, &enuzak_noktalar);
+                }
+                break;
+            }
+
+            default:
+            {
+                printf("Secim gecersiz. Secenekleri gormek icin 0 girebilirsiniz.\n");
                 break;
             }
         }
+        printf("\n"); // estetik
     }
-
+    
+    end: 
+    // for debugging purposes
     /*for (int i = 0; i < dosyaindex; i++)
     {
         printf("DOSYA [%d] [%s]:\n", i + 1, Dosyalar[i].Ad);
@@ -393,14 +505,25 @@ int main(void)
         for(int i2=0;i2<Dosyalar[i].OkunanNokta;i2++)
         {
             printf("%d - ",i2);
-            for(int j=0; j<(Dosyalar[i].Baslik.ALANLAR==ALANTIP_XYZ ? 3 : 6); j++)
+
+            int boyut = Dosyalar[i].Baslik.ALANLAR==ALANTIP_XYZ ? 3 : 6;
+            for(int j=0; j<boyut; j++)
             {
-                printf("%.3f ",Dosyalar[i].Noktalar[i2*(Dosyalar[i].Baslik.ALANLAR==ALANTIP_XYZ ? 3 : 6)+j]);
+                if(j<3)
+                {
+                    printf("%.3f ",Dosyalar[i].Noktalar[i2*boyut+j]);
+                }
+                else
+                {
+                    printf("%d ",(int)Dosyalar[i].Noktalar[i2*boyut+j]);
+                }
+                
             }
             printf("\n");
         }
     }*/
 
+       
     for (int i = 0; i < dosyaindex; i++)
     {
         free(Dosyalar[i].Noktalar);
