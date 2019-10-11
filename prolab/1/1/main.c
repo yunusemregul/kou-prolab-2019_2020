@@ -50,6 +50,29 @@ void clean_stdin(void)
     } while (c != '\n' && c != EOF);
 }
 
+int isCharAllowed(int i)
+{
+    // kontrol karakterlerine izin vermiyoruz
+    if(iscntrl((char)i)&&i!='\n')
+        return 0;
+
+    return 1;
+}
+
+// -1 döndürmediyse sorun var demektir
+int charControl(char * text)
+{
+    for(int i=0; i<strlen(text);i++)
+    {
+        if(!isCharAllowed(text[i]))
+        {
+            return text[i];
+        }
+    }
+
+    return -1;
+}
+
 static char NOKTAVERILERI[6] = {
     'x', 'y', 'z', 'r', 'g', 'b'
 };
@@ -122,8 +145,14 @@ int IsTipValid(int size, int innersize, char *array, char *tip)
     ve referans üzerinde yapılan değişikler(realloc,memcpy) bu scope un dışına çıkamayacağı için
     pointerin pointeri ni kullanmak zorundayız.
 */
-void LogHata(char **hatalar, const char *hata)
+void LogHata(char **hatalar, const char *hata, int satir)
 {
+    // son yeni satır karakterini silip satır ekliyoruz
+    strcpy(strrchr(hata,'\n')," ");
+    char buf[32];
+    sprintf(buf,"[SATIR %d]\n",satir);
+    
+    strcat(hata,buf);
     // hatalar ın boyutunu yeni eklenecek hata boyutunca artırıyoruz
     *hatalar = (char *)realloc(*hatalar,strlen(*hatalar)*sizeof(char)+strlen(hata)*sizeof(char));
     // yeni gelen hatayı eski hataların sonuna ekliyoruz
@@ -217,17 +246,22 @@ int main(void)
             FILE *file;
             file = fopen(de->d_name, "r");
 
+            int satir = 0;
+            int offset = 0;
+
             // 4 satırlık başlık bilgisini bulup oku
             for (int i = 0; i < 4; i++)
             {
                 read = getline(&line, &len, file);
+                offset = offset + strlen(line);
+                satir++;
 
                 // eğer başlık bilgisi yoksa
                 if (read == -1)
                 {
                     char hatabuffer[128];
                     sprintf(hatabuffer, "[%s] dosyasinin baslik bilgisi hatali. [%s] bulunamadi.\n", de->d_name, BASLIKTIPLERI[i]);
-                    LogHata(&hatalar,hatabuffer);
+                    LogHata(&hatalar,hatabuffer,satir);
                     dosyaindex--;
                     goto end_reading;
                 }
@@ -243,9 +277,17 @@ int main(void)
                 {
                     char hatabuffer[128];
                     sprintf(hatabuffer, "[%s] dosyasinin baslik bilgisi hatali. [%s] beklenirken [%s] okundu.\n", de->d_name, BASLIKTIPLERI[i], line);
-                    LogHata(&hatalar,hatabuffer);
+                    LogHata(&hatalar,hatabuffer,satir);
                     dosyaindex--;
                     goto end_reading;
+                }
+                else if(charControl(line)!=-1)
+                {
+                    char hatabuffer[128];
+                    sprintf(hatabuffer, "[%s] dosyasinda uygun olmayan bir karakter okundu. Karakter kodu: [%d]\n", de->d_name, charControl(line));
+                    LogHata(&hatalar,hatabuffer,satir);
+                    dosyaindex--;
+                    goto end_reading;                    
                 }
 
                 // versiyon oku
@@ -258,7 +300,7 @@ int main(void)
                     {
                         char hatabuffer[128];
                         sprintf(hatabuffer, "[%s] dosyasi icin VERSION bilgisi [%d] gecersiz. Sadece VERSION 1 dosyalar okunabilir.\n", de->d_name, ver);
-                        LogHata(&hatalar,hatabuffer);
+                        LogHata(&hatalar,hatabuffer,satir);
                         dosyaindex--;
                         goto end_reading;
                     }
@@ -274,9 +316,9 @@ int main(void)
 
                     if (tip == -1)
                     {
-                        char hatabuffer[128];
+                        char hatabuffer[128];             
                         sprintf(hatabuffer, "[%s] dosyasi icin ALAN bilgisi [%s] gecersiz.\n", de->d_name, alanbilgisi);
-                        LogHata(&hatalar,hatabuffer);
+                        LogHata(&hatalar,hatabuffer,satir);
                         dosyaindex--;
                         goto end_reading;
                     }
@@ -303,7 +345,7 @@ int main(void)
                     {
                         char hatabuffer[128];
                         sprintf(hatabuffer,"[%s] dosyasi icin DATA bilgisi [%s] gecersiz.\n", de->d_name, databilgisi);
-                        LogHata(&hatalar,hatabuffer);
+                        LogHata(&hatalar,hatabuffer,satir);
                         dosyaindex--;
                         goto end_reading;
                     }
@@ -326,6 +368,7 @@ int main(void)
                 // satır satır okuyoruz
                 while ((read = getline(&line, &len, file)) != -1)
                 {
+                    satir++;
                     // eğer satır yorum satırıysa boşver
                     if (line[0] == '#')
                         continue;
@@ -353,7 +396,7 @@ int main(void)
                             {
                                 char hatabuffer[128];
                                 sprintf(hatabuffer,"[%s] isimli dosyada [%d] numarali noktada [%c] bilgisi bulunamadi.\n", de->d_name, noktacount + 1, toupper(NOKTAVERILERI[i]));
-                                LogHata(&hatalar,hatabuffer);
+                                LogHata(&hatalar,hatabuffer,satir);
                                 dosyaindex--;
                                 goto end_reading;
                             }
@@ -384,7 +427,7 @@ int main(void)
                             {
                                 char hatabuffer[128];
                                 sprintf(hatabuffer,"[%s] isimli dosyada [%d] numarali noktada [%c] bilgisi bulunamadi.\n", de->d_name, noktacount + 1, toupper(NOKTAVERILERI[i]));
-                                LogHata(&hatalar,hatabuffer);
+                                LogHata(&hatalar,hatabuffer,satir);
                                 dosyaindex--;
                                 goto end_reading;
                             }
@@ -402,7 +445,7 @@ int main(void)
                 {
                     char hatabuffer[128];
                     sprintf(hatabuffer,"[%s] isimli dosyadan okunan nokta sayisi [%d] dosya basligindaki nokta sayisiyla [%d] uyusmuyor.\n", de->d_name, noktacount, Dosyalar[dosyaindex].Baslik.NOKTALAR);
-                    LogHata(&hatalar,hatabuffer);
+                    LogHata(&hatalar,hatabuffer,satir);
                     dosyaindex--;
                     goto end_reading;
                 }
@@ -412,6 +455,11 @@ int main(void)
             // binary şeklinde oku
             else if (Dosyalar[dosyaindex].Baslik.DATA == DATATIP_BINARY)
             {
+                /*char a;
+                fseek(file,offset,SEEK_SET);
+                fread((void *)(&a),sizeof(a),1,file);
+
+                printf("read float: %c\n",a);*/
             }
 
             end_reading:
@@ -522,13 +570,13 @@ int main(void)
             printf("\n");
         }
     }*/
-
        
     for (int i = 0; i < dosyaindex; i++)
     {
         free(Dosyalar[i].Noktalar);
     }
     free(Dosyalar);
+    free(hatalar);
 
     closedir(dr);
     return 0;

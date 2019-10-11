@@ -1,0 +1,19 @@
+# Noktalar dosya format bu dosya problemli olarak haz?rlanm??t?r. 
+VERSION 2
+ALANLAR r g b
+NOKTALAR 5.5
+DATA ascii
+
+0.93773 0.33763 255
+
+0.90805 0.35641 0 114 145 
+
+0.81915 0.32 0 2 
+255 255 255
+1 2
+1
+
+
+
+
+1
