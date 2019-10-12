@@ -126,6 +126,8 @@ static char DATATIPLERI[2][8] = {
 };
 
 /*
+    alan tipi veya data tipi okunabilecek alan/data tiplerinde var mı diye kontrol eden fonksiyon
+
     size :: ALANTIPLERI[->2<-][16]
     innersize :: ALANTIPLERI[2][->16<-]
 */
@@ -141,6 +143,8 @@ int IsTipValid(int size, int innersize, char *array, char *tip)
 }
 
 /*
+    dosyalardaki hataları boyutu dinamik bir buffere ekleyen fonksiyon
+
     **hatalar yapıyoruz çünkü gelen *hatalar pointer değeri referans olduğu için
     ve referans üzerinde yapılan değişikler(realloc,memcpy) bu scope un dışına çıkamayacağı için
     pointerin pointeri ni kullanmak zorundayız.
@@ -155,16 +159,24 @@ void LogHata(char **hatalar, const char *hata, int satir)
     strcat(hata,buf);
     // hatalar ın boyutunu yeni eklenecek hata boyutunca artırıyoruz
     *hatalar = (char *)realloc(*hatalar,strlen(*hatalar)*sizeof(char)+strlen(hata)*sizeof(char));
+    if(hatalar==NULL)
+    {
+        printf("'hatalar' icin realloc yapilirken hata olustu. Bellek yetersiz olabilir.\n");
+        return;
+    }  
     // yeni gelen hatayı eski hataların sonuna ekliyoruz
     memcpy(*hatalar+strlen(*hatalar)*sizeof(char),hata,strlen(hata));
 }
 
+// noktalar arası mesafeyi hesaplayan fonksiyon
 float NoktaMesafe(float a[3], float b[3])
 {
     return sqrtf(powf(a[0]-b[0],2.0f)+powf(a[1]-b[1],2.0f)+powf(a[2]-b[2],2.0f));
 }
 
-// özellik 2
+/*
+    noktalar içinde birbirine en yakın olanları bulan fonksiyon
+*/
 void EnYakinNoktalarHesapla(float noktalar[], int alantip, int count, int *to_write)
 {
     // initial olarak 0. ve 1. noktayı en yakın olarak belirliyoruz
@@ -191,7 +203,9 @@ void EnYakinNoktalarHesapla(float noktalar[], int alantip, int count, int *to_wr
     }
 }
 
-// özellik 2
+/*
+    noktalar içinde birbirine en uzak olanları bulan fonksiyon
+*/
 void EnUzakNoktalarHesapla(float noktalar[], int alantip, int count, int *to_write)
 {
     // en yakını bulmanın benzeri ama şimdilik yapmak istemiyorum en yakın-daki
@@ -206,10 +220,22 @@ int main(void)
     // initial olarak rastgele bir boyut atıyoruz
     Dosyalar = (struct Dosya *)malloc(sizeof(struct Dosya));
 
+    if(Dosyalar==NULL)
+    {
+        printf("'Dosyalar' icin malloc yapilirken hata olustu. Bellek yetersiz olabilir.\n");
+        return 0;
+    }
+
     // hataları içerecek pointer
     char *hatalar = NULL;
     // initial olarak rastgele bir boyut atıyoruz
     hatalar = (char *)malloc(sizeof(char));
+
+    if(hatalar==NULL)
+    {
+        printf("'hatalar' icin malloc yapilirken hata olustu. Bellek yetersiz olabilir.\n");
+        return 0;
+    }
    
     struct dirent *de; // Pointer for directory entry
 
@@ -240,6 +266,12 @@ int main(void)
         {
             // yeni bir dosya kaydına başladığımız için dosyalar arrayının boyutunu 1 arttırıyoruz
             Dosyalar = (struct Dosya *)realloc(Dosyalar, (dosyaindex + 1) * sizeof(struct Dosya));
+            if(Dosyalar==NULL)
+            {
+                printf("'Dosyalar' icin realloc yapilirken hata olustu. Bellek yetersiz olabilir.\n");
+                return 0;
+            }  
+
             strcpy(&Dosyalar[dosyaindex].Ad, de->d_name);
 
             // okunan dosyanın FILE pointeri
@@ -361,6 +393,11 @@ int main(void)
 
             // dosyanın noktalarını tutacak array için initial memory ataması yapıyoruz
             Dosyalar[dosyaindex].Noktalar = (float*)malloc(sizeof(float));
+            if(Dosyalar[dosyaindex].Noktalar==NULL)
+            {
+                printf("'Dosyalar[dosyaindex].Noktalar' icin malloc yapilirken hata olustu. Bellek yetersiz olabilir.\n");
+                return 0;
+            }            
 
             // ascii şeklinde oku
             if (Dosyalar[dosyaindex].Baslik.DATA == DATATIP_ASCII)
@@ -382,6 +419,11 @@ int main(void)
                     {
                         // yeni nokta kaydı yapacağımız için boyutu ona göre arttırıyoruz
                         Dosyalar[dosyaindex].Noktalar = (float*)realloc(Dosyalar[dosyaindex].Noktalar,sizeof(float)*3*(noktacount+1));
+                        if(Dosyalar[dosyaindex].Noktalar==NULL)
+                        {
+                            printf("'Dosyalar[dosyaindex].Noktalar' icin realloc yapilirken hata olustu. Bellek yetersiz olabilir.\n");
+                            return 0;
+                        }   
 
                         // arka arkaya 3 tane float okuyacağız
                         // her floatın bitiş noktası space ile ayrıldığı için
@@ -413,6 +455,11 @@ int main(void)
                     {
                         // yeni nokta kaydı yapacağımız için boyutu ona göre arttırıyoruz
                         Dosyalar[dosyaindex].Noktalar = (float*)realloc(Dosyalar[dosyaindex].Noktalar,sizeof(float)*6*(noktacount+1));
+                        if(Dosyalar[dosyaindex].Noktalar==NULL)
+                        {
+                            printf("'Dosyalar[dosyaindex].Noktalar' icin realloc yapilirken hata olustu. Bellek yetersiz olabilir.\n");
+                            return 0;
+                        }  
 
                         // arka arkaya 6 tane float okuyacağız
                         // her floatın bitiş noktası space ile ayrıldığı için
@@ -455,11 +502,26 @@ int main(void)
             // binary şeklinde oku
             else if (Dosyalar[dosyaindex].Baslik.DATA == DATATIP_BINARY)
             {
-                /*char a;
-                fseek(file,offset,SEEK_SET);
-                fread((void *)(&a),sizeof(a),1,file);
+                // binary okuma testleri
+                // pdf de güzel açıklanmamış şuanki hali hatalı anlamaya çalışıyorum
 
-                printf("read float: %c\n",a);*/
+                int extraoffset = 0;
+                
+                // başlığın bittiği yere götürüyoruz okuyucuyu
+                fseek(file,offset,SEEK_SET);
+
+                // test olarak 10 tane oku
+                while(extraoffset<sizeof(float)*3*10)
+                {
+                    float a[3];
+                    
+                    // 3 tane float okuyoruz arraya kaydediyoruz
+                    fread((void *)(&a),sizeof(float),3,file);
+                    
+                    printf("read nokta : %f %f %f\n",a[0],a[1],a[2]);
+
+                    extraoffset += sizeof(float)*3;
+                }
             }
 
             end_reading:
@@ -571,6 +633,7 @@ int main(void)
         }
     }*/
        
+    // kendimiz allocate ettiğimiz tüm belleği free liyoruz
     for (int i = 0; i < dosyaindex; i++)
     {
         free(Dosyalar[i].Noktalar);
