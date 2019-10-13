@@ -151,12 +151,17 @@ int IsTipValid(int size, int innersize, char *array, char *tip)
 */
 void LogHata(char **hatalar, const char *hata, int satir)
 {
-    // son yeni satır karakterini silip satır ekliyoruz
-    strcpy(strrchr(hata,'\n')," ");
-    char buf[32];
-    sprintf(buf,"[SATIR %d]\n",satir);
+    // satır bilgisini koymak istemiyorsak, mesela binary de satır olmadığı için
+    // bu fonksiyona -1 gönderiyoruz
+    if(satir!=-1)
+    {
+        // son yeni satır karakterini silip satır ekliyoruz
+        strcpy(strrchr(hata,'\n')," ");
+        char buf[32];
+        sprintf(buf,"[SATIR %d]\n",satir);
+        strcat(hata,buf);
+    }
     
-    strcat(hata,buf);
     // hatalar ın boyutunu yeni eklenecek hata boyutunca artırıyoruz
     *hatalar = (char *)realloc(*hatalar,strlen(*hatalar)*sizeof(char)+strlen(hata)*sizeof(char));
     if(hatalar==NULL)
@@ -210,6 +215,23 @@ void EnUzakNoktalarHesapla(float noktalar[], int alantip, int count, int *to_wri
 {
     // en yakını bulmanın benzeri ama şimdilik yapmak istemiyorum en yakın-daki
     // karşılaştırma algoritması çok yavaş olduğu için hoşuma gitmedi
+}
+
+/*
+    içine bütün noktaları alan en küçük küpün köşe noktalarını bulan fonksiyon
+
+    mantığım:
+        henüz yok
+
+*/
+void TumNoktalariIcerenEnKucukKupKoseleri(float noktalar[], int alantip, int count, int *to_write)
+{
+    int alanboyut = (alantip==ALANTIP_XYZ ? 3 : 6);
+
+    for(int i=0; i<count; i++)
+    {
+
+    }
 }
 
 int main(void)
@@ -277,6 +299,11 @@ int main(void)
             // okunan dosyanın FILE pointeri
             FILE *file;
             file = fopen(de->d_name, "r");
+            if(file==NULL)
+            {
+                printf("'%s' dosyasi 'r' modunda acilamadi.\n",de->d_name);
+                return 0;
+            }
 
             int satir = 0;
             int offset = 0;
@@ -502,26 +529,51 @@ int main(void)
             // binary şeklinde oku
             else if (Dosyalar[dosyaindex].Baslik.DATA == DATATIP_BINARY)
             {
-                // binary okuma testleri
-                // pdf de güzel açıklanmamış şuanki hali hatalı anlamaya çalışıyorum
-
-                int extraoffset = 0;
-                
-                // başlığın bittiği yere götürüyoruz okuyucuyu
-                fseek(file,offset,SEEK_SET);
-
-                // test olarak 10 tane oku
-                while(extraoffset<sizeof(float)*3*10)
+                fclose(file);
+                file = fopen(de->d_name,"rb"); // sorun çözümü rb miş
+                if(file==NULL)
                 {
-                    float a[3];
-                    
-                    // 3 tane float okuyoruz arraya kaydediyoruz
-                    fread((void *)(&a),sizeof(float),3,file);
-                    
-                    printf("read nokta : %f %f %f\n",a[0],a[1],a[2]);
-
-                    extraoffset += sizeof(float)*3;
+                    printf("'%s' dosyasi 'rb' modunda acilamadi.\n",de->d_name);
+                    return 0;
                 }
+
+                fseek(file,offset,SEEK_SET);
+            
+                // niye float değil?
+                double xyz[3];
+
+                while(fread((void *)(&xyz),sizeof(xyz),1,file)!=NULL)
+                {
+                    Dosyalar[dosyaindex].Noktalar = (float*)realloc(Dosyalar[dosyaindex].Noktalar,sizeof(float)*3*(noktacount+1));
+
+                    // ALAN tip XYZ oku
+                    if (Dosyalar[dosyaindex].Baslik.ALANLAR == ALANTIP_XYZ)
+                    {
+                        // double arrayı float arraya cast ediyoruz
+
+                        for(int i=0; i<3; i++)
+                        {
+                            Dosyalar[dosyaindex].Noktalar[noktacount*3+i] = (float)xyz[i];
+                        }
+                    }
+                    //  ALAN tip XYZRGB oku
+                    else if (Dosyalar[dosyaindex].Baslik.ALANLAR == ALANTIP_XYZRGB)
+                    {
+                        // rgb için 3 int daha oku?              
+                    }
+                    
+                    noktacount++;
+                }
+
+                if(noktacount!=Dosyalar[dosyaindex].Baslik.NOKTALAR)
+                {
+                    char hatabuffer[128];
+                    sprintf(hatabuffer,"[%s] isimli dosyadan okunan nokta sayisi [%d] dosya basligindaki nokta sayisiyla [%d] uyusmuyor.\n", de->d_name, noktacount, Dosyalar[dosyaindex].Baslik.NOKTALAR);
+                    LogHata(&hatalar,hatabuffer,-1);
+                    dosyaindex--;
+                    goto end_reading;
+                }
+                Dosyalar[dosyaindex].OkunanNokta = noktacount;
             }
 
             end_reading:
