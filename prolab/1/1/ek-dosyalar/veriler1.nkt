@@ -1,6 +1,6 @@
 # Noktalar dosya format
 VERSION 1
-ALANLAR x y z rg b
+ALANLAR x y z r g b
 NOKTALAR 10000
 DATA ascii
 79.911334 51.105907 12.947192 95 227 28
