@@ -22,7 +22,7 @@
 
 /*
     TO DO:
-        en kısa noktaları bulurken karşılaştırmada daha hızlı bi algoritma gerek
+       delete // debug *
 */
 
 /*
@@ -101,7 +101,8 @@ static char BASLIKTIPLERI[4][12] = {
     "VERSION",
     "ALANLAR",
     "NOKTALAR",
-    "DATA"};
+    "DATA"
+};
 
 enum ALANTIPLERI
 {
@@ -139,7 +140,7 @@ int IsTipValid(int size, int innersize, char *array, char *tip)
             return i; // return (bulunan tip)
     }
 
-    return -1;
+    return -1; // bulunmadı demektir
 }
 
 /*
@@ -164,7 +165,7 @@ void LogHata(char **hatalar, const char *hata, int satir)
     
     // hatalar ın boyutunu yeni eklenecek hata boyutunca artırıyoruz
     *hatalar = (char *)realloc(*hatalar,strlen(*hatalar)*sizeof(char)+strlen(hata)*sizeof(char));
-    if(hatalar==NULL)
+    if(*hatalar==NULL)
     {
         printf("'hatalar' icin realloc yapilirken hata olustu. Bellek yetersiz olabilir.\n");
         return;
@@ -182,7 +183,7 @@ float NoktaMesafe(float a[3], float b[3])
 /*
     noktalar içinde birbirine en yakın olanları bulan fonksiyon
 */
-void EnYakinNoktalarHesapla(float noktalar[], int alantip, int count, int *to_write)
+void EnYakinNoktalar(float noktalar[], int alantip, int count, int *to_write)
 {
     // initial olarak 0. ve 1. noktayı en yakın olarak belirliyoruz
     // sonrasında bu 2sinin mesafesinden kısa ise karşılaştırılan herhangi 2 nokta
@@ -198,7 +199,6 @@ void EnYakinNoktalarHesapla(float noktalar[], int alantip, int count, int *to_wr
     {
         for(int j=i+1; j<=count-1; j++)
         {
-            printf("%d %d\n",i,j);
             if(NoktaMesafe(&noktalar[i*alanboyut],&noktalar[j*alanboyut])<NoktaMesafe(&noktalar[to_write[0]*alanboyut],&noktalar[to_write[1]*alanboyut]))
             {
                 to_write[0] = i;
@@ -211,10 +211,27 @@ void EnYakinNoktalarHesapla(float noktalar[], int alantip, int count, int *to_wr
 /*
     noktalar içinde birbirine en uzak olanları bulan fonksiyon
 */
-void EnUzakNoktalarHesapla(float noktalar[], int alantip, int count, int *to_write)
+void EnUzakNoktalar(float noktalar[], int alantip, int count, int *to_write)
 {
-    // en yakını bulmanın benzeri ama şimdilik yapmak istemiyorum en yakın-daki
-    // karşılaştırma algoritması çok yavaş olduğu için hoşuma gitmedi
+    // en yakının tam tersi
+    to_write[0] = 0;
+    to_write[1] = 1;
+
+    int alanboyut = (alantip==ALANTIP_XYZ ? 3 : 6);
+
+    // tüm noktaları birbiriyle karşılaştırıyoruz
+    // daha hızlı bi algoritma gerek
+    for(int i=0; i<count; i++)
+    {
+        for(int j=i+1; j<=count-1; j++)
+        {
+            if(NoktaMesafe(&noktalar[i*alanboyut],&noktalar[j*alanboyut])>NoktaMesafe(&noktalar[to_write[0]*alanboyut],&noktalar[to_write[1]*alanboyut]))
+            {
+                to_write[0] = i;
+                to_write[1] = j;
+            }      
+        }
+    }
 }
 
 /*
@@ -224,14 +241,115 @@ void EnUzakNoktalarHesapla(float noktalar[], int alantip, int count, int *to_wri
         henüz yok
 
 */
-void TumNoktalariIcerenEnKucukKupKoseleri(float noktalar[], int alantip, int count, int *to_write)
+void Kup(float noktalar[], int alantip, int count)
 {
     int alanboyut = (alantip==ALANTIP_XYZ ? 3 : 6);
 
+    // bunlar en küçük ve en büyük indisleri tutuyorlar
+    float x[2] = {noktalar[0], noktalar[0]}; 
+    float y[2] = {noktalar[1], noktalar[1]};
+    float z[2] = {noktalar[2], noktalar[2]};
+
     for(int i=0; i<count; i++)
     {
+        float *nokta = &noktalar[i*alanboyut];
+        
+        // en küçük en büyükleri kontrol edip
+        // daha küçük daha büyükse atama yapıyor
+        // x
+        if(nokta[0]<x[0])
+            x[0] = nokta[0];
+        if(nokta[0]>x[1])
+            x[1] = nokta[0];
 
+        // y
+        if(nokta[1]<y[0])
+            y[0] = nokta[1];
+        if(nokta[1]>y[1])
+            y[1] = nokta[1];
+
+        // z
+        if(nokta[2]<z[0])
+            z[0] = nokta[2];
+        if(nokta[2]>z[1])
+            z[1] = nokta[2];
     }
+
+    float xfark = x[1]-x[0];
+    float yfark = y[1]-y[0];
+    float zfark = z[1]-z[0];
+
+    float xyz_enbuyukfark = xfark;
+    int xyz_enbuyukfark_indis = 0; // 0 : x, 1 : y, 2 : z
+
+    if(yfark>xyz_enbuyukfark)
+        xyz_enbuyukfark_indis = 1;
+
+    if(zfark>xyz_enbuyukfark)
+        xyz_enbuyukfark_indis = 2;
+    
+    // debug printf("%f %f %f %f\n",xyz_enbuyukfark,xfark,yfark,zfark);
+    for(int i=0; i<3; i++)
+    {
+        if(i==xyz_enbuyukfark_indis)
+            continue;
+        
+        if(i==0)
+        {
+            x[0] = x[0]-(xyz_enbuyukfark-xfark)/2;
+            x[1] = x[1]+(xyz_enbuyukfark-xfark)/2;
+        }
+        if(i==1)
+        {
+            y[0] = y[0]-(xyz_enbuyukfark-yfark)/2;
+            y[1] = y[1]+(xyz_enbuyukfark-yfark)/2;
+        }
+        if(i==2)
+        {
+            z[0] = z[0]-(xyz_enbuyukfark-zfark)/2;
+            z[1] = z[1]+(xyz_enbuyukfark-zfark)/2;
+        }
+    }
+
+    printf("%f %f %f\n",x[0],y[0],z[0]);
+    printf("%f %f %f\n",x[0],y[0],z[1]);
+    printf("%f %f %f\n",x[0],y[1],z[0]);
+    printf("%f %f %f\n",x[0],y[1],z[1]);
+    printf("%f %f %f\n",x[1],y[0],z[0]);
+    printf("%f %f %f\n",x[1],y[0],z[1]);
+    printf("%f %f %f\n",x[1],y[1],z[0]);
+    printf("%f %f %f\n",x[1],y[1],z[1]);
+}
+
+/*
+    merkez x,y,z ve yarıçap r bilgisi kullanıcıdan alınan kürenin içinde kalan
+    noktaları bulan fonksiyon
+
+    return olarak kaç tane bulduğunu döndürüyor
+
+    (*to_write)[] yapıyoruz çünkü [] operatörünün önceliği * operatörünün önceliğinden fazla o yüzden hatalı oluyor
+*/
+int Kure(float noktalar[], int alantip, int count, float *xyz, float r, int **to_write)
+{
+    int alanboyut = (alantip==ALANTIP_XYZ ? 3 : 6);
+
+    int counter = 0;
+    for(int i=0; i<count; i++)
+    {
+        // debug printf("%d. nokta mesafesi : %f, icerde olmasi icin: %f\n",i,NoktaMesafe(&noktalar[i*alanboyut],xyz),NoktaMesafe(&noktalar[i*alanboyut],xyz)-r);
+        if(NoktaMesafe(&noktalar[i*alanboyut],xyz)<r)
+        {
+            // debug printf("%d icerde!\n",i);
+            *to_write = realloc(*to_write,sizeof(int)*(counter+1));
+
+            (*to_write)[counter] = i;
+            
+            // debug printf("towr %d = %d | %d\n",counter,(*to_write)[counter],sizeof(int)*(counter+1));
+            counter++;
+        }
+    }
+
+    return counter;
 }
 
 int main(void)
@@ -519,7 +637,7 @@ int main(void)
                 {
                     char hatabuffer[128];
                     sprintf(hatabuffer,"[%s] isimli dosyadan okunan nokta sayisi [%d] dosya basligindaki nokta sayisiyla [%d] uyusmuyor.\n", de->d_name, noktacount, Dosyalar[dosyaindex].Baslik.NOKTALAR);
-                    LogHata(&hatalar,hatabuffer,satir);
+                    LogHata(&hatalar,hatabuffer,-1);
                     dosyaindex--;
                     goto end_reading;
                 }
@@ -529,8 +647,11 @@ int main(void)
             // binary şeklinde oku
             else if (Dosyalar[dosyaindex].Baslik.DATA == DATATIP_BINARY)
             {
+                // bu 2 satırsız da çalışıyor ama çözemedim
+                // https://stackoverflow.com/a/2174928/8993088
                 fclose(file);
-                file = fopen(de->d_name,"rb"); // sorun çözümü rb miş
+                file = fopen(de->d_name,"rb");
+
                 if(file==NULL)
                 {
                     printf("'%s' dosyasi 'rb' modunda acilamadi.\n",de->d_name);
@@ -539,8 +660,8 @@ int main(void)
 
                 fseek(file,offset,SEEK_SET);
             
-                // niye float değil?
-                double xyz[3];
+                // güncellemeyle floata çevirdiler ;)
+                float xyz[3];
 
                 while(fread((void *)(&xyz),sizeof(xyz),1,file)!=NULL)
                 {
@@ -549,12 +670,8 @@ int main(void)
                     // ALAN tip XYZ oku
                     if (Dosyalar[dosyaindex].Baslik.ALANLAR == ALANTIP_XYZ)
                     {
-                        // double arrayı float arraya cast ediyoruz
-
-                        for(int i=0; i<3; i++)
-                        {
-                            Dosyalar[dosyaindex].Noktalar[noktacount*3+i] = (float)xyz[i];
-                        }
+                        // geçici olarak xyz ye kaydettiğimizi asıl yerine taşıyoruz
+                        memcpy(&Dosyalar[dosyaindex].Noktalar[noktacount*3],xyz,sizeof(xyz));
                     }
                     //  ALAN tip XYZRGB oku
                     else if (Dosyalar[dosyaindex].Baslik.ALANLAR == ALANTIP_XYZRGB)
@@ -631,12 +748,57 @@ int main(void)
                     int enyakin_noktalar[2];
                     int enuzak_noktalar[2];
 
-                    EnYakinNoktalarHesapla(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta, &enyakin_noktalar);
-                    printf("%d %d\n",enyakin_noktalar[0],enyakin_noktalar[1]);
+                    EnYakinNoktalar(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta, &enyakin_noktalar);
+                    // debug printf("%d %d\n",enyakin_noktalar[0],enyakin_noktalar[1]);
 
-                    EnUzakNoktalarHesapla(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta, &enuzak_noktalar);
+                    EnUzakNoktalar(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta, &enuzak_noktalar);
                 }
                 break;
+            }
+            case 3:
+            {
+                for(int i=0; i<dosyaindex; i++)
+                {
+                    Kup(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta);
+                }
+                break;
+            }
+            case 4:
+            {
+                float cxyz[3], cr;
+                
+                printf("Kurenin X koordinatini girin: ");
+                scanf("%f",&cxyz);
+                clean_stdin();
+                printf("Kurenin Y koordinatini girin: ");
+                scanf("%f",&cxyz[1]);
+                clean_stdin();
+                printf("Kurenin Z koordinatini girin: ");
+                scanf("%f",&cxyz[2]);
+                clean_stdin();
+
+                printf("Kurenin yaricap bilgisini girin: ");
+                scanf("%f",&cr);
+                clean_stdin();
+
+                for(int i=0; i<dosyaindex; i++)
+                {
+                    int *noktalar = NULL;
+                    noktalar = malloc(sizeof(int)*4);
+
+                    int adet = Kure(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta,cxyz,cr,&noktalar);
+
+                    /* debug
+                    printf("adet: %d\n",adet);
+                    for(int i=0; i<adet; i++)
+                    {
+                        printf("%d = %d\n",i+1,noktalar[i]);
+                    }
+                    */
+
+                    free(noktalar);
+                }
+                break;         
             }
 
             default:
@@ -649,7 +811,8 @@ int main(void)
     }
     
     end: 
-    // for debugging purposes
+    
+    // debug
     /*for (int i = 0; i < dosyaindex; i++)
     {
         printf("DOSYA [%d] [%s]:\n", i + 1, Dosyalar[i].Ad);
