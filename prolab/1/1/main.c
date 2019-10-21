@@ -168,6 +168,10 @@ void LogHata(char **hatalar, char *hata, int satir)
     strcat(*hatalar,hata);
 }
 
+/*
+    dosyaya log kaydeder
+*/
+
 // noktalar arası mesafeyi hesaplayan fonksiyon
 float NoktaMesafe(float a[3], float b[3])
 {
@@ -195,7 +199,7 @@ void EnYakinEnUzak(float noktalar[], int alantip, int count, int *enyakinlar_buf
     // daha hızlı bi algoritma gerek
     for(int i=0; i<count; i++)
     {
-        for(int j=i+1; j<=count-1; j++)
+        for(int j=i+1; j<count; j++)
         {
             float mesafe = NoktaMesafe(&noktalar[i*alanboyut],&noktalar[j*alanboyut]);
 
@@ -223,17 +227,19 @@ float Ortalama(float noktalar[], int alantip, int count)
     int alanboyut = (alantip==ALANTIP_XYZ ? 3 : 6);
 
     float ort = 0;
+    int counter = 0;
 
     for(int i=0; i<count; i++)
     {
-        for(int j=i+1; j<=count-1; j++)
+        for(int j=i+1; j<count; j++)
         {
             float mesafe = NoktaMesafe(&noktalar[i*alanboyut],&noktalar[j*alanboyut]);
 
             ort = ort + mesafe;
+            counter++;
         }
     }
-    ort = ort/count;
+    ort = ort/counter;
 
     return ort;
 }
@@ -536,7 +542,7 @@ int main(void)
                     }    
 
                     int count = atoi(noktalarbilgisi);
-                    Dosyalar[dosyaindex].Baslik.NOKTALAR = count; // VERSION dan sonrasını int e çevir
+                    Dosyalar[dosyaindex].Baslik.NOKTALAR = count; // NOKTALAR dan sonrasını int e çevir
                     
                     // debug printf("hellooooo %d\n",count);
                 }
@@ -775,7 +781,7 @@ int main(void)
             {
                 if(strlen(hatalar)==0)
                 {
-                    printf("Tum dosyalar uyumludur.\n");
+                    printf("Tum dosyalar [%d dosya] uyumludur.\n",dosyaindex);
                 }
                 else
                 {
@@ -851,7 +857,6 @@ int main(void)
                     noktalar = malloc(sizeof(int)*4);
 
                     int adet = Kure(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta,cxyz,cr,&noktalar);
-
                     for(int i=0; i<adet; i++)
                     {
 
@@ -897,7 +902,7 @@ int main(void)
     end: 
     
     // debug
-    /*for (int i = 0; i < dosyaindex; i++)
+    for (int i = 0; i < dosyaindex; i++)
     {
         printf("DOSYA [%d] [%s]:\n", i + 1, Dosyalar[i].Ad);
         printf("\tVERSION: %d", Dosyalar[i].Baslik.VERSION);
@@ -930,7 +935,7 @@ int main(void)
             }
             printf("\n");
         }
-    }*/
+    }
        
     // kendimiz allocate ettiğimiz tüm belleği free liyoruz
     for (int i = 0; i < dosyaindex; i++)
