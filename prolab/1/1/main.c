@@ -225,76 +225,98 @@ float NoktaMesafe(float a[3], float b[3])
     return sqrtf(powf(a[0]-b[0],2.0f)+powf(a[1]-b[1],2.0f)+powf(a[2]-b[2],2.0f));
 }
 
-void EnYakinEnUzak(float noktalar[], int alantip, int count, int *enyakinlar_buffer, int *enuzaklar_buffer)
+void EnYakinEnUzak(struct Dosya dosya)
 {
     // initial olarak 0. ve 1. noktayı en yakın olarak belirliyoruz
     // sonrasında bu 2sinin mesafesinden kısa/uzun ise karşılaştırılan herhangi 2 nokta
     // bunları değiştiricez basit en küçük/en büyük bulma mantığı
-    enyakinlar_buffer[0] = 0;
-    enyakinlar_buffer[1] = 1;
+    int enyakin_noktalar[2];
+    int enuzak_noktalar[2];
+
+    enyakin_noktalar[0] = 0;
+    enyakin_noktalar[1] = 1;
 
     // en yakının tam tersi
-    enuzaklar_buffer[0] = 0;
-    enuzaklar_buffer[1] = 1;
+    enuzak_noktalar[0] = 0;
+    enuzak_noktalar[1] = 1;
 
-    int alanboyut = (alantip==ALANTIP_XYZ ? 3 : 6);
+    int alanboyut = (dosya.Baslik.ALANLAR == ALANTIP_XYZ ? 3 : 6);
+    float *noktalar = dosya.Noktalar;
 
-    float yakinlar = NoktaMesafe(&noktalar[enyakinlar_buffer[0]*alanboyut],&noktalar[enyakinlar_buffer[1]*alanboyut]);
-    float uzaklar = NoktaMesafe(&noktalar[enuzaklar_buffer[0]*alanboyut],&noktalar[enuzaklar_buffer[1]*alanboyut]);
+    float yakinlar = NoktaMesafe(&noktalar[enyakin_noktalar[0] * alanboyut], &noktalar[enyakin_noktalar[1] * alanboyut]);
+    float uzaklar = NoktaMesafe(&noktalar[enuzak_noktalar[0] * alanboyut], &noktalar[enuzak_noktalar[1] * alanboyut]);
 
-    for(int i=0; i<count; i++)
+    for (int i = 0; i < dosya.OkunanNokta; i++)
     {
-        for(int j=i+1; j<count; j++)
+        for (int j = i + 1; j < dosya.OkunanNokta; j++)
         {
-            float mesafe = NoktaMesafe(&noktalar[i*alanboyut],&noktalar[j*alanboyut]);
+            float mesafe = NoktaMesafe(&noktalar[i * alanboyut], &noktalar[j * alanboyut]);
 
-            if(mesafe<yakinlar)
+            if (mesafe < yakinlar)
             {
-                enyakinlar_buffer[0] = i;
-                enyakinlar_buffer[1] = j;
+                enyakin_noktalar[0] = i;
+                enyakin_noktalar[1] = j;
 
-                yakinlar = NoktaMesafe(&noktalar[enyakinlar_buffer[0]*alanboyut],&noktalar[enyakinlar_buffer[1]*alanboyut]);
-            }      
+                yakinlar = NoktaMesafe(&noktalar[enyakin_noktalar[0] * alanboyut], &noktalar[enyakin_noktalar[1] * alanboyut]);
+            }
 
-            if(mesafe>uzaklar)
+            if (mesafe > uzaklar)
             {
-                enuzaklar_buffer[0] = i;
-                enuzaklar_buffer[1] = j;
+                enuzak_noktalar[0] = i;
+                enuzak_noktalar[1] = j;
 
-                uzaklar = NoktaMesafe(&noktalar[enuzaklar_buffer[0]*alanboyut],&noktalar[enuzaklar_buffer[1]*alanboyut]);
-            }      
+                uzaklar = NoktaMesafe(&noktalar[enuzak_noktalar[0] * alanboyut], &noktalar[enuzak_noktalar[1] * alanboyut]);
+            }
         }
     }
+
+    char buffer[128];
+    NoktaToString(&noktalar[enyakin_noktalar[0] * alanboyut], dosya.Baslik.ALANLAR, buffer);
+    Log(2, buffer, dosya.Ad);
+    NoktaToString(&noktalar[enyakin_noktalar[1] * alanboyut], dosya.Baslik.ALANLAR, buffer);
+    Log(2, buffer, NULL);
+
+    NoktaToString(&noktalar[enuzak_noktalar[0] * alanboyut], dosya.Baslik.ALANLAR, buffer);
+    Log(2, buffer, NULL);
+    NoktaToString(&noktalar[enuzak_noktalar[1] * alanboyut], dosya.Baslik.ALANLAR, buffer);
+    Log(2, buffer, NULL);
 }
 
-float Ortalama(float noktalar[], int alantip, int count)
+void Ortalama(struct Dosya dosya)
 {
-    int alanboyut = (alantip==ALANTIP_XYZ ? 3 : 6);
+    int alanboyut = (dosya.Baslik.ALANLAR == ALANTIP_XYZ ? 3 : 6);
+    float *noktalar = dosya.Noktalar;
 
     float ort = 0;
-    int counter = 0;
+    int counter = 1;
 
-    for(int i=0; i<count; i++)
+    for (int i = 0; i < dosya.OkunanNokta; i++)
     {
-        for(int j=i+1; j<count; j++)
+        for (int j = i + 1; j < dosya.OkunanNokta; j++)
         {
-            float mesafe = NoktaMesafe(&noktalar[i*alanboyut],&noktalar[j*alanboyut]);
+            float mesafe = NoktaMesafe(&noktalar[i * alanboyut], &noktalar[j * alanboyut]);
 
-            ort = ort + mesafe;
+            // https://stackoverflow.com/a/1934266/8993088
+            // iterative mean
+            ort += (mesafe-ort)/counter;
             counter++;
         }
     }
-    ort = ort/counter;
+    //ort = ort / (counter);
 
-    return ort;
+    char buffer[32];
+    sprintf(buffer, "%f", ort);
+    Log(5, buffer, dosya.Ad);
 }
 
 /*
     içine bütün noktaları alan en küçük küpün köşe noktalarını bulan fonksiyon
 */
-void Kup(float noktalar[], int alantip, int count)
+//void Kup(float noktalar[], int alantip, int count)
+void Kup(struct Dosya dosya)
 {
-    int alanboyut = (alantip==ALANTIP_XYZ ? 3 : 6);
+    int alanboyut = (dosya.Baslik.ALANLAR==ALANTIP_XYZ ? 3 : 6);
+    float *noktalar = dosya.Noktalar;
 
     // bunlar en küçük ve en büyük indisleri tutuyorlar
     // index 0 = en küçük
@@ -303,7 +325,7 @@ void Kup(float noktalar[], int alantip, int count)
     float y[2] = {noktalar[1], noktalar[1]};
     float z[2] = {noktalar[2], noktalar[2]};
 
-    for(int i=0; i<count; i++)
+    for(int i=0; i<dosya.OkunanNokta; i++)
     {
         float *nokta = &noktalar[i*alanboyut];
         
@@ -364,14 +386,23 @@ void Kup(float noktalar[], int alantip, int count)
         }
     }
 
-    printf("%f %f %f\n",x[0],y[0],z[0]);
-    printf("%f %f %f\n",x[0],y[0],z[1]);
-    printf("%f %f %f\n",x[0],y[1],z[0]);
-    printf("%f %f %f\n",x[0],y[1],z[1]);
-    printf("%f %f %f\n",x[1],y[0],z[0]);
-    printf("%f %f %f\n",x[1],y[0],z[1]);
-    printf("%f %f %f\n",x[1],y[1],z[0]);
-    printf("%f %f %f\n",x[1],y[1],z[1]);
+    char buffer[64];
+    sprintf(buffer,"%f %f %f",x[0],y[0],z[0]);
+    Log(3,buffer,dosya.Ad);
+    sprintf(buffer,"%f %f %f",x[0],y[0],z[1]);
+    Log(3,buffer,NULL);
+    sprintf(buffer,"%f %f %f",x[0],y[1],z[0]);
+    Log(3,buffer,NULL);
+    sprintf(buffer,"%f %f %f",x[0],y[1],z[1]);
+    Log(3,buffer,NULL);
+    sprintf(buffer,"%f %f %f",x[1],y[0],z[0]);
+    Log(3,buffer,NULL);
+    sprintf(buffer,"%f %f %f",x[1],y[0],z[1]);
+    Log(3,buffer,NULL);
+    sprintf(buffer,"%f %f %f",x[1],y[1],z[0]);
+    Log(3,buffer,NULL);
+    sprintf(buffer,"%f %f %f",x[1],y[1],z[1]);
+    Log(3,buffer,NULL);
 }
 
 /*
@@ -382,27 +413,23 @@ void Kup(float noktalar[], int alantip, int count)
 
     (*to_write)[] yapıyoruz çünkü [] operatörünün önceliği * operatörünün önceliğinden fazla o yüzden hatalı oluyor
 */
-int Kure(float noktalar[], int alantip, int count, float *xyz, float r, int **to_write)
+void Kure(struct Dosya dosya, float *xyz, float r)
 {
-    int alanboyut = (alantip==ALANTIP_XYZ ? 3 : 6);
+    int alanboyut = (dosya.Baslik.ALANLAR==ALANTIP_XYZ ? 3 : 6);
+    float *noktalar = dosya.Noktalar;
 
     int counter = 0;
-    for(int i=0; i<count; i++)
+    for(int i=0; i<dosya.OkunanNokta; i++)
     {
         // debug printf("%d. nokta mesafesi : %f, icerde olmasi icin: %f\n",i,NoktaMesafe(&noktalar[i*alanboyut],xyz),NoktaMesafe(&noktalar[i*alanboyut],xyz)-r);
         if(NoktaMesafe(&noktalar[i*alanboyut],xyz)<r)
         {
-            // debug printf("%d icerde!\n",i);
-            *to_write = realloc(*to_write,sizeof(int)*(counter+1));
-
-            (*to_write)[counter] = i;
-            
-            // debug printf("towr %d = %d | %d\n",counter,(*to_write)[counter],sizeof(int)*(counter+1));
+            char buffer[128];
+            NoktaToString(&noktalar[i*alanboyut],dosya.Baslik.ALANLAR,buffer);
+            Log(4,buffer,counter==0 ? dosya.Ad : NULL);
             counter++;
         }
     }
-
-    return counter;
 }
 
 // main
@@ -852,34 +879,7 @@ int main(void)
                 }
                 for(int i=0; i<dosyaindex; i++)
                 {
-                    // indis tutuyorlar 2 şer nokta indisi
-                    int enyakin_noktalar[2];
-                    int enuzak_noktalar[2];
-
-                    // debug
-                    //int sure = 0;
-                    //sure = time(NULL);
-                    EnYakinEnUzak(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta, &enyakin_noktalar, &enuzak_noktalar);
-                    // EnYakinNoktalar(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta, &enyakin_noktalar);
-                    // debug
-                    //printf("kisalar %d %d\n",enyakin_noktalar[0],enyakin_noktalar[1]);
-
-                    //EnUzakNoktalar(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta, &enuzak_noktalar);
-                    //printf("uzunlar %d %d\n",enuzak_noktalar[0],enuzak_noktalar[1]);
-                    //printf("%d nokta icin aldigi zaman: %d\n",Dosyalar[i].OkunanNokta,(int)time(NULL)-sure);
-
-                    int alanboyut = (Dosyalar[i].Baslik.ALANLAR==ALANTIP_XYZ ? 3 : 6);
-
-                    char buffer[128];
-                    NoktaToString(&Dosyalar[i].Noktalar[enyakin_noktalar[0]*alanboyut], Dosyalar[i].Baslik.ALANLAR, buffer);
-                    Log(2, buffer, Dosyalar[i].Ad);
-                    NoktaToString(&Dosyalar[i].Noktalar[enyakin_noktalar[1]*alanboyut], Dosyalar[i].Baslik.ALANLAR, buffer);
-                    Log(2, buffer, NULL);
-
-                    NoktaToString(&Dosyalar[i].Noktalar[enuzak_noktalar[0]*alanboyut], Dosyalar[i].Baslik.ALANLAR, buffer);
-                    Log(2, buffer, NULL);
-                    NoktaToString(&Dosyalar[i].Noktalar[enuzak_noktalar[1]*alanboyut], Dosyalar[i].Baslik.ALANLAR, buffer);
-                    Log(2, buffer, NULL);
+                    EnYakinEnUzak(Dosyalar[i]);
                 }
                 break;
             }
@@ -892,7 +892,7 @@ int main(void)
                 }
                 for(int i=0; i<dosyaindex; i++)
                 {
-                    Kup(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta);
+                    Kup(Dosyalar[i]);
                 }
                 break;
             }
@@ -925,27 +925,7 @@ int main(void)
 
                 for(int i=0; i<dosyaindex; i++)
                 {
-                    int *noktalar = NULL;
-                    noktalar = malloc(sizeof(int));
-
-                    int adet = Kure(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta,cxyz,cr,&noktalar);
-                    int alanboyut = (Dosyalar[i].Baslik.ALANLAR==ALANTIP_XYZ ? 3 : 6);
-
-                    for(int j=0; j<adet; j++)
-                    {
-                        NoktaToString(&Dosyalar[i].Noktalar[noktalar[j]*alanboyut],Dosyalar[i].Baslik.ALANLAR,buffer);
-                        Log(4,buffer,j==0 ? Dosyalar[i].Ad : NULL);
-                    }
-
-                    /* debug
-                    printf("adet: %d\n",adet);
-                    for(int i=0; i<adet; i++)
-                    {
-                        printf("%d = %d\n",i+1,noktalar[i]);
-                    }
-                    */
-
-                    free(noktalar);
+                    Kure(Dosyalar[i],cxyz,cr);
                 }
                 break;         
             }
@@ -959,10 +939,7 @@ int main(void)
                 
                 for(int i=0; i<dosyaindex; i++)
                 {
-                    char buffer[32];
-                    sprintf(buffer, "%f", Ortalama(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta));
-
-                    Log(5,buffer,Dosyalar[i].Ad);
+                    Ortalama(Dosyalar[i]);
                 }
                 
                 break;
