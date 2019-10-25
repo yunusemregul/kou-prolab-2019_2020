@@ -6,9 +6,6 @@
 #include <math.h>
 #include <ctype.h>
 
-// debug
-#include <time.h>
-
 /*
     sources:
         * find all files in a folder
@@ -42,6 +39,7 @@ void clean_stdin(void)
     } while (c != '\n' && c != EOF);
 }
 
+// bir karakterin uygun olup olmadığını döndüren fonksiyon
 int isCharAllowed(int i)
 {
     // \n hariç kontrol karakterlerine izin vermiyoruz \r koyup sapıttırıyolar kodu
@@ -51,6 +49,8 @@ int isCharAllowed(int i)
     return 1;
 }
 
+// bir char arrayının içinde uygunsuz karakter varmı diye kontrol eden fonksiyon
+// uygunsuz karakter bulunca karakterin ascii değerini döndürür
 // -1 döndürmediyse sorun var demektir
 int charControl(char * text)
 {
@@ -119,9 +119,6 @@ static char DATATIPLERI[2][8] = {
 
 /*
     alan tipi veya data tipi okunabilecek alan/data tiplerinde var mı diye kontrol eden fonksiyon
-
-    size :: ALANTIPLERI[->2<-][16]
-    innersize :: ALANTIPLERI[2][->16<-]
 */
 int IsTipValid(int size, int innersize, char array[size][innersize], char *tip)
 {
@@ -138,7 +135,7 @@ int IsTipValid(int size, int innersize, char array[size][innersize], char *tip)
     dosyalardaki hataları boyutu dinamik bir buffere ekleyen fonksiyon
 
     **hatalar yapıyoruz çünkü gelen *hatalar pointer değeri referans olduğu için
-    ve referans üzerinde yapılan değişikler(realloc,memcpy) bu scope un dışına çıkamayacağı için
+    ve referans üzerinde yapılan değişiklikler (realloc,strcat) bu scope un dışına çıkamayacağı için
     pointerin pointeri ni kullanmak zorundayız.
 */
 void LogHata(char **hatalar, char *hata, int satir)
@@ -152,7 +149,7 @@ void LogHata(char **hatalar, char *hata, int satir)
             // son yeni satır karakterini silip satır ekliyoruz
             strcpy(strrchr(hata,'\n')," ");
             char buf[32];
-            sprintf(buf,"[SATIR %d]\n",satir);
+            sprintf(buf,"[SATIR %d]",satir);
             strcat(hata,buf);            
         }
     }
@@ -166,11 +163,61 @@ void LogHata(char **hatalar, char *hata, int satir)
     }  
     // yeni gelen hatayı eski hataların sonuna ekliyoruz
     strcat(*hatalar,hata);
+    //printf("hatalar: %x\n",hatalar);
 }
 
 /*
-    dosyaya log kaydeder
+    output.nkt dosyasına kaydeder
 */
+void Log(int secim, char *text, char dosya_adi[128])
+{
+    static int sonsecim = 0;
+    
+    FILE * output = fopen("output.nkt","a");
+
+    if(output==NULL)
+    {
+        printf("output.nkt dosyasini olustururken hata.\n");
+        return;
+    }
+
+    if(sonsecim!=secim)
+    {
+        fprintf(output,"SECIM %d\n",secim);
+        sonsecim = secim;
+    }
+
+    if(dosya_adi!=NULL)
+    {
+        fprintf(output,"%s dosyası\n",dosya_adi);
+        printf("%s dosyası\n",dosya_adi);
+    }
+
+    fprintf(output,"%s\n",text);
+
+    printf("%s\n",text);
+
+    fclose(output);
+}
+
+void NoktaToString(float *nokta, int alantip, char buffer[128])
+{
+    memset(buffer,0,128);
+
+    int alanboyut = (alantip == ALANTIP_XYZ ? 3 : 6);
+
+    for (int i = 0; i < alanboyut; i++)
+    {
+        if (i < 3)
+        {
+            sprintf(buffer+strlen(buffer), "%.3f ", nokta[i]);
+        }
+        else
+        {
+            sprintf(buffer+strlen(buffer), "%d ", (int)nokta[i]);
+        }
+    }
+}
 
 // noktalar arası mesafeyi hesaplayan fonksiyon
 float NoktaMesafe(float a[3], float b[3])
@@ -195,8 +242,6 @@ void EnYakinEnUzak(float noktalar[], int alantip, int count, int *enyakinlar_buf
     float yakinlar = NoktaMesafe(&noktalar[enyakinlar_buffer[0]*alanboyut],&noktalar[enyakinlar_buffer[1]*alanboyut]);
     float uzaklar = NoktaMesafe(&noktalar[enuzaklar_buffer[0]*alanboyut],&noktalar[enuzaklar_buffer[1]*alanboyut]);
 
-    // tüm noktaları birbiriyle karşılaştırıyoruz
-    // daha hızlı bi algoritma gerek
     for(int i=0; i<count; i++)
     {
         for(int j=i+1; j<count; j++)
@@ -252,6 +297,8 @@ void Kup(float noktalar[], int alantip, int count)
     int alanboyut = (alantip==ALANTIP_XYZ ? 3 : 6);
 
     // bunlar en küçük ve en büyük indisleri tutuyorlar
+    // index 0 = en küçük
+    // index 1 = en büyük
     float x[2] = {noktalar[0], noktalar[0]}; 
     float y[2] = {noktalar[1], noktalar[1]};
     float z[2] = {noktalar[2], noktalar[2]};
@@ -261,7 +308,7 @@ void Kup(float noktalar[], int alantip, int count)
         float *nokta = &noktalar[i*alanboyut];
         
         // en küçük en büyükleri kontrol edip
-        // daha küçük daha büyükse atama yapıyor
+        // daha küçük ya da daha büyükse atama yapıyor
         // x
         if(nokta[0]<x[0])
             x[0] = nokta[0];
@@ -407,6 +454,9 @@ int main(void)
     {
         // dosya uzantısı
         char *file_extension = strrchr(de->d_name, '.');
+
+        if(strcmp(de->d_name,"output.nkt")==0)
+            continue;
 
         // dosya uzantısı .nkt mı diye kontrol ediyoruz
         if (file_extension != NULL && strcmp(file_extension, ".nkt") == 0)
@@ -781,11 +831,15 @@ int main(void)
             {
                 if(strlen(hatalar)==0)
                 {
-                    printf("Tum dosyalar [%d dosya] uyumludur.\n",dosyaindex);
+                    char buffer[256];
+                    sprintf(buffer,"Tum dosyalar [%d dosya] uyumludur.",dosyaindex);
+                    Log(1,buffer,NULL);
                 }
                 else
                 {
-                    printf("%s",hatalar);
+                    char buffer[256];
+                    sprintf(buffer,"%s",hatalar);
+                    Log(1,buffer,NULL);
                 }
                 break;
             }
@@ -802,16 +856,30 @@ int main(void)
                     int enyakin_noktalar[2];
                     int enuzak_noktalar[2];
 
-                    int sure = 0;
-                    sure = time(NULL);
-                    EnYakinEnUzak(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta, &enyakin_noktalar, &enuzak_noktalar);
-                   // EnYakinNoktalar(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta, &enyakin_noktalar);
                     // debug
-                    printf("kisalar %d %d\n",enyakin_noktalar[0],enyakin_noktalar[1]);
+                    //int sure = 0;
+                    //sure = time(NULL);
+                    EnYakinEnUzak(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta, &enyakin_noktalar, &enuzak_noktalar);
+                    // EnYakinNoktalar(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta, &enyakin_noktalar);
+                    // debug
+                    //printf("kisalar %d %d\n",enyakin_noktalar[0],enyakin_noktalar[1]);
 
                     //EnUzakNoktalar(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta, &enuzak_noktalar);
-                    printf("uzunlar %d %d\n",enuzak_noktalar[0],enuzak_noktalar[1]);
-                    printf("%d nokta icin aldigi zaman: %d\n",Dosyalar[i].OkunanNokta,(int)time(NULL)-sure);
+                    //printf("uzunlar %d %d\n",enuzak_noktalar[0],enuzak_noktalar[1]);
+                    //printf("%d nokta icin aldigi zaman: %d\n",Dosyalar[i].OkunanNokta,(int)time(NULL)-sure);
+
+                    int alanboyut = (Dosyalar[i].Baslik.ALANLAR==ALANTIP_XYZ ? 3 : 6);
+
+                    char buffer[128];
+                    NoktaToString(&Dosyalar[i].Noktalar[enyakin_noktalar[0]*alanboyut], Dosyalar[i].Baslik.ALANLAR, buffer);
+                    Log(2, buffer, Dosyalar[i].Ad);
+                    NoktaToString(&Dosyalar[i].Noktalar[enyakin_noktalar[1]*alanboyut], Dosyalar[i].Baslik.ALANLAR, buffer);
+                    Log(2, buffer, NULL);
+
+                    NoktaToString(&Dosyalar[i].Noktalar[enuzak_noktalar[0]*alanboyut], Dosyalar[i].Baslik.ALANLAR, buffer);
+                    Log(2, buffer, NULL);
+                    NoktaToString(&Dosyalar[i].Noktalar[enuzak_noktalar[1]*alanboyut], Dosyalar[i].Baslik.ALANLAR, buffer);
+                    Log(2, buffer, NULL);
                 }
                 break;
             }
@@ -851,15 +919,22 @@ int main(void)
                 scanf("%f",&cr);
                 clean_stdin();
 
+                char buffer[128];
+                sprintf(buffer, "cx=%f cy=%f cz=%f cr=%f",cxyz[0],cxyz[1],cxyz[2],cr);
+                Log(4, buffer, NULL);
+
                 for(int i=0; i<dosyaindex; i++)
                 {
                     int *noktalar = NULL;
-                    noktalar = malloc(sizeof(int)*4);
+                    noktalar = malloc(sizeof(int));
 
                     int adet = Kure(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta,cxyz,cr,&noktalar);
-                    for(int i=0; i<adet; i++)
-                    {
+                    int alanboyut = (Dosyalar[i].Baslik.ALANLAR==ALANTIP_XYZ ? 3 : 6);
 
+                    for(int j=0; j<adet; j++)
+                    {
+                        NoktaToString(&Dosyalar[i].Noktalar[noktalar[j]*alanboyut],Dosyalar[i].Baslik.ALANLAR,buffer);
+                        Log(4,buffer,j==0 ? Dosyalar[i].Ad : NULL);
                     }
 
                     /* debug
@@ -884,7 +959,10 @@ int main(void)
                 
                 for(int i=0; i<dosyaindex; i++)
                 {
-                    printf("ortalama: %f\n",Ortalama(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta));
+                    char buffer[32];
+                    sprintf(buffer, "%f", Ortalama(Dosyalar[i].Noktalar,Dosyalar[i].Baslik.ALANLAR,Dosyalar[i].OkunanNokta));
+
+                    Log(5,buffer,Dosyalar[i].Ad);
                 }
                 
                 break;
@@ -902,7 +980,7 @@ int main(void)
     end: 
     
     // debug
-    for (int i = 0; i < dosyaindex; i++)
+    /*for (int i = 0; i < dosyaindex; i++)
     {
         printf("DOSYA [%d] [%s]:\n", i + 1, Dosyalar[i].Ad);
         printf("\tVERSION: %d", Dosyalar[i].Baslik.VERSION);
@@ -935,7 +1013,7 @@ int main(void)
             }
             printf("\n");
         }
-    }
+    }*/
        
     // kendimiz allocate ettiğimiz tüm belleği free liyoruz
     for (int i = 0; i < dosyaindex; i++)
