@@ -10,10 +10,10 @@
     sources:
         * find all files in a folder
             https://www.geeksforgeeks.org/c-program-list-files-sub-directories-directory/
-        
+
         * find file extension
             https://stackoverflow.com/a/5309514/8993088
-        
+
         * read file line by line
             https://stackoverflow.com/a/3501681/8993088
 
@@ -27,56 +27,16 @@
 */
 
 /*
-    TO LEARN:  
+    TO LEARN:
         strtok, strrchr, pointer ->, dirent, readdir
 */
-
-void clean_stdin(void)
-{
-    int c;
-    do {
-        c = getchar();
-    } while (c != '\n' && c != EOF);
-}
-
-// bir karakterin uygun olup olmadığını döndüren fonksiyon
-int isCharAllowed(int i)
-{
-    // \n hariç kontrol karakterlerine izin vermiyoruz \r koyup sapıttırıyolar kodu
-    if(iscntrl((char)i)&&i!='\n')
-        return 0;
-
-    return 1;
-}
-
-// bir char arrayının içinde uygunsuz karakter varmı diye kontrol eden fonksiyon
-// uygunsuz karakter bulunca karakterin ascii değerini döndürür
-// -1 döndürmediyse sorun var demektir
-int charControl(char * text)
-{
-    for(int i=0; i<strlen(text);i++)
-    {
-        if(!isCharAllowed(text[i]))
-        {
-            return text[i];
-        }
-    }
-
-    return -1;
-}
-
-static char NOKTAVERILERI[6] = {
-    'x', 'y', 'z', 'r', 'g', 'b'
-};
 
 struct DosyaBaslik
 {
     int VERSION;
     int ALANLAR;
-    //char ALANLAR[16]; // x y z || x y z r g b
     int NOKTALAR;
     int DATA;
-    //char DATA[8]; // ascii || binary
 };
 
 struct Dosya
@@ -86,6 +46,10 @@ struct Dosya
 
     float *Noktalar;
     int OkunanNokta;
+};
+
+static char NOKTAVERILERI[6] = {
+    'x', 'y', 'z', 'r', 'g', 'b'
 };
 
 static char BASLIKTIPLERI[4][12] = {
@@ -107,72 +71,106 @@ enum DATATIPLERI
     DATATIP_BINARY
 };
 
-static char ALANTIPLERI[2][16] = {
+static char ALANTIPLERI[2][12] = {
     "x y z",
     "x y z r g b"
 };
 
-static char DATATIPLERI[2][8] = {
+static char DATATIPLERI[2][12] = {
     "ascii",
     "binary"
 };
 
-/*
-    alan tipi veya data tipi okunabilecek alan/data tiplerinde var mı diye kontrol eden fonksiyon
-*/
-int IsTipValid(int size, int innersize, char array[size][innersize], char *tip)
+void clean_stdin(void)
 {
-    for (int i = 0; i < size; i++)
+    int c;
+    do {
+        c = getchar();
+    } while (c != '\n' && c != EOF);
+}
+
+// bir karakterin uygun olup olmadigini döndüren fonksiyon
+int isCharAllowed(int i)
+{
+    // \n hariç kontrol karakterlerine izin vermiyoruz \r koyup sapittiriyolar kodu
+    if(iscntrl((char)i)&&i!='\n')
+        return 0;
+
+    return 1;
+}
+
+// bir char arrayinin içinde uygunsuz karakter varmi diye kontrol eden fonksiyon
+// uygunsuz karakter bulunca karakterin ascii degerini döndürür
+// -1 döndürmediyse sorun var demektir
+int charControl(char * text)
+{
+    for(int i=0; i<strlen(text);i++)
+    {
+        if(!isCharAllowed(text[i]))
+        {
+            return text[i];
+        }
+    }
+
+    return -1;
+}
+
+/*
+    alan tipi veya data tipi okunabilecek alan/data tiplerinde var mi diye kontrol eden fonksiyon
+*/
+int IsTipValid(char array[2][12], char *tip)
+{
+    for (int i = 0; i < 2; i++)
     {
         if (strcmp(tip, array[i]) == 0)
             return i; // return (bulunan tip)
     }
 
-    return -1; // bulunmadı demektir
+    return -1; // bulunmadi demektir
 }
 
 /*
-    dosyalardaki hataları boyutu dinamik bir buffere ekleyen fonksiyon
+    dosyalardaki hatalari boyutu dinamik bir buffere ekleyen fonksiyon
 
-    **hatalar yapıyoruz çünkü gelen *hatalar pointer değeri referans olduğu için
-    ve referans üzerinde yapılan değişiklikler (realloc,strcat) bu scope un dışına çıkamayacağı için
-    pointerin pointeri ni kullanmak zorundayız.
+    **hatalar yapiyoruz çünkü gelen *hatalar pointer degeri referans oldugu için
+    ve referans üzerinde yapilan degisiklikler (realloc,strcat) bu scope un disina çikamayacagi için
+    pointerin pointeri ni kullanmak zorundayiz.
 */
 void LogHata(char **hatalar, char *hata, int satir)
 {
-    // satır bilgisini koymak istemiyorsak, mesela binary de satır olmadığı için
+    // satir bilgisini koymak istemiyorsak, mesela binary de satir olmadigi için
     // bu fonksiyona -1 gönderiyoruz
     if(satir!=-1)
     {
         if(strrchr(hata,'\n')!=NULL)
         {
-            // son yeni satır karakterini silip satır ekliyoruz
+            // son yeni satir karakterini silip satir ekliyoruz
             strcpy(strrchr(hata,'\n')," ");
             char buf[32];
-            sprintf(buf,"[SATIR %d]",satir);
-            strcat(hata,buf);            
+            sprintf(buf,"[SATIR %d]\n",satir);
+            strcat(hata,buf);
         }
     }
-    
-    // hatalar ın boyutunu yeni eklenecek hata boyutunca artırıyoruz
-    *hatalar = (char *)realloc(*hatalar,strlen(*hatalar)*sizeof(char)+strlen(hata)*sizeof(char)+1); // +1 bi sorunu çözüyor alt satıra bozuk bytelar geliyor onu çözüyo
+
+    // hatalar in boyutunu yeni eklenecek hata boyutunca artiriyoruz
+    *hatalar = (char *)realloc(*hatalar,strlen(*hatalar)*sizeof(char)+strlen(hata)*sizeof(char)+1); // +1 bi sorunu çözüyor alt satira bozuk bytelar geliyor onu çözüyo
     if(*hatalar==NULL)
     {
         printf("'hatalar' icin realloc yapilirken hata olustu. Bellek yetersiz olabilir.\n");
         return;
-    }  
-    // yeni gelen hatayı eski hataların sonuna ekliyoruz
+    }
+    // yeni gelen hatayi eski hatalarin sonuna ekliyoruz
     strcat(*hatalar,hata);
     //printf("hatalar: %x\n",hatalar);
 }
 
 /*
-    output.nkt dosyasına kaydeder
+    output.nkt dosyasina kaydeder
 */
 void Log(int secim, char *text, char dosya_adi[128])
 {
     static int sonsecim = 0;
-    
+
     FILE * output = fopen("output.nkt","a");
 
     if(output==NULL)
@@ -189,8 +187,8 @@ void Log(int secim, char *text, char dosya_adi[128])
 
     if(dosya_adi!=NULL)
     {
-        fprintf(output,"%s dosyası\n",dosya_adi);
-        printf("%s dosyası\n",dosya_adi);
+        fprintf(output,"%s dosyasi\n",dosya_adi);
+        printf("%s dosyasi\n",dosya_adi);
     }
 
     fprintf(output,"%s\n",text);
@@ -219,7 +217,7 @@ void NoktaToString(float *nokta, int alantip, char buffer[128])
     }
 }
 
-// noktalar arası mesafeyi hesaplayan fonksiyon
+// noktalar arasi mesafeyi hesaplayan fonksiyon
 float NoktaMesafe(float a[3], float b[3])
 {
     return sqrtf(powf(a[0]-b[0],2.0f)+powf(a[1]-b[1],2.0f)+powf(a[2]-b[2],2.0f));
@@ -227,16 +225,16 @@ float NoktaMesafe(float a[3], float b[3])
 
 void EnYakinEnUzak(struct Dosya dosya)
 {
-    // initial olarak 0. ve 1. noktayı en yakın olarak belirliyoruz
-    // sonrasında bu 2sinin mesafesinden kısa/uzun ise karşılaştırılan herhangi 2 nokta
-    // bunları değiştiricez basit en küçük/en büyük bulma mantığı
+    // initial olarak 0. ve 1. noktayi en yakin olarak belirliyoruz
+    // sonrasinda bu 2sinin mesafesinden kisa/uzun ise karsilastirilan herhangi 2 nokta
+    // bunlari degistiricez basit en küçük/en büyük bulma mantigi
     int enyakin_noktalar[2];
     int enuzak_noktalar[2];
 
     enyakin_noktalar[0] = 0;
     enyakin_noktalar[1] = 1;
 
-    // en yakının tam tersi
+    // en yakinin tam tersi
     enuzak_noktalar[0] = 0;
     enuzak_noktalar[1] = 1;
 
@@ -310,7 +308,7 @@ void Ortalama(struct Dosya dosya)
 }
 
 /*
-    içine bütün noktaları alan en küçük küpün köşe noktalarını bulan fonksiyon
+    içine bütün noktalari alan en küçük küpün köse noktalarini bulan fonksiyon
 */
 //void Kup(float noktalar[], int alantip, int count)
 void Kup(struct Dosya dosya)
@@ -321,16 +319,16 @@ void Kup(struct Dosya dosya)
     // bunlar en küçük ve en büyük indisleri tutuyorlar
     // index 0 = en küçük
     // index 1 = en büyük
-    float x[2] = {noktalar[0], noktalar[0]}; 
+    float x[2] = {noktalar[0], noktalar[0]};
     float y[2] = {noktalar[1], noktalar[1]};
     float z[2] = {noktalar[2], noktalar[2]};
 
     for(int i=0; i<dosya.OkunanNokta; i++)
     {
         float *nokta = &noktalar[i*alanboyut];
-        
+
         // en küçük en büyükleri kontrol edip
-        // daha küçük ya da daha büyükse atama yapıyor
+        // daha küçük ya da daha büyükse atama yapiyor
         // x
         if(nokta[0]<x[0])
             x[0] = nokta[0];
@@ -362,13 +360,13 @@ void Kup(struct Dosya dosya)
 
     if(zfark>xyz_enbuyukfark)
         xyz_enbuyukfark_indis = 2;
-    
+
     // debug printf("%f %f %f %f\n",xyz_enbuyukfark,xfark,yfark,zfark);
     for(int i=0; i<3; i++)
     {
         if(i==xyz_enbuyukfark_indis)
             continue;
-        
+
         if(i==0)
         {
             x[0] = x[0]-(xyz_enbuyukfark-xfark)/2;
@@ -406,12 +404,12 @@ void Kup(struct Dosya dosya)
 }
 
 /*
-    merkez x,y,z ve yarıçap r bilgisi kullanıcıdan alınan kürenin içinde kalan
-    noktaları bulan fonksiyon
+    merkez x,y,z ve yariçap r bilgisi kullanicidan alinan kürenin içinde kalan
+    noktalari bulan fonksiyon
 
-    return olarak kaç tane bulduğunu döndürüyor
+    return olarak kaç tane buldugunu döndürüyor
 
-    (*to_write)[] yapıyoruz çünkü [] operatörünün önceliği * operatörünün önceliğinden fazla o yüzden hatalı oluyor
+    (*to_write)[] yapiyoruz çünkü [] operatörünün önceligi * operatörünün önceliginden fazla o yüzden hatali oluyor
 */
 void Kure(struct Dosya dosya, float *xyz, float r)
 {
@@ -435,10 +433,10 @@ void Kure(struct Dosya dosya, float *xyz, float r)
 // main
 int main(void)
 {
-    // dosyaların bilgilerini içerecek struct
+    // dosyalarin bilgilerini içerecek struct
     // boyutu dinamik
     struct Dosya *Dosyalar;
-    // initial olarak rastgele bir boyut atıyoruz
+    // initial olarak rastgele bir boyut atiyoruz
     Dosyalar = (struct Dosya *)malloc(sizeof(struct Dosya));
 
     if(Dosyalar==NULL)
@@ -447,22 +445,22 @@ int main(void)
         return 0;
     }
 
-    // hataları içerecek pointer
+    // hatalari içerecek pointer
     char *hatalar = NULL;
-    // initial olarak rastgele bir boyut atıyoruz
+    // initial olarak rastgele bir boyut atiyoruz
     hatalar = (char *)malloc(sizeof(char));
+    memset(hatalar,0,strlen(hatalar));
 
     if(hatalar==NULL)
     {
         printf("'hatalar' icin malloc yapilirken hata olustu. Bellek yetersiz olabilir.\n");
         return 0;
     }
-   
+
     struct dirent *de; // Pointer for directory entry
 
-    char *line = NULL;
-    ssize_t read;
-    size_t len = 0;
+    char line[100];
+    char *read;
 
     // opendir() returns a pointer of DIR type.
     DIR *dr = opendir(".");
@@ -473,32 +471,34 @@ int main(void)
         return 0;
     }
 
-    // loopdaki anlık dosyanın indexini tutuyor
+    // loopdaki anlik dosyanin indexini tutuyor
     int dosyaindex = 0;
+    int hatalidosyasayisi = 0;
 
     // for every file
     while ((de = readdir(dr)) != NULL)
     {
-        // dosya uzantısı
+        // dosya uzantisi
         char *file_extension = strrchr(de->d_name, '.');
+        int olddosyaindex = dosyaindex;
 
         if(strcmp(de->d_name,"output.nkt")==0)
             continue;
 
-        // dosya uzantısı .nkt mı diye kontrol ediyoruz
+        // dosya uzantisi .nkt mi diye kontrol ediyoruz
         if (file_extension != NULL && strcmp(file_extension, ".nkt") == 0)
         {
-            // yeni bir dosya kaydına başladığımız için dosyalar arrayının boyutunu 1 arttırıyoruz
+            // yeni bir dosya kaydina basladigimiz için dosyalar arrayinin boyutunu 1 arttiriyoruz
             Dosyalar = (struct Dosya *)realloc(Dosyalar, (dosyaindex + 1) * sizeof(struct Dosya));
             if(Dosyalar==NULL)
             {
                 printf("'Dosyalar' icin realloc yapilirken hata olustu. Bellek yetersiz olabilir.\n");
                 return 0;
-            }  
+            }
 
             strcpy(Dosyalar[dosyaindex].Ad, de->d_name);
 
-            // okunan dosyanın FILE pointeri
+            // okunan dosyanin FILE pointeri
             FILE *file;
             file = fopen(de->d_name, "r");
             if(file==NULL)
@@ -509,16 +509,16 @@ int main(void)
 
             int satir = 0;
             int offset = 0;
+           int noktacount = 0;
 
-            // 4 satırlık başlık bilgisini bulup oku
+            // 4 satirlik baslik bilgisini bulup oku
             for (int i = 0; i < 4; i++)
             {
-                read = getline(&line, &len, file);
+                read = fgets(line, 100, file);
                 offset = offset + strlen(line);
                 satir++;
-
-                // eğer başlık bilgisi yoksa
-                if (read == -1)
+                // eger baslik bilgisi yoksa
+                if (read == NULL)
                 {
                     char hatabuffer[400];
                     sprintf(hatabuffer, "[%s] dosyasinin baslik bilgisi hatali. [%s] bulunamadi.\n", de->d_name, BASLIKTIPLERI[i]);
@@ -526,19 +526,19 @@ int main(void)
                     dosyaindex--;
                     goto end_reading;
                 }
-                // eğer başlık yorum satırıysa
-                // boşver burdan başlama okumaya
+                // eger baslik yorum satiriysa
+                // bosver burdan baslama okumaya
                 else if (line[0] == '#')
                 {
                     i--;
                     continue;
                 }
-                
+
                 line[strlen(line)-1] = '\0';
-                char ayrac[2] = " ";                
-                char *parca = strtok(line,ayrac);                
-                
-                // başlık bilgisi beklenen sıradan farklıysa
+                char ayrac[2] = " ";
+                char *parca = strtok(line,ayrac);
+
+                // baslik bilgisi beklenen siradan farkliysa
                 if (strcmp(parca, BASLIKTIPLERI[i]) != 0)
                 {
                     char hatabuffer[400];
@@ -553,7 +553,7 @@ int main(void)
                     sprintf(hatabuffer, "[%s] dosyasinda uygun olmayan bir karakter okundu. Karakter kodu: [%d]\n", de->d_name, charControl(line));
                     LogHata(&hatalar,hatabuffer,satir);
                     dosyaindex--;
-                    goto end_reading;                    
+                    goto end_reading;
                 }
 
                 // debug printf("satir: %s\n",line);
@@ -572,8 +572,8 @@ int main(void)
                         goto end_reading;
                     }
 
-                    int ver = atoi(versiyonbilgisi); // 'VERSION ' kısmını geçip devamını okuyoruz
-                    Dosyalar[dosyaindex].Baslik.VERSION = ver; // VERSION dan sonrasını int e çevir
+                    int ver = atoi(versiyonbilgisi); // 'VERSION ' kismini geçip devamini okuyoruz
+                    Dosyalar[dosyaindex].Baslik.VERSION = ver; // VERSION dan sonrasini int e çevir
 
                     if (ver != 1)
                     {
@@ -588,13 +588,13 @@ int main(void)
                 // alanlar oku
                 if (strcmp(parca, "ALANLAR") == 0)
                 {
-                    char *alanbilgisi = line + 8; // 'ALANLAR ' kısmını geçip devamını okuyoruz
+                    char *alanbilgisi = line + 8; // 'ALANLAR ' kismini geçip devamini okuyoruz
 
-                    int tip = IsTipValid(2, 16, ALANTIPLERI, alanbilgisi);
+                    int tip = IsTipValid(ALANTIPLERI, alanbilgisi);
 
                     if (tip == -1)
                     {
-                        char hatabuffer[400];             
+                        char hatabuffer[400];
                         sprintf(hatabuffer, "[%s] dosyasi icin ALAN bilgisi [%s] gecersiz.\n", de->d_name, alanbilgisi);
                         LogHata(&hatalar,hatabuffer,satir);
                         dosyaindex--;
@@ -616,11 +616,11 @@ int main(void)
                         LogHata(&hatalar,hatabuffer,satir);
                         dosyaindex--;
                         goto end_reading;
-                    }    
+                    }
 
                     int count = atoi(noktalarbilgisi);
-                    Dosyalar[dosyaindex].Baslik.NOKTALAR = count; // NOKTALAR dan sonrasını int e çevir
-                    
+                    Dosyalar[dosyaindex].Baslik.NOKTALAR = count; // NOKTALAR dan sonrasini int e çevir
+
                     // debug printf("hellooooo %d\n",count);
                 }
 
@@ -631,7 +631,7 @@ int main(void)
                 {
                     char *databilgisi = line + 5;
 
-                    int tip = IsTipValid(2, 8, DATATIPLERI, databilgisi);
+                    int tip = IsTipValid(DATATIPLERI, databilgisi);
 
                     if (tip == -1)
                     {
@@ -646,48 +646,47 @@ int main(void)
                 }
             }
 
-            // başlık okumayı bitirdik, nokta okumaya başlıyoruz
-                
-            // en son nokta indisini dolayısıyla nokta sayısını tutacak değişken
-            int noktacount = 0;
+            // baslik okumayi bitirdik, nokta okumaya basliyoruz
 
-            // dosyanın noktalarını tutacak array için initial memory ataması yapıyoruz
+            // en son nokta indisini dolayisiyla nokta sayisini tutacak degisken
+
+            // dosyanin noktalarini tutacak array için initial memory atamasi yapiyoruz
             Dosyalar[dosyaindex].Noktalar = (float*)malloc(sizeof(float));
             if(Dosyalar[dosyaindex].Noktalar==NULL)
             {
                 printf("'Dosyalar[dosyaindex].Noktalar' icin malloc yapilirken hata olustu. Bellek yetersiz olabilir.\n");
                 return 0;
-            }            
+            }
 
-            // ascii şeklinde oku
+            // ascii seklinde oku
             if (Dosyalar[dosyaindex].Baslik.DATA == DATATIP_ASCII)
             {
-                // satır satır okuyoruz
-                while ((read = getline(&line, &len, file)) != -1)
+                // satir satir okuyoruz
+                while ((read = fgets(line, 100, file)) != NULL)
                 {
                     satir++;
-                    // eğer satır yorum satırıysa boşver
+                    // eger satir yorum satiriysa bosver
                     if (line[0] == '#')
                         continue;
-                   
-                    // noktaları okurken parçalar halinde okuyacağız, parça ayracı ve şuanki parçanın adresini tutan token
+
+                    // noktalari okurken parçalar halinde okuyacagiz, parça ayraci ve suanki parçanin adresini tutan token
                     char ayrac[2] = " ";
                     char *token;
 
                     // ALAN tip XYZ oku
                     if (Dosyalar[dosyaindex].Baslik.ALANLAR == ALANTIP_XYZ)
                     {
-                        // yeni nokta kaydı yapacağımız için boyutu ona göre arttırıyoruz
+                        // yeni nokta kaydi yapacagimiz için boyutu ona göre arttiriyoruz
                         Dosyalar[dosyaindex].Noktalar = (float*)realloc(Dosyalar[dosyaindex].Noktalar,sizeof(float)*3*(noktacount+1));
                         if(Dosyalar[dosyaindex].Noktalar==NULL)
                         {
                             printf("'Dosyalar[dosyaindex].Noktalar' icin realloc yapilirken hata olustu. Bellek yetersiz olabilir.\n");
                             return 0;
-                        }   
+                        }
 
-                        // arka arkaya 3 tane float okuyacağız
-                        // her floatın bitiş noktası space ile ayrıldığı için
-                        // strtok ile space ye göre ayırarak işlem yapacağız
+                        // arka arkaya 3 tane float okuyacagiz
+                        // her floatin bitis noktasi space ile ayrildigi için
+                        // strtok ile space ye göre ayirarak islem yapacagiz
 
                         token = strtok(line, ayrac);
 
@@ -703,9 +702,9 @@ int main(void)
                                 goto end_reading;
                             }
 
-                            // 3 lü 3 lü artan bir nokta arrayı olduğu için şuanki offseti bulmak için
-                            // noktacount*3 yapıyoruz ve x y z değerleri içinde i ekliyoruz
-                            Dosyalar[dosyaindex].Noktalar[noktacount*3+i] = atof(token);    
+                            // 3 lü 3 lü artan bir nokta arrayi oldugu için suanki offseti bulmak için
+                            // noktacount*3 yapiyoruz ve x y z degerleri içinde i ekliyoruz
+                            Dosyalar[dosyaindex].Noktalar[noktacount*3+i] = atof(token);
 
                             token = strtok(NULL, ayrac);
                         }
@@ -713,17 +712,17 @@ int main(void)
                     //  ALAN tip XYZRGB oku
                     else if (Dosyalar[dosyaindex].Baslik.ALANLAR == ALANTIP_XYZRGB)
                     {
-                        // yeni nokta kaydı yapacağımız için boyutu ona göre arttırıyoruz
+                        // yeni nokta kaydi yapacagimiz için boyutu ona göre arttiriyoruz
                         Dosyalar[dosyaindex].Noktalar = (float*)realloc(Dosyalar[dosyaindex].Noktalar,sizeof(float)*6*(noktacount+1));
                         if(Dosyalar[dosyaindex].Noktalar==NULL)
                         {
                             printf("'Dosyalar[dosyaindex].Noktalar' icin realloc yapilirken hata olustu. Bellek yetersiz olabilir.\n");
                             return 0;
-                        }  
+                        }
 
-                        // arka arkaya 6 tane float okuyacağız
-                        // her floatın bitiş noktası space ile ayrıldığı için
-                        // strtok ile space ye göre ayırarak işlem yapacağız
+                        // arka arkaya 6 tane float okuyacagiz
+                        // her floatin bitis noktasi space ile ayrildigi için
+                        // strtok ile space ye göre ayirarak islem yapacagiz
 
                         token = strtok(line, ayrac);
 
@@ -747,7 +746,7 @@ int main(void)
 
                     noktacount++;
                 }
-                
+
                 if(noktacount!=Dosyalar[dosyaindex].Baslik.NOKTALAR)
                 {
                     char hatabuffer[400];
@@ -759,10 +758,10 @@ int main(void)
                 Dosyalar[dosyaindex].OkunanNokta = noktacount;
 
             }
-            // binary şeklinde oku
+            // binary seklinde oku
             else if (Dosyalar[dosyaindex].Baslik.DATA == DATATIP_BINARY)
             {
-                // bu 2 satırsız da çalışıyor ama çözemedim
+                // bu 2 satirsiz da çalisiyor ama çözemedim
                 // https://stackoverflow.com/a/2174928/8993088
                 fclose(file);
                 file = fopen(de->d_name,"rb");
@@ -774,7 +773,7 @@ int main(void)
                 }
 
                 fseek(file,offset,SEEK_SET);
-            
+
                 // güncellemeyle floata çevirdiler ;)
                 float xyz[3];
 
@@ -788,7 +787,7 @@ int main(void)
                     // ALAN tip XYZ oku
                     if (Dosyalar[dosyaindex].Baslik.ALANLAR == ALANTIP_XYZ)
                     {
-                        // geçici olarak xyz ye kaydettiğimizi asıl yerine taşıyoruz
+                        // geçici olarak xyz ye kaydettigimizi asil yerine tasiyoruz
                         memcpy(&Dosyalar[dosyaindex].Noktalar[noktacount*3],xyz,sizeof(xyz));
                     }
                     //  ALAN tip XYZRGB oku
@@ -798,13 +797,21 @@ int main(void)
                         memcpy(&Dosyalar[dosyaindex].Noktalar[noktacount*6],xyz,sizeof(xyz));
                         fread((void *)&rgb,sizeof(rgb),1,file);
 
-                        // birlikte saklamak daha kolay olduğu için int rgb yi de float a cast ediyoruz ve xyz ile birlikte saklıyoruz
+                        // birlikte saklamak daha kolay oldugu için int rgb yi de float a cast ediyoruz ve xyz ile birlikte sakliyoruz
                         for(int i=0; i<3; i++)
                         {
+                            if(rgb[i]>255 || rgb[i]<0)
+                            {
+                                char hatabuffer[400];
+                                sprintf(hatabuffer,"[%s] isimli dosyada [%d] numarali noktanin [%c] bilgisinde hata. Degeri 255 den buyuk, 0 dan kucuk olamaz.\n", de->d_name, noktacount+1, toupper(NOKTAVERILERI[3+i]));
+                                LogHata(&hatalar,hatabuffer,-1);
+                                dosyaindex--;
+                                goto end_reading;
+                            }
                             Dosyalar[dosyaindex].Noktalar[noktacount*6+3+i] = (float)rgb[i];
                         }
                     }
-                    
+
                     noktacount++;
                 }
 
@@ -819,6 +826,10 @@ int main(void)
                 Dosyalar[dosyaindex].OkunanNokta = noktacount;
             }
 
+            if(dosyaindex>olddosyaindex)
+            {
+                hatalidosyasayisi++;
+            }
             end_reading:
             fclose(file);
 
@@ -859,13 +870,30 @@ int main(void)
                 if(strlen(hatalar)==0)
                 {
                     char buffer[256];
-                    sprintf(buffer,"Tum dosyalar [%d dosya] uyumludur.",dosyaindex);
+                    if(dosyaindex==0)
+                    {
+                        char current_directory[128];
+                        getcwd(current_directory, 128);
+
+                        sprintf(buffer,"Programin calistigi dizinde [%s] hic .nkt dosyasi bulunamadi.", current_directory);
+                    }
+                    else
+                    {
+                        sprintf(buffer,"Tum dosyalar [%d dosya] uyumludur.",dosyaindex);
+                    }
                     Log(1,buffer,NULL);
                 }
                 else
                 {
                     char buffer[256];
                     sprintf(buffer,"%s",hatalar);
+
+                    if((dosyaindex-hatalidosyasayisi)>0)
+                    {
+                        char alterbuffer[64];
+                        sprintf(alterbuffer,"Geriye kalan [%d] dosya uyumludur.",(dosyaindex-hatalidosyasayisi));
+                        strcat(buffer,alterbuffer);
+                    }
                     Log(1,buffer,NULL);
                 }
                 break;
@@ -904,7 +932,7 @@ int main(void)
                     break;
                 }
                 float cxyz[3], cr;
-                
+
                 printf("Kurenin X koordinatini girin: ");
                 scanf("%f",&cxyz[0]);
                 clean_stdin();
@@ -927,7 +955,7 @@ int main(void)
                 {
                     Kure(Dosyalar[i],cxyz,cr);
                 }
-                break;         
+                break;
             }
             case 5:
             {
@@ -936,12 +964,12 @@ int main(void)
                     printf("Hic dosya yok ya da tum dosyalar hatali.\n");
                     break;
                 }
-                
+
                 for(int i=0; i<dosyaindex; i++)
                 {
                     Ortalama(Dosyalar[i]);
                 }
-                
+
                 break;
             }
 
@@ -953,11 +981,11 @@ int main(void)
         }
         printf("\n"); // estetik
     }
-    
-    end: 
-    
+
+    end:
+
     // debug
-    /*for (int i = 0; i < dosyaindex; i++)
+    for (int i = 0; i < dosyaindex; i++)
     {
         printf("DOSYA [%d] [%s]:\n", i + 1, Dosyalar[i].Ad);
         printf("\tVERSION: %d", Dosyalar[i].Baslik.VERSION);
@@ -986,13 +1014,13 @@ int main(void)
                 {
                     printf("%d ",(int)Dosyalar[i].Noktalar[i2*boyut+j]);
                 }
-                
+
             }
             printf("\n");
         }
-    }*/
-       
-    // kendimiz allocate ettiğimiz tüm belleği free liyoruz
+    }
+
+    // kendimiz allocate ettigimiz tüm bellegi free liyoruz
     for (int i = 0; i < dosyaindex; i++)
     {
         free(Dosyalar[i].Noktalar);
@@ -1001,5 +1029,7 @@ int main(void)
     free(hatalar);
 
     closedir(dr);
+
+    getchar();
     return 0;
 }
