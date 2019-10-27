@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <string.h>
-#include <sys/types.h>
 #include <math.h>
 #include <ctype.h>
 
@@ -500,7 +499,7 @@ int main(void)
                 // baslik bilgisi beklenen siradan farkliysa
                 if (strcmp(parca, BASLIKTIPLERI[i]) != 0)
                 {
-                    char hatabuffer[400];
+                    char hatabuffer[512];
                     sprintf(hatabuffer, "[%s] dosyasinin baslik bilgisi hatali. [%s] beklenirken [%s] okundu.\n", dosya_entry->d_name, BASLIKTIPLERI[i], line);
                     LogHata(&hatalar,hatabuffer,satir);
                     dosyaindex--;
