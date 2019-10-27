@@ -55,6 +55,7 @@ static char DATATIPLERI[2][12] = {
     "binary"
 };
 
+// fflush alternatifi
 void clean_stdin(void)
 {
     int c;
@@ -387,7 +388,6 @@ void Kure(struct Dosya dosya, float *xyz, float r)
     }
 }
 
-// main
 int main(void)
 {
     // dosyalarin bilgilerini içerecek struct
