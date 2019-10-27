@@ -380,9 +380,16 @@ void Kure(struct Dosya dosya, float *xyz, float r)
     {
         if(NoktaMesafe(&noktalar[i*alanboyut],xyz)<r)
         {
+            if(counter==0)
+            {
+                char buffer[128];
+                sprintf(buffer,"ALANLAR %s\nNOKTALAR %d\nDATA %s",ALANTIPLERI[dosya.Baslik.ALANLAR],dosya.OkunanNokta,DATATIPLERI[dosya.Baslik.DATA]);
+                Log(4,buffer,dosya.Ad);                
+            }
+
             char buffer[128];
             NoktaToString(&noktalar[i*alanboyut],dosya.Baslik.ALANLAR,buffer);
-            Log(4,buffer,counter==0 ? dosya.Ad : NULL);
+            Log(4,buffer,NULL);
             counter++;
         }
     }
