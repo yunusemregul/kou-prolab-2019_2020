@@ -1,0 +1,15 @@
+# Noktalar dosya format
+VERSION 1
+ALANLAR x y z
+NOKTALAR 10
+DATA ascii
+99 0 0
+0 99 0
+0 0 99
+99 0 99
+0 99 99
+100 100 100
+50 50 50
+75 75 75
+25 25 25
+0 0 0
