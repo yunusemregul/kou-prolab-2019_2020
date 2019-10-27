@@ -106,7 +106,7 @@ int IsTipValid(char array[2][12], char *tip)
 // dosyalardaki hatalari boyutu dinamik bir buffere ekleyen fonksiyon
 void LogHata(char **hatalar, char *hata, int satir)
 {
-    // satir bilgisini koymak istemiyorsak, mesela binary dosya_entry satir olmadigi için
+    // satir bilgisini koymak istemiyorsak, mesela binary dede satir olmadigi için
     // bu fonksiyona -1 gönderiyoruz
     if(satir!=-1)
     {
@@ -429,16 +429,14 @@ int main(void)
         return 0;
     }
 
-    // dosya sayisini, hatali dosya sayisini tutan degiskenler
+    // dosya sayisini tutan degiskenler
     int dosyaindex = 0;
-    int hatalidosyasayisi = 0;
 
     // tum dosyalar icin
     while ((dosya_entry = readdir(dir)) != NULL)
     {
         // dosya uzantisi
         char *file_extension = strrchr(dosya_entry->d_name, '.');
-        int olddosyaindex = dosyaindex;
 
         if(strcmp(dosya_entry->d_name,"output.nkt")==0)
             continue;
@@ -777,12 +775,8 @@ int main(void)
                 Dosyalar[dosyaindex].OkunanNokta = noktacount;
             }
 
-            // dosya hatali oldugunda dosyaindex i azalttigimiz icin
-            if(dosyaindex>olddosyaindex)
-            {
-                hatalidosyasayisi++;
-            }
             end_reading:
+
             fclose(file);
 
             dosyaindex++;
@@ -840,10 +834,10 @@ int main(void)
                     char buffer[256];
                     sprintf(buffer,"%s",hatalar);
 
-                    if((dosyaindex-hatalidosyasayisi)>0)
+                    if(dosyaindex>0)
                     {
                         char alterbuffer[64];
-                        sprintf(alterbuffer,"Geriye kalan [%d] dosya uyumludur.",(dosyaindex-hatalidosyasayisi));
+                        sprintf(alterbuffer,"Geriye kalan [%d] dosya uyumludur.",dosyaindex);
                         strcat(buffer,alterbuffer);
                     }
                     Log(1,buffer,NULL);
