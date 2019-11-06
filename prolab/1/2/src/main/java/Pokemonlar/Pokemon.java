@@ -4,6 +4,7 @@ public class Pokemon {
     private int pokemonID;
     private String pokemonAdi;
     private String pokemonTip;
+    public boolean kartKullanildiMi = false;
 
     public Pokemon()
     {

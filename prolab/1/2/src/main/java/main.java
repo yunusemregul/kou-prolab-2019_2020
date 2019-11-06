@@ -1,5 +1,7 @@
+import Oyuncular.InsanOyuncusu;
 import Pokemonlar.*;
-import Oyuncular.*;
+
+import javax.swing.*;
 
 public class main {
     public static void main(String[] args) {
@@ -16,6 +18,6 @@ public class main {
                 new Meowth()
         };
 
-
+        Masa masa = new Masa(kartListesi);
     }
 }
