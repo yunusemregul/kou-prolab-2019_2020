@@ -24,7 +24,7 @@ public abstract class Oyuncu {
     {
         int count = 0;
         for (int i = 0; i < this.kartListesi.length; i++) {
-            if(this.kartListesi[i]!=null)
+            if(this.kartListesi[i]!=null && !this.kartListesi[i].kartKullanildiMi)
                 count++;
         }
         return count;
@@ -79,7 +79,8 @@ public abstract class Oyuncu {
     {
         if(kartSayisi()==0)
             return;
-
+        if(!kartVarMi(kart))
+            return;
         for (int i = 0; i < this.kartListesi.length; i++) {
             if(this.kartListesi[i].getPokemonAdi()==kart.getPokemonAdi())
             {
@@ -94,7 +95,7 @@ public abstract class Oyuncu {
         return this.Skor;
     }
 
-    public abstract void kartSec();
+    public abstract Pokemon kartSec();
 
     public int getOyuncuID() {
         return oyuncuID;

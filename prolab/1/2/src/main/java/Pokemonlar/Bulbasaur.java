@@ -1,12 +1,13 @@
 package Pokemonlar;
 
 public class Bulbasaur extends Pokemon {
-    private int hasarPuani = 50;
+    private int hasarPuani;
     boolean kartKullanildiMi = false;
 
     public Bulbasaur()
     {
         super("Bulbasaur","Çim");
+        this.setHasarPuani(50);
     }
 
     public int hasarPuaniGoster()

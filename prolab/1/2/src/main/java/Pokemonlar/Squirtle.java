@@ -1,12 +1,13 @@
 package Pokemonlar;
 
 public class Squirtle extends Pokemon {
-    private int hasarPuani = 30;
+    private int hasarPuani;
     boolean kartKullanildiMi = false;
 
     public Squirtle()
     {
         super("Squirtle","Su");
+        this.setHasarPuani(30);
     }
 
     public int hasarPuaniGoster()

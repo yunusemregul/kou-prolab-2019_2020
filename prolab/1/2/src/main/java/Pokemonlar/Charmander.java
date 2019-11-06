@@ -1,12 +1,13 @@
 package Pokemonlar;
 
 public class Charmander extends Pokemon {
-    private int hasarPuani = 60;
+    private int hasarPuani;
     boolean kartKullanildiMi = false;
 
     public Charmander()
     {
         super("Charmander","Ateş");
+        this.setHasarPuani(60);
     }
 
     public int hasarPuaniGoster()

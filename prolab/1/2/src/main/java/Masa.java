@@ -17,6 +17,8 @@ public class Masa extends JFrame{
     private Pokemon[] kartListesi;
     private JPanel oyunModuPanel;
 
+    private Oyuncu[] oyuncular = new Oyuncu[2];
+
     public Masa()
     {
         super("Pokemon Kart Oyunu");
@@ -70,7 +72,17 @@ public class Masa extends JFrame{
         this();
         this.kartListesi = kartListesi;
 
-        System.out.println("Masa "+this.kartListesi.length+" kart ile baslatildi.");
+        System.out.println("Masa "+this.kartListesi.length+" kart ile olusturuldu.");
+    }
+
+    public int kartSayisi()
+    {
+        int count = 0;
+        for (int i = 0; i < this.kartListesi.length; i++) {
+            if(this.kartListesi[i]!=null && !this.kartListesi[i].kartKullanildiMi)
+                count++;
+        }
+        return count;
     }
 
     public boolean kartVarMi(Pokemon kart)
@@ -85,9 +97,26 @@ public class Masa extends JFrame{
         return false;
     }
 
+    private void kartKullan(Pokemon kart)
+    {
+        if(!this.kartVarMi(kart))
+            return;
+
+        for (int i = 0; i < this.kartListesi.length; i++) {
+            if(this.kartListesi[i].getPokemonAdi()==kart.getPokemonAdi())
+            {
+                this.kartListesi[i].kartKullanildiMi = true;
+            }
+        }
+    }
+
     public void kartVer(Oyuncu ply, Pokemon kart)
     {
+        if(!this.kartVarMi(kart))
+            return;
 
+        ply.kartEkle(kart);
+        this.kartKullan(kart);
     }
 
     public void startGame(int oyunModu)
@@ -97,7 +126,27 @@ public class Masa extends JFrame{
         System.out.println("Oyun '"+tipStr+"' tipinde baslatildi.");
         this.setTitle(this.getTitle()+" - "+tipStr);
 
+        if(oyunModu==0)
+        {
+            this.oyuncular[0] = new InsanOyuncusu();
+            this.oyuncular[1] = new InsanOyuncusu();
+        }
+        else
+        {
+            this.oyuncular[0] = new BilgisayarOyuncusu();
+            this.oyuncular[1] = new BilgisayarOyuncusu();
+        }
+
         this.remove(oyunModuPanel);
         SwingUtilities.updateComponentTreeUI(this);
+    }
+
+    public void kartDagit()
+    {
+        for (int i = 0; i < this.oyuncular.length; i++) {
+
+        }
+
+        System.out.println("Masa kartlari dagitti.");
     }
 }

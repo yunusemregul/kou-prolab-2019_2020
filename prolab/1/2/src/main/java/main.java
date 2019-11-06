@@ -1,4 +1,4 @@
-import Oyuncular.InsanOyuncusu;
+import Oyuncular.*;
 import Pokemonlar.*;
 
 import javax.swing.*;

@@ -4,18 +4,20 @@ public class Pokemon {
     private int pokemonID;
     private String pokemonAdi;
     private String pokemonTip;
-    public boolean kartKullanildiMi = false;
+    public boolean kartKullanildiMi;
 
     public Pokemon()
     {
-        this.pokemonAdi = "Adsiz Pokemon";
-        this.pokemonTip = "Tipsiz Pokemon";
+       this.setPokemonAdi("Adsiz Pokemon");
+       this.setPokemonTip("Tipsiz Pokemon"); // :(
+       kartKullanildiMi = false;
     }
 
     public Pokemon(String pokemonAdi, String pokemonTip)
     {
-        this.pokemonAdi = pokemonAdi;
-        this.pokemonTip = pokemonTip;
+        this.setPokemonAdi(pokemonAdi);
+        this.setPokemonTip(pokemonTip);
+        kartKullanildiMi = false;
     }
 
     public int hasarPuaniGoster()
@@ -45,5 +47,10 @@ public class Pokemon {
 
     public void setPokemonTip(String pokemonTip) {
         this.pokemonTip = pokemonTip;
+    }
+
+    public void kullan()
+    {
+        this.kartKullanildiMi = true;
     }
 }

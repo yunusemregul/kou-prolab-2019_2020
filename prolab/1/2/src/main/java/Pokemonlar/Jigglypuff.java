@@ -1,12 +1,13 @@
 package Pokemonlar;
 
 public class Jigglypuff extends Pokemon {
-    private int hasarPuani = 70;
+    private int hasarPuani;
     boolean kartKullanildiMi = false;
 
     public Jigglypuff()
     {
         super("Jigglypuff","Ses");
+        this.setHasarPuani(70);
     }
 
     public int hasarPuaniGoster()

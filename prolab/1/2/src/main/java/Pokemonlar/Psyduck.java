@@ -1,12 +1,13 @@
 package Pokemonlar;
 
 public class Psyduck extends Pokemon {
-    private int hasarPuani = 20;
+    private int hasarPuani;
     boolean kartKullanildiMi = false;
 
     public Psyduck()
     {
         super("Psyduck","Su");
+        this.setHasarPuani(20);
     }
 
     public int hasarPuaniGoster()

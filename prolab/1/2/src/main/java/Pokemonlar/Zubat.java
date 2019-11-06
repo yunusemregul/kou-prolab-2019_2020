@@ -1,12 +1,13 @@
 package Pokemonlar;
 
 public class Zubat extends Pokemon {
-    private int hasarPuani = 50;
+    private int hasarPuani;
     boolean kartKullanildiMi = false;
 
     public Zubat()
     {
         super("Zubat","Hava");
+        this.setHasarPuani(50);
     }
 
     public int hasarPuaniGoster()

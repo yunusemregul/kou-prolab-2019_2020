@@ -1,12 +1,13 @@
 package Pokemonlar;
 
 public class Pikachu extends Pokemon {
-    private int hasarPuani = 40;
+    private int hasarPuani;
     boolean kartKullanildiMi = false;
 
     public Pikachu()
     {
         super("Pikachu","Elektrik");
+        this.setHasarPuani(40);
     }
 
     public int hasarPuaniGoster()

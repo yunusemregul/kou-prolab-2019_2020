@@ -1,12 +1,13 @@
 package Pokemonlar;
 
 public class Butterfree extends Pokemon {
-    private int hasarPuani = 10;
+    private int hasarPuani;
     boolean kartKullanildiMi = false;
 
     public Butterfree()
     {
         super("Butterfree","Hava");
+        this.setHasarPuani(10);
     }
 
     public int hasarPuaniGoster()
