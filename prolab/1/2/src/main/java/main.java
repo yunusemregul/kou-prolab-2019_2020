@@ -19,5 +19,16 @@ public class main {
         };
 
         Masa masa = new Masa(kartListesi);
+
+        boolean kartlarDagitildiMi = false;
+        /*while(true)
+        {
+            // oyuncular hazırsa ve kartlar dağıtılmadıysa
+            if(masa.getGameState()==1 && !kartlarDagitildiMi)
+            {
+                masa.kartDagit();
+                kartlarDagitildiMi = true;
+            }
+        }*/
     }
 }
