@@ -1,7 +1,10 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Random;
 
 import Pokemonlar.*;
@@ -10,7 +13,7 @@ import Oyuncular.*;
 public class Masa extends JFrame{
     /*
             oyunModu
-                -1: Yok
+                -1: Yok/Belirlenmedi
                 0: Kullanıcı vs Bilgisayar
                 1: Bilgisayar vs Bilgisayar
          */
@@ -28,7 +31,6 @@ public class Masa extends JFrame{
     // loglarda vs kullanmak için
     private static String[] gameStates = {"Oyun Baslamadi","Oyuncular Hazir","Oyun Basladi"};
 
-
     // masa envanterindeki kartları tutuyor
     private Pokemon[] kartListesi;
 
@@ -40,9 +42,28 @@ public class Masa extends JFrame{
     // 1. oyuncu = bilgisayar
     private Oyuncu[] oyuncular = new Oyuncu[2];
 
-    // constructor
-    public Masa()
+    // açılmamış kart imajını tutuyor
+    private Image img_kart;
+    // pokemonlara ait imajları tutuyor
+    private Image[] img_pokemonlar;
+
+    // çizimde gerekli imajları hazırlayan fonksiyon
+    private void LoadImages() throws IOException
     {
+        img_kart = ImageIO.read(getClass().getResource("kart.png"));
+        img_kart = img_kart.getScaledInstance(369/2,512/2, Image.SCALE_SMOOTH);
+
+        // kartlistesindeki pokemonların imajlarını hazırlıyoruz
+        for (int i = 0; i < this.kartListesi.length; i++) {
+            // pokemon adını lowercase yaparak resource klasöründeki png adına ulaşıyoruz
+            String name = this.kartListesi[i].getPokemonAdi().toLowerCase()+".png";
+            img_pokemonlar[i] = ImageIO.read(getClass().getResource(name));
+            img_pokemonlar[i] = img_pokemonlar[i].getScaledInstance(369/2,512/2, Image.SCALE_SMOOTH);
+        }
+    }
+
+    // constructor
+    public Masa() throws IOException {
         // başlık
         super("Pokemon Kart Oyunu");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -66,7 +87,7 @@ public class Masa extends JFrame{
         gui_oyunModu = new JPanel();
         gui_oyunModu.setOpaque(false);
 
-        // kullanıcıya oyun modu seçimi sunan parçalar
+        // kullanıcıya oyun modu seçimi sunan öğeler
         JLabel OM = new JLabel("Oyun modu seçiniz:");
         OM.setForeground(new Color(255,255,255));
 
@@ -89,7 +110,7 @@ public class Masa extends JFrame{
             }
         });
 
-        // oluşturulan gui öğrelerini gui_oyunmodu paneline ekliyoruz
+        // oluşturulan gui öğelerini gui_oyunmodu paneline ekliyoruz
         gui_oyunModu.add(OM);
         gui_oyunModu.add(KB);
         gui_oyunModu.add(BB);
@@ -106,14 +127,23 @@ public class Masa extends JFrame{
         this.setGameState(0);
     }
 
-    public Masa(Pokemon[] kartListesi)
-    {
+    public Masa(Pokemon[] kartListesi) throws IOException {
         this();
+
         this.kartListesi = kartListesi;
+        for (int i = 0; i < this.kartListesi.length; i++) {
+            this.kartListesi[i].setPokemonID(i); // kart kullanıcıya verildiğinde
+            // masadaki indexine ulaşamayacığımız için
+            // id değerine masadaki indexini kaydediyoruz
+            // ki imajına ulaşabilelim
+        }
 
         System.out.println("Masa "+this.kartListesi.length+" kart ile olusturuldu.");
-    }
 
+        img_pokemonlar = new Image[this.kartListesi.length];
+        // çizimde gerekli imajları yükle
+        this.LoadImages();
+    }
 
     //@Override
     public void paint(Graphics g)
@@ -123,13 +153,61 @@ public class Masa extends JFrame{
         if(this.getGameState()>=1)
         {
             g.setFont(new Font("TimesRoman", Font.PLAIN, 16));
-            g.setColor(Color.white);  // Here
-            g.drawString("Masa Kartları", 25, 100);
+            g.setColor(Color.white);
+            g.drawString("Masa Kartları", 57, 94);
 
+            // masa kartlarını çiz
+            int count = 0;
             for (int i = 0; i < this.kartListesi.length; i++) {
                 if(this.kartListesi[i]!=null && !this.kartListesi[i].kartKullanildiMi)
                 {
-                    // kartı çiz
+                    g.drawImage(img_kart,25,100+count*(25*18/this.kartSayisi()),null);
+                    count++;
+                }
+            }
+
+            // Oyuncu isimlerini çiz
+            g.drawString(this.oyuncular[0].getOyuncuAdi(), 530, 485);
+            g.drawString(this.oyuncular[1].getOyuncuAdi(), 530, 325);
+
+            // kartlar üzerindeki sarı şerit ve hasar puanını gösteren kısım
+            // ile ilgili ayarlamalar
+            int sx = 0; // şeritin kart'a relatif x konumu;
+            int sy = 145; // şeritin kart'a relatif y konumu
+            int tx = 50; // yazının kart'a relatif x konumu
+            int ty = 20; // yazının şerit'e relatif y konumu
+
+            // 0. oyuncu kartlarını çiz (alt)
+            count = 0;
+            for (int i=0; i<this.oyuncular[0].kartListesi.length; i++)
+            {
+                if(this.oyuncular[0].kartListesi[i]!=null)
+                {
+                    int x = 280+count*369/2+10*count;
+                    int y = 495;
+                    g.drawImage(img_pokemonlar[this.oyuncular[0].kartListesi[i].getPokemonID()],x,y,null);
+                    g.setColor(new Color(255, 224, 105));
+                    g.fillRect(x,y+sy,369/2,30);
+                    g.setColor(Color.black);
+                    g.drawString("Hasar: "+ Integer.toString(this.oyuncular[0].kartListesi[i].hasarPuaniGoster()),x+tx,y+sy+ty);
+                    count++;
+                }
+            }
+
+            // 1. oyuncu kartlarını çiz (üst)
+            count = 0;
+            for (int i=0; i<this.oyuncular[1].kartListesi.length; i++)
+            {
+                if(this.oyuncular[1].kartListesi[i]!=null)
+                {
+                    int x = 280+count*369/2+10*count;
+                    int y = 45;
+                    g.drawImage(img_pokemonlar[this.oyuncular[1].kartListesi[i].getPokemonID()],x,y,null);
+                    g.setColor(new Color(255, 224, 105));
+                    g.fillRect(x,y+sy,369/2,30);
+                    g.setColor(Color.black);
+                    g.drawString("Hasar: "+ Integer.toString(this.oyuncular[1].kartListesi[i].hasarPuaniGoster()),x+tx,y+sy+ty);
+                    count++;
                 }
             }
         }
@@ -183,6 +261,7 @@ public class Masa extends JFrame{
         System.out.println(kart.getPokemonAdi()+" to "+ply.getOyuncuAdi());
         ply.kartEkle(kart);
         this.kartKullan(kart);
+        repaint();
     }
 
     // oyunu kullanıcı tarafından seçilen mod ile başlatan fonksiyon
@@ -226,7 +305,7 @@ public class Masa extends JFrame{
     };
 
     // tüm oyunculara masadan 3 er kart veren fonksiyon
-    public void kartDagit()
+    public void kartDagit(int kactane)
     {
         if(this.gameState<1)
         {
@@ -235,7 +314,7 @@ public class Masa extends JFrame{
         }
 
         // 3 adet kart ver
-        for(int adet=0;adet<3;adet++)
+        for(int adet=0;adet<kactane;adet++)
         {
             for (int i = 0; i < this.oyuncular.length; i++) {
                 this.kartVer(this.oyuncular[i],rastgeleKart());

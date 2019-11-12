@@ -2,9 +2,10 @@ import Oyuncular.*;
 import Pokemonlar.*;
 
 import javax.swing.*;
+import java.io.IOException;
 
 public class main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // masada kullanılacak kartların listesi
         Pokemon[] kartListesi = new Pokemon[]{
                 new Pikachu(),
@@ -31,8 +32,8 @@ public class main {
             // oyuncular hazırsa (oyun modu seçildi ise) ve kartlar dağıtılmadıysa
             if(masa.getGameState()==1 && !kartlarDagitildiMi)
             {
-                // kartları dağıt
-                masa.kartDagit();
+                // 3 adet kart dağıt
+                masa.kartDagit(3);
                 kartlarDagitildiMi = true;
             }
         }

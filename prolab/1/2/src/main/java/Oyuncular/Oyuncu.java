@@ -6,7 +6,7 @@ public abstract class Oyuncu {
     private int oyuncuID;
     private String oyuncuAdi;
     private int Skor;
-    Pokemon[] kartListesi = new Pokemon[3];
+    public Pokemon[] kartListesi = new Pokemon[3];
 
     public Oyuncu()
     {
@@ -15,9 +15,9 @@ public abstract class Oyuncu {
 
     public Oyuncu(int oyuncuID, String oyuncuAdi, int Skor)
     {
-        this.oyuncuID = oyuncuID;
-        this.oyuncuAdi = oyuncuAdi;
-        this.Skor = Skor;
+        this.setOyuncuID(oyuncuID);
+        this.setOyuncuAdi(oyuncuAdi);
+        this.setSkor(Skor);
     }
 
     public int kartSayisi()
