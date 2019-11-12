@@ -5,6 +5,7 @@ import javax.swing.*;
 
 public class main {
     public static void main(String[] args) {
+        // masada kullanılacak kartların listesi
         Pokemon[] kartListesi = new Pokemon[]{
                 new Pikachu(),
                 new Bulbasaur(),
@@ -18,17 +19,22 @@ public class main {
                 new Meowth()
         };
 
+        // gui ve oyuna ait temel fonksiyonları içeren classtan
+        // oluşturuyoruz
         Masa masa = new Masa(kartListesi);
 
         boolean kartlarDagitildiMi = false;
-        /*while(true)
+
+        // program kapatılana kadar masayı yönetecek olan döngü
+        while(true)
         {
-            // oyuncular hazırsa ve kartlar dağıtılmadıysa
+            // oyuncular hazırsa (oyun modu seçildi ise) ve kartlar dağıtılmadıysa
             if(masa.getGameState()==1 && !kartlarDagitildiMi)
             {
+                // kartları dağıt
                 masa.kartDagit();
                 kartlarDagitildiMi = true;
             }
-        }*/
+        }
     }
 }
