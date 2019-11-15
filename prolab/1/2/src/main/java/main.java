@@ -5,7 +5,7 @@ import javax.swing.*;
 import java.io.IOException;
 
 public class main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException,InterruptedException {
         // masada kullanılacak kartların listesi
         Pokemon[] kartListesi = new Pokemon[]{
                 new Pikachu(),
@@ -36,6 +36,8 @@ public class main {
                 masa.kartDagit(3);
                 kartlarDagitildiMi = true;
             }
+
+            Thread.sleep(500);
         }
     }
 }

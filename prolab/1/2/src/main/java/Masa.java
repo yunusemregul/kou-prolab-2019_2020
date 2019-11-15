@@ -10,7 +10,7 @@ import java.util.Random;
 import Pokemonlar.*;
 import Oyuncular.*;
 
-public class Masa extends JFrame{
+public class Masa extends JPanel{
     /*
             oyunModu
                 -1: Yok/Belirlenmedi
@@ -24,15 +24,19 @@ public class Masa extends JFrame{
                 0: Oyun başlamadı
                 1: Oyuncular hazır
                 2: Oyun başladı
+                3: Kartlar Dağıtılıyor
          */
     // oyun durumunu tutuyor
     private volatile int gameState;
     // oyun durumunun yazılı anlamını tutuyor
-    // loglarda vs kullanmak için
+    // loglarda vs kullanmak    için
     private static String[] gameStates = {"Oyun Baslamadi","Oyuncular Hazir","Oyun Basladi"};
 
     // masa envanterindeki kartları tutuyor
     private Pokemon[] kartListesi;
+
+    // ana framemiz
+    private JFrame frame;
 
     // gui_oyunModu paneline erişim için burada tanımladım
     private JPanel gui_oyunModu;
@@ -65,23 +69,24 @@ public class Masa extends JFrame{
     // constructor
     public Masa() throws IOException {
         // başlık
-        super("Pokemon Kart Oyunu");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame = new JFrame("Pokemon Kart Oyunu");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // bu kısmın tümü ana pencereyi boyutlandırma ile alakalı
         Dimension windowSize = new Dimension(1024,768);
-        this.setSize(windowSize);
-        this.setMaximumSize(windowSize);
-        this.setPreferredSize(windowSize);
-        this.setMinimumSize(windowSize);
-        this.setResizable(false);
+        frame.setSize(windowSize);
+        frame.setMaximumSize(windowSize);
+        frame.setPreferredSize(windowSize);
+        frame.setMinimumSize(windowSize);
+        frame.setResizable(false);
+        frame.setLayout(new BorderLayout());
 
         // pencerenin arkaplan rengi
-        this.getContentPane().setBackground(new Color(33,33,33));
+        frame.getContentPane().setBackground(new Color(33,33,33));
 
         // pencereyi ekranın ortasına koyan kısım
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+        frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
 
         // oyun seçim paneli
         gui_oyunModu = new JPanel();
@@ -118,10 +123,10 @@ public class Masa extends JFrame{
         gui_oyunModu.setLayout(new BoxLayout(gui_oyunModu,BoxLayout.Y_AXIS));
 
         // gui_oyunmodu panelini ana pencereye ekliyoruz
-        this.add(gui_oyunModu);
+        frame.add(gui_oyunModu);
 
         // penceremiz üzerinde yaptığımız ekleme işlemleri bitince görünür hale getiriyoruz
-        this.setVisible(true);
+        frame.setVisible(true);
 
         // oyunu başlamamış olarak belirliyoruz
         this.setGameState(0);
@@ -145,34 +150,38 @@ public class Masa extends JFrame{
         this.LoadImages();
     }
 
-    //@Override
-    public void paint(Graphics g)
+    @Override
+    public void paintComponent(Graphics g)
     {
-        super.paint(g);
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D)g; // ekstra fonksiyonlar için
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); // estetik için
 
         if(this.getGameState()>=1)
         {
-            g.setFont(new Font("TimesRoman", Font.PLAIN, 16));
-            g.setColor(Color.white);
-            g.drawString("Masa Kartları", 57, 94);
+            g2.setFont(new Font("TimesRoman", Font.PLAIN, 16));
+            g2.setColor(Color.white);
+            g2.drawString("Masa Kartları", 57, 67);
 
-            // masa kartlarını çiz
+            // masaya ait kartları çiz
             int count = 0;
             for (int i = 0; i < this.kartListesi.length; i++) {
                 if(this.kartListesi[i]!=null && !this.kartListesi[i].kartKullanildiMi)
                 {
-                    g.drawImage(img_kart,25,100+count*(25*18/this.kartSayisi()),null);
+                    // 370/kartsayısı kısmı kart sayısı çoğaldığında kartlar arasındaki boşluğu
+                    // daraltmak için
+                    // 370 de deneyerek bulduğum özel ayar
+                    g2.drawImage(img_kart,25,73+count*(370/(this.kartSayisi())),null);
                     count++;
                 }
             }
 
             // Oyuncu isimlerini çiz
-            g.drawString(this.oyuncular[0].getOyuncuAdi(), 530, 485);
-            g.drawString(this.oyuncular[1].getOyuncuAdi(), 530, 325);
+            g2.drawString(this.oyuncular[0].getOyuncuAdi(), 530, 458);
+            g2.drawString(this.oyuncular[1].getOyuncuAdi(), 530, 298);
 
             // kartlar üzerindeki sarı şerit ve hasar puanını gösteren kısım
             // ile ilgili ayarlamalar
-            int sx = 0; // şeritin kart'a relatif x konumu;
             int sy = 145; // şeritin kart'a relatif y konumu
             int tx = 50; // yazının kart'a relatif x konumu
             int ty = 20; // yazının şerit'e relatif y konumu
@@ -184,12 +193,14 @@ public class Masa extends JFrame{
                 if(this.oyuncular[0].kartListesi[i]!=null)
                 {
                     int x = 280+count*369/2+10*count;
-                    int y = 495;
-                    g.drawImage(img_pokemonlar[this.oyuncular[0].kartListesi[i].getPokemonID()],x,y,null);
-                    g.setColor(new Color(255, 224, 105));
-                    g.fillRect(x,y+sy,369/2,30);
-                    g.setColor(Color.black);
-                    g.drawString("Hasar: "+ Integer.toString(this.oyuncular[0].kartListesi[i].hasarPuaniGoster()),x+tx,y+sy+ty);
+                    int y = 468;
+                    g2.drawImage(img_pokemonlar[this.oyuncular[0].kartListesi[i].getPokemonID()],x,y,null);
+
+                    g2.setColor(new Color(255, 224, 105));
+                    g2.fillRect(x,y+sy,369/2,30);
+                    g2.setColor(Color.black);
+                    g2.drawString("Hasar: "+ Integer.toString(this.oyuncular[0].kartListesi[i].hasarPuaniGoster()),x+tx,y+sy+ty);
+
                     count++;
                 }
             }
@@ -201,16 +212,18 @@ public class Masa extends JFrame{
                 if(this.oyuncular[1].kartListesi[i]!=null)
                 {
                     int x = 280+count*369/2+10*count;
-                    int y = 45;
-                    g.drawImage(img_pokemonlar[this.oyuncular[1].kartListesi[i].getPokemonID()],x,y,null);
-                    g.setColor(new Color(255, 224, 105));
-                    g.fillRect(x,y+sy,369/2,30);
-                    g.setColor(Color.black);
-                    g.drawString("Hasar: "+ Integer.toString(this.oyuncular[1].kartListesi[i].hasarPuaniGoster()),x+tx,y+sy+ty);
+                    int y = 18;
+                    g2.drawImage(img_pokemonlar[this.oyuncular[1].kartListesi[i].getPokemonID()],x,y,null);
+                    g2.setColor(new Color(255, 224, 105));
+                    g2.fillRect(x,y+sy,369/2,30);
+                    g2.setColor(Color.black);
+                    g2.drawString("Hasar: "+ Integer.toString(this.oyuncular[1].kartListesi[i].hasarPuaniGoster()),x+tx,y+sy+ty);
                     count++;
                 }
             }
         }
+
+        repaint();
     }
 
     // masada kalan kullanılmamış kart sayısını döndüren fonksiyon
@@ -270,7 +283,7 @@ public class Masa extends JFrame{
         this.oyunModu = oyunModu;
         String tipStr = (oyunModu==0 ? "Kullanıcı vs Bilgisayar" : "Bilgisayar vs Bilgisayar");
         System.out.println("Oyun '"+tipStr+"' tipinde baslatildi.");
-        this.setTitle(this.getTitle()+" - "+tipStr);
+        frame.setTitle(frame.getTitle()+" - "+tipStr);
 
         if(oyunModu==0)
             this.oyuncular[0] = new InsanOyuncusu();
@@ -279,8 +292,10 @@ public class Masa extends JFrame{
 
         this.oyuncular[1] = new BilgisayarOyuncusu();
 
-        this.remove(gui_oyunModu);
-        SwingUtilities.updateComponentTreeUI(this);
+        frame.remove(gui_oyunModu);
+        SwingUtilities.updateComponentTreeUI(frame);
+        frame.add(this,BorderLayout.CENTER);
+        this.setOpaque(false);
         this.setGameState(1);
     }
 
