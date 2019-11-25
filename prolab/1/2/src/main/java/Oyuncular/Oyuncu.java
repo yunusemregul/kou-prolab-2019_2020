@@ -6,15 +6,18 @@ public abstract class Oyuncu {
     private int oyuncuID;
     private String oyuncuAdi;
     private int Skor;
-    public Pokemon[] kartListesi = new Pokemon[3];
+    public Pokemon[] kartListesi = new Pokemon[5];
 
     public Oyuncu()
     {
-
+        this.setOyuncuID(-1);
+        this.setOyuncuAdi("Bilinmeyen");
+        this.setSkor(0);
     }
 
     public Oyuncu(int oyuncuID, String oyuncuAdi, int Skor)
     {
+        super();
         this.setOyuncuID(oyuncuID);
         this.setOyuncuAdi(oyuncuAdi);
         this.setSkor(Skor);
@@ -45,21 +48,6 @@ public abstract class Oyuncu {
         return false;
     }
 
-    public boolean kartVarMi(String kartAdi)
-    {
-        if(kartSayisi()==0)
-            return false;
-
-        for (int i = 0; i < this.kartListesi.length; i++) {
-            if(this.kartListesi[i].getPokemonAdi()==kartAdi)
-            {
-                return !this.kartListesi[i].kartKullanildiMi;
-            }
-        }
-
-        return false;
-    }
-
     public void kartEkle(Pokemon kart)
     {
         if(kartSayisi()==3)
@@ -73,9 +61,23 @@ public abstract class Oyuncu {
                 break;
             }
         }
+
+        for (int i = 0; i < this.kartListesi.length; i++) {
+            if(this.kartListesi[i]!=null)
+            {
+                System.out.println(this.kartListesi[i].getPokemonAdi()+" "+this.kartListesi[i].kartKullanildiMi);
+            }
+        }
+        System.out.println(kartSayisi());
+
     }
 
-    public void kartSil(Pokemon kart)
+    /*
+        Proje zorunluluğu:
+        Boolean veri tipinde kartKullanildiMi bilgisi tutulmalıdır.
+        Kullanılan kartların oyunda bir daha kullanılmasını engellemek için bu veri tipinden yararlanılacaktır.
+     */
+    public void kartKullan(Pokemon kart)
     {
         if(kartSayisi()==0)
             return;
@@ -84,7 +86,7 @@ public abstract class Oyuncu {
         for (int i = 0; i < this.kartListesi.length; i++) {
             if(this.kartListesi[i].getPokemonAdi()==kart.getPokemonAdi())
             {
-                this.kartListesi[i] = null;
+                this.kartListesi[i].kullan();
                 break;
             }
         }

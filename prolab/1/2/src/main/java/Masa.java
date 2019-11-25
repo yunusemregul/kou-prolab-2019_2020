@@ -3,6 +3,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Random;
@@ -128,6 +130,31 @@ public class Masa extends JPanel{
         // penceremiz üzerinde yaptığımız ekleme işlemleri bitince görünür hale getiriyoruz
         frame.setVisible(true);
 
+        // tıklamalar için mouse listener
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                Point mouse = new Point(e.getX(),e.getY());
+
+                if(getOyunModu()==0)
+                {
+                    int count = 0;
+                    for (int i = 0; i < oyuncular[0].kartListesi.length; i++) {
+                        if(oyuncular[0].kartListesi[i]!=null) {
+                            int x = 280 + count * 369 / 2 + 10 * count;
+                            int y = 468;
+
+                            if (getOyunModu() == 0 && (mouse.x > x && mouse.x < x + (369 / 2) && mouse.y > y)) {
+                                oyuncular[0].kartKullan(oyuncular[0].kartListesi[i]);
+                            }
+                            count++;
+                        }
+                    }
+                }
+            }
+        });
+
         // oyunu başlamamış olarak belirliyoruz
         this.setGameState(0);
     }
@@ -156,6 +183,12 @@ public class Masa extends JPanel{
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g; // ekstra fonksiyonlar için
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); // estetik için
+
+        Point mouse = MouseInfo.getPointerInfo().getLocation();
+        if(frame!=null)
+        {
+            SwingUtilities.convertPointFromScreen(mouse,frame);
+        }
 
         if(this.getGameState()>=1)
         {
@@ -190,12 +223,17 @@ public class Masa extends JPanel{
             count = 0;
             for (int i=0; i<this.oyuncular[0].kartListesi.length; i++)
             {
-                if(this.oyuncular[0].kartListesi[i]!=null)
+                if(this.oyuncular[0].kartListesi[i]!=null && !this.oyuncular[0].kartListesi[i].kartKullanildiMi)
                 {
                     int x = 280+count*369/2+10*count;
                     int y = 468;
-                    g2.drawImage(img_pokemonlar[this.oyuncular[0].kartListesi[i].getPokemonID()],x,y,null);
 
+                    if(this.getOyunModu()==0 && (mouse.x>x && mouse.x<x+(369/2) && mouse.y>y))
+                    {
+                        g2.setColor(Color.red);
+                        g2.fillRect(x-4,y-4,369/2+8,512/2+8);
+                    }
+                    g2.drawImage(img_pokemonlar[this.oyuncular[0].kartListesi[i].getPokemonID()],x,y,null);
                     g2.setColor(new Color(255, 224, 105));
                     g2.fillRect(x,y+sy,369/2,30);
                     g2.setColor(Color.black);
@@ -209,7 +247,7 @@ public class Masa extends JPanel{
             count = 0;
             for (int i=0; i<this.oyuncular[1].kartListesi.length; i++)
             {
-                if(this.oyuncular[1].kartListesi[i]!=null)
+                if(this.oyuncular[1].kartListesi[i]!=null && !this.oyuncular[1].kartListesi[i].kartKullanildiMi)
                 {
                     int x = 280+count*369/2+10*count;
                     int y = 18;
@@ -272,15 +310,20 @@ public class Masa extends JPanel{
             return;
 
         System.out.println(kart.getPokemonAdi()+" to "+ply.getOyuncuAdi());
+        /*
+            TODO:
+            kartın kopyasının oluşturulması gerek, masadaki kartı oyuncuya verince
+            problemli oluyor, şuan oyunculara kart gitmeme sebebi kartKullanildiMi degeri
+            masada true yapıldığı için oyuncudada true olduğundan
+         */
         ply.kartEkle(kart);
         this.kartKullan(kart);
-        repaint();
     }
 
     // oyunu kullanıcı tarafından seçilen mod ile başlatan fonksiyon
     public void startGame(int oyunModu)
     {
-        this.oyunModu = oyunModu;
+        this.setOyunModu(oyunModu);
         String tipStr = (oyunModu==0 ? "Kullanıcı vs Bilgisayar" : "Bilgisayar vs Bilgisayar");
         System.out.println("Oyun '"+tipStr+"' tipinde baslatildi.");
         frame.setTitle(frame.getTitle()+" - "+tipStr);

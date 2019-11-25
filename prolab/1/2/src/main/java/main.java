@@ -5,7 +5,7 @@ import javax.swing.*;
 import java.io.IOException;
 
 public class main {
-    public static void main(String[] args) throws IOException,InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, CloneNotSupportedException {
         // masada kullanılacak kartların listesi
         Pokemon[] kartListesi = new Pokemon[]{
                 new Pikachu(),
@@ -37,7 +37,7 @@ public class main {
                 kartlarDagitildiMi = true;
             }
 
-            Thread.sleep(500);
+            Thread.sleep(100);
         }
     }
 }

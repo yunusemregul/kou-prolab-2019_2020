@@ -1,6 +1,6 @@
 package Pokemonlar;
 
-public class Pokemon {
+public class Pokemon{
     private int pokemonID;
     private String pokemonAdi;
     private String pokemonTip;
