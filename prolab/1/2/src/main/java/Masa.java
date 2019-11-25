@@ -140,13 +140,33 @@ public class Masa extends JPanel{
                 if(getOyunModu()==0)
                 {
                     int count = 0;
+                    for (int i = 0; i < kartListesi.length; i++) {
+                        if(kartListesi[i]!=null && !kartListesi[i].kartKullanildiMi)
+                        {
+                            // 370/kartsayısı kısmı kart sayısı çoğaldığında kartlar arasındaki boşluğu
+                            // daraltmak için
+                            // 370 de deneyerek bulduğum özel ayar
+                            int x = 25;
+                            int y = 73+count*(370/(kartSayisi()));
+
+                            if(getOyunModu()==0 && (mouse.x>x && mouse.x<x+(369/2) && mouse.y>y && mouse.y<y+(370/(kartSayisi()))))
+                            {
+                                System.out.println("masadan "+count+". kart ("+kartListesi[i].getPokemonAdi()+") alinmaya calisildi");
+                                kartVer(oyuncular[0],kartListesi[i]);
+                            }
+                            count++;
+                        }
+                    }
+
+                    count = 0;
                     for (int i = 0; i < oyuncular[0].kartListesi.length; i++) {
-                        if(oyuncular[0].kartListesi[i]!=null) {
+                        if(oyuncular[0].kartListesi[i]!=null && !oyuncular[0].kartListesi[i].kartKullanildiMi) {
                             int x = 280 + count * 369 / 2 + 10 * count;
                             int y = 468;
 
                             if (getOyunModu() == 0 && (mouse.x > x && mouse.x < x + (369 / 2) && mouse.y > y)) {
                                 oyuncular[0].kartKullan(oyuncular[0].kartListesi[i]);
+                                System.out.println("hebe "+oyuncular[0].kartListesi[i]);
                             }
                             count++;
                         }
@@ -194,7 +214,7 @@ public class Masa extends JPanel{
         {
             g2.setFont(new Font("TimesRoman", Font.PLAIN, 16));
             g2.setColor(Color.white);
-            g2.drawString("Masa Kartları", 57, 67);
+            g2.drawString("Masa Kartları ", 57, 67);
 
             // masaya ait kartları çiz
             int count = 0;
@@ -204,12 +224,21 @@ public class Masa extends JPanel{
                     // 370/kartsayısı kısmı kart sayısı çoğaldığında kartlar arasındaki boşluğu
                     // daraltmak için
                     // 370 de deneyerek bulduğum özel ayar
-                    g2.drawImage(img_kart,25,73+count*(370/(this.kartSayisi())),null);
+                    int x = 25;
+                    int y = 73+count*(370/(this.kartSayisi()));
+
+                    if(this.getOyunModu()==0 && (mouse.x>x && mouse.x<x+(369/2) && mouse.y>y && mouse.y<y+(370/(this.kartSayisi()))))
+                    {
+                        g2.setColor(Color.red);
+                        g2.fillRect(x-4,y-4,369/2+8,512/2+8);
+                    }
+                    g2.drawImage(img_pokemonlar[this.kartListesi[i].getPokemonID()],x,y,null);
                     count++;
                 }
             }
 
             // Oyuncu isimlerini çiz
+            g2.setColor(Color.white);
             g2.drawString(this.oyuncular[0].getOyuncuAdi(), 530, 458);
             g2.drawString(this.oyuncular[1].getOyuncuAdi(), 530, 298);
 
@@ -217,7 +246,8 @@ public class Masa extends JPanel{
             // ile ilgili ayarlamalar
             int sy = 145; // şeritin kart'a relatif y konumu
             int tx = 50; // yazının kart'a relatif x konumu
-            int ty = 20; // yazının şerit'e relatif y konumu
+            int ty = 35; // yazının şerit'e relatif y konumu
+            int sh = 60; // şeritin uzunluğu
 
             // 0. oyuncu kartlarını çiz (alt)
             count = 0;
@@ -235,16 +265,15 @@ public class Masa extends JPanel{
                     }
                     g2.drawImage(img_pokemonlar[this.oyuncular[0].kartListesi[i].getPokemonID()],x,y,null);
                     g2.setColor(new Color(255, 224, 105));
-                    g2.fillRect(x,y+sy,369/2,30);
+                    g2.fillRect(x,y+sy,369/2,sh);
                     g2.setColor(Color.black);
                     g2.drawString("Hasar: "+ Integer.toString(this.oyuncular[0].kartListesi[i].hasarPuaniGoster()),x+tx,y+sy+ty);
-
                     count++;
                 }
             }
 
             // 1. oyuncu kartlarını çiz (üst)
-            count = 0;
+            count=0;
             for (int i=0; i<this.oyuncular[1].kartListesi.length; i++)
             {
                 if(this.oyuncular[1].kartListesi[i]!=null && !this.oyuncular[1].kartListesi[i].kartKullanildiMi)
@@ -253,7 +282,7 @@ public class Masa extends JPanel{
                     int y = 18;
                     g2.drawImage(img_pokemonlar[this.oyuncular[1].kartListesi[i].getPokemonID()],x,y,null);
                     g2.setColor(new Color(255, 224, 105));
-                    g2.fillRect(x,y+sy,369/2,30);
+                    g2.fillRect(x,y+sy,369/2,sh);
                     g2.setColor(Color.black);
                     g2.drawString("Hasar: "+ Integer.toString(this.oyuncular[1].kartListesi[i].hasarPuaniGoster()),x+tx,y+sy+ty);
                     count++;
@@ -316,7 +345,60 @@ public class Masa extends JPanel{
             problemli oluyor, şuan oyunculara kart gitmeme sebebi kartKullanildiMi degeri
             masada true yapıldığı için oyuncudada true olduğundan
          */
-        ply.kartEkle(kart);
+        // şimdilik berbat çözüm
+        switch (kart.getPokemonAdi())
+        {
+            case "Bulbasaur":
+            {
+                ply.kartEkle(new Bulbasaur(kart.getPokemonID()));
+                break;
+            }
+            case "Butterfree":
+            {
+                ply.kartEkle(new Butterfree(kart.getPokemonID()));
+                break;
+            }
+            case "Charmander":
+            {
+                ply.kartEkle(new Charmander(kart.getPokemonID()));
+                break;
+            }
+            case "Jigglypuff":
+            {
+                ply.kartEkle(new Jigglypuff(kart.getPokemonID()));
+                break;
+            }
+            case "Meowth":
+            {
+                ply.kartEkle(new Meowth(kart.getPokemonID()));
+                break;
+            }
+            case "Pikachu":
+            {
+                ply.kartEkle(new Pikachu(kart.getPokemonID()));
+                break;
+            }
+            case "Psyduck":
+            {
+                ply.kartEkle(new Psyduck(kart.getPokemonID()));
+                break;
+            }
+            case "Snorlax":
+            {
+                ply.kartEkle(new Snorlax(kart.getPokemonID()));
+                break;
+            }
+            case "Squirtle":
+            {
+                ply.kartEkle(new Squirtle(kart.getPokemonID()));
+                break;
+            }
+            case "Zubat":
+            {
+                ply.kartEkle(new Zubat(kart.getPokemonID()));
+                break;
+            }
+        }
         this.kartKullan(kart);
     }
 

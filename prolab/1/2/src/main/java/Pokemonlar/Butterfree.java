@@ -10,6 +10,12 @@ public class Butterfree extends Pokemon {
         this.setHasarPuani(10);
     }
 
+    public Butterfree(int pokemonID)
+    {
+        this();
+        this.setPokemonID(pokemonID);
+    }
+
     public int hasarPuaniGoster()
     {
         return this.hasarPuani;

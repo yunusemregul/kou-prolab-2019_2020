@@ -10,6 +10,12 @@ public class Charmander extends Pokemon {
         this.setHasarPuani(60);
     }
 
+    public Charmander(int pokemonID)
+    {
+        this();
+        this.setPokemonID(pokemonID);
+    }
+
     public int hasarPuaniGoster()
     {
         return this.hasarPuani;

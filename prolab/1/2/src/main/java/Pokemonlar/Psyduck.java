@@ -10,6 +10,12 @@ public class Psyduck extends Pokemon {
         this.setHasarPuani(20);
     }
 
+    public Psyduck(int pokemonID)
+    {
+        this();
+        this.setPokemonID(pokemonID);
+    }
+
     public int hasarPuaniGoster()
     {
         return this.hasarPuani;

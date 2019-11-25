@@ -10,6 +10,12 @@ public class Bulbasaur extends Pokemon {
         this.setHasarPuani(50);
     }
 
+    public Bulbasaur(int pokemonID)
+    {
+        this();
+        this.setPokemonID(pokemonID);
+    }
+
     public int hasarPuaniGoster()
     {
         return this.hasarPuani;

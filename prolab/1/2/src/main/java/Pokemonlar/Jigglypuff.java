@@ -10,6 +10,12 @@ public class Jigglypuff extends Pokemon {
         this.setHasarPuani(70);
     }
 
+    public Jigglypuff(int pokemonID)
+    {
+        this();
+        this.setPokemonID(pokemonID);
+    }
+
     public int hasarPuaniGoster()
     {
         return this.hasarPuani;

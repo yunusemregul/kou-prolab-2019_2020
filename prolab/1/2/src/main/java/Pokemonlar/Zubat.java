@@ -10,6 +10,12 @@ public class Zubat extends Pokemon {
         this.setHasarPuani(50);
     }
 
+    public Zubat(int pokemonID)
+    {
+        this();
+        this.setPokemonID(pokemonID);
+    }
+
     public int hasarPuaniGoster()
     {
         return this.hasarPuani;

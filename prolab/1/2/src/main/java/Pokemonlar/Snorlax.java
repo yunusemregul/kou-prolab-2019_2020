@@ -10,6 +10,12 @@ public class Snorlax extends Pokemon {
         this.setHasarPuani(30);
     }
 
+    public Snorlax(int pokemonID)
+    {
+        this();
+        this.setPokemonID(pokemonID);
+    }
+
     public int hasarPuaniGoster()
     {
         return this.hasarPuani;

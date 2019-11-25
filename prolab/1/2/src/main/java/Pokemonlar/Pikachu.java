@@ -10,6 +10,12 @@ public class Pikachu extends Pokemon {
         this.setHasarPuani(40);
     }
 
+    public Pikachu(int pokemonID)
+    {
+        this();
+        this.setPokemonID(pokemonID);
+    }
+
     public int hasarPuaniGoster()
     {
         return this.hasarPuani;

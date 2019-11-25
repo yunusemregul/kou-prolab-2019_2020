@@ -10,6 +10,12 @@ public class Squirtle extends Pokemon {
         this.setHasarPuani(30);
     }
 
+    public Squirtle(int pokemonID)
+    {
+        this();
+        this.setPokemonID(pokemonID);
+    }
+
     public int hasarPuaniGoster()
     {
         return this.hasarPuani;

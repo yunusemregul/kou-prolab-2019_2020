@@ -39,6 +39,9 @@ public abstract class Oyuncu {
             return false;
 
         for (int i = 0; i < this.kartListesi.length; i++) {
+            if(this.kartListesi[i]==null)
+                continue;
+
             if(this.kartListesi[i].getPokemonAdi()==kart.getPokemonAdi())
             {
                 return !this.kartListesi[i].kartKullanildiMi;
@@ -50,7 +53,7 @@ public abstract class Oyuncu {
 
     public void kartEkle(Pokemon kart)
     {
-        if(kartSayisi()==3)
+        if(kartSayisi()==5)
             return;
         if(kartVarMi(kart))
             return;
@@ -61,15 +64,6 @@ public abstract class Oyuncu {
                 break;
             }
         }
-
-        for (int i = 0; i < this.kartListesi.length; i++) {
-            if(this.kartListesi[i]!=null)
-            {
-                System.out.println(this.kartListesi[i].getPokemonAdi()+" "+this.kartListesi[i].kartKullanildiMi);
-            }
-        }
-        System.out.println(kartSayisi());
-
     }
 
     /*
@@ -86,6 +80,7 @@ public abstract class Oyuncu {
         for (int i = 0; i < this.kartListesi.length; i++) {
             if(this.kartListesi[i].getPokemonAdi()==kart.getPokemonAdi())
             {
+                System.out.println(this.getOyuncuAdi()+" "+kart.getPokemonAdi()+" kartini kullandi.");
                 this.kartListesi[i].kullan();
                 break;
             }

@@ -10,6 +10,12 @@ public class Meowth extends Pokemon {
         this.setHasarPuani(40);
     }
 
+    public Meowth(int pokemonID)
+    {
+        this();
+        this.setPokemonID(pokemonID);
+    }
+
     public int hasarPuaniGoster()
     {
         return this.hasarPuani;
