@@ -82,6 +82,7 @@ public abstract class Oyuncu {
             {
                 System.out.println(this.getOyuncuAdi()+" "+kart.getPokemonAdi()+" kartini kullandi.");
                 this.kartListesi[i].kullan();
+
                 break;
             }
         }
@@ -92,7 +93,7 @@ public abstract class Oyuncu {
         return this.Skor;
     }
 
-    public abstract Pokemon kartSec();
+    public abstract Pokemon kartSec(Pokemon kart);
 
     public int getOyuncuID() {
         return oyuncuID;
@@ -116,5 +117,10 @@ public abstract class Oyuncu {
 
     public void setSkor(int skor) {
         Skor = skor;
+    }
+
+    public void addSkor(int skor) {
+        Skor += skor;
+        System.out.println(this.getOyuncuAdi()+" "+skor+" skor kazandi!");
     }
 }
