@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
 public class Masa extends JPanel{
@@ -404,65 +405,15 @@ public class Masa extends JPanel{
             return;
 
         System.out.println(kart.getPokemonAdi()+" to "+ply.getOyuncuAdi());
-        /*
-            TODO:
-            kartın kopyasının oluşturulması gerek, masadaki kartı oyuncuya verince
-            problemli oluyor, şuan oyunculara kart gitmeme sebebi kartKullanildiMi degeri
-            masada true yapıldığı için oyuncudada true olduğundan
-         */
-        // şimdilik berbat çözüm
-        switch (kart.getPokemonAdi())
-        {
-            case "Bulbasaur":
-            {
-                ply.kartEkle(new Bulbasaur(kart.getPokemonID()));
-                break;
-            }
-            case "Butterfree":
-            {
-                ply.kartEkle(new Butterfree(kart.getPokemonID()));
-                break;
-            }
-            case "Charmander":
-            {
-                ply.kartEkle(new Charmander(kart.getPokemonID()));
-                break;
-            }
-            case "Jigglypuff":
-            {
-                ply.kartEkle(new Jigglypuff(kart.getPokemonID()));
-                break;
-            }
-            case "Meowth":
-            {
-                ply.kartEkle(new Meowth(kart.getPokemonID()));
-                break;
-            }
-            case "Pikachu":
-            {
-                ply.kartEkle(new Pikachu(kart.getPokemonID()));
-                break;
-            }
-            case "Psyduck":
-            {
-                ply.kartEkle(new Psyduck(kart.getPokemonID()));
-                break;
-            }
-            case "Snorlax":
-            {
-                ply.kartEkle(new Snorlax(kart.getPokemonID()));
-                break;
-            }
-            case "Squirtle":
-            {
-                ply.kartEkle(new Squirtle(kart.getPokemonID()));
-                break;
-            }
-            case "Zubat":
-            {
-                ply.kartEkle(new Zubat(kart.getPokemonID()));
-                break;
-            }
+
+        // oyuncuya masadaki kartın kopyasını vermek için
+        // bu şekilde class ı instance ediyoruz
+        // kart.clone gibi şeyleri denedim ama olmadı
+        try {
+            ply.kartEkle((Pokemon)Class.forName("Pokemonlar."+kart.getPokemonAdi()).getDeclaredConstructor(int.class).newInstance(kart.getPokemonID()));
+        }
+        catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
         this.kartKullan(kart);
     }
@@ -518,8 +469,8 @@ public class Masa extends JPanel{
         // 3 adet kart ver
         for(int adet=0;adet<kactane;adet++)
         {
-            for (int i = 0; i < this.oyuncular.length; i++) {
-                this.kartVer(this.oyuncular[i],rastgeleKart());
+            for (Oyuncu oyuncu : this.oyuncular) {
+                this.kartVer(oyuncu, rastgeleKart());
             }
         }
 
