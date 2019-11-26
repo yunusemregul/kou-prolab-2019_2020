@@ -4,11 +4,11 @@ import Pokemonlar.*;
 
 public class InsanOyuncusu extends Oyuncu {
     @Override
-    public Pokemon kartSec()
+    public Pokemon kartSec(Pokemon kart)
     {
+        this.kartKullan(kart);
 
-
-        return null;
+        return kart;
     }
 
     public InsanOyuncusu()

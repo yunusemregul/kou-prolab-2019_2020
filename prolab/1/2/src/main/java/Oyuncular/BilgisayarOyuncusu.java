@@ -2,20 +2,39 @@ package Oyuncular;
 
 import Pokemonlar.*;
 
+import java.util.Random;
+
 public class BilgisayarOyuncusu extends Oyuncu {
     @Override
-    public Pokemon kartSec()
+    public Pokemon kartSec(Pokemon kart)
     {
-        if(this.kartSayisi()==0)
+        /*
+            eğer seçilecek kart belliyse? kartı kullan
+            değilse devam edip rastgele bi kart seç
+         */
+        if(kart!=null)
         {
-            System.out.println("Bilgisayarin secebilecegi kart kalmadi ancak kart istendi.");
-            return null;
+            this.kartKullan(kart);
+            return kart;
         }
-        for (int i = 0; i < this.kartListesi.length; i++) {
-            if(!this.kartListesi[i].kartKullanildiMi)
-            {
 
+        /*
+            bilgisayar oyuncusu sahip olduğu kartlardan rastgele bir kartı
+            seçerek kullanır
+         */
+        int rnd = new Random().nextInt(this.kartSayisi());
+
+        int count = 0;
+        for (int i = 0; i < this.kartListesi.length; i++) {
+            if(this.kartListesi[i]==null || this.kartListesi[i].kartKullanildiMi)
+                continue;
+
+            if(count==rnd)
+            {
+                this.kartKullan(this.kartListesi[i]);
+                return this.kartListesi[i];
             }
+            count++;
         }
 
         return null;
