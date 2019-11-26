@@ -24,17 +24,67 @@ public class Main {
         // oluşturuyoruz
         Masa masa = new Masa(kartListesi);
 
-        boolean kartlarDagitildiMi = false;
-
         // program kapatılana kadar masayı yönetecek olan döngü
         while(true)
         {
             // oyuncular hazırsa (oyun modu seçildi ise) ve kartlar dağıtılmadıysa
-            if(masa.getGameState()==1 && !kartlarDagitildiMi)
+            if(masa.getGameState()==1)
             {
                 // 3 adet kart dağıt
                 masa.kartDagit(3);
-                kartlarDagitildiMi = true;
+            }
+
+            // eğer oyun bilgisayar vs bilgisayar modunda ise ve oyuncuların kart seçmesi/kart oynaması bekleniyorsa
+            if(masa.getOyunModu()==1 && masa.getGameState()==2)
+            {
+                // eğer oyuncuların yeteri kadar kartı varsa
+                if(masa.oyuncular[0].kartSayisi()>0)
+                {
+                    Thread.sleep(1000);
+                    masa.kapisanKartlar[0] = masa.oyuncular[0].kartSec(null);
+                    masa.kapisanKartlar[1] = masa.oyuncular[1].kartSec(null);
+                    masa.setGameState(3);
+                }
+                else
+                {
+                    masa.kartVer(masa.oyuncular[0],masa.rastgeleKart());
+                    masa.kartVer(masa.oyuncular[1],masa.rastgeleKart());
+                }
+            }
+
+            // eğer masa kapışma durumundaysa
+            if(masa.getGameState()==3)
+            {
+                if(masa.kapisanKartlar[0]!=null && masa.kapisanKartlar[1]!=null)
+                {
+                    Thread.sleep(1000);
+                    if(masa.kapisanKartlar[0].hasarPuaniGoster()>masa.kapisanKartlar[1].hasarPuaniGoster())
+                        masa.oyuncular[0].addSkor(5);
+                    else
+                        masa.oyuncular[1].addSkor(5);
+
+                    masa.kapisanKartlar[0] = null;
+                    masa.kapisanKartlar[1] = null;
+
+                    // masada veya oyuncularda kart kaldıysa kapışmaya devam etsinler, kalmadıysa oyun bitsin
+                    if(masa.kartSayisi()>0 || masa.oyuncular[0].kartSayisi()>0)
+                        masa.setGameState(2); // destelerini oynamaya devam etsinler
+                    else
+                    {
+                        masa.setGameState(4); // oyun bitsin
+                        Oyuncu kazanan = null;
+
+                        if (masa.oyuncular[0].getSkor()==masa.oyuncular[1].getSkor())
+                            System.out.println("Iki oyuncunun da skoru "+masa.oyuncular[0].getSkor()+". Oyun berabere bitti!");
+                        else if(masa.oyuncular[0].getSkor()>masa.oyuncular[1].getSkor())
+                            kazanan = masa.oyuncular[0];
+                        else
+                            kazanan = masa.oyuncular[1];
+
+                        if(kazanan!=null)
+                            System.out.println(kazanan.getOyuncuAdi()+" oyunu "+kazanan.getSkor()+" skor ile kazandi!");
+                    }
+                }
             }
 
             Thread.sleep(100);
