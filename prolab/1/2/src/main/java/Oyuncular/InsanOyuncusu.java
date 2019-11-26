@@ -1,6 +1,6 @@
 package Oyuncular;
 
-import Pokemonlar.*;
+import Pokemonlar.Pokemon;
 
 public class InsanOyuncusu extends Oyuncu {
     @Override

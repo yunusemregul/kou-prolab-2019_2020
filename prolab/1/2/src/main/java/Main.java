@@ -1,7 +1,6 @@
-import Oyuncular.*;
+import Oyuncular.Oyuncu;
 import Pokemonlar.*;
 
-import javax.swing.*;
 import java.io.IOException;
 
 public class Main {
@@ -58,11 +57,17 @@ public class Main {
                 if(masa.kapisanKartlar[0]!=null && masa.kapisanKartlar[1]!=null)
                 {
                     Thread.sleep(1000);
-                    if(masa.kapisanKartlar[0].hasarPuaniGoster()>masa.kapisanKartlar[1].hasarPuaniGoster())
-                        masa.oyuncular[0].addSkor(5);
+                    if(masa.kapisanKartlar[0].hasarPuaniGoster()!=masa.kapisanKartlar[1].hasarPuaniGoster())
+                    {
+                        if(masa.kapisanKartlar[0].hasarPuaniGoster()>masa.kapisanKartlar[1].hasarPuaniGoster())
+                            masa.oyuncular[0].addSkor(5);
+                        else
+                            masa.oyuncular[1].addSkor(5);
+                    }
                     else
-                        masa.oyuncular[1].addSkor(5);
-
+                    {
+                        System.out.println("Kart kapismasi berabere. Kimse skor kazanamadi!");
+                    }
                     masa.kapisanKartlar[0] = null;
                     masa.kapisanKartlar[1] = null;
 

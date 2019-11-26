@@ -1,6 +1,6 @@
 package Oyuncular;
 
-import Pokemonlar.*;
+import Pokemonlar.Pokemon;
 
 import java.util.Random;
 

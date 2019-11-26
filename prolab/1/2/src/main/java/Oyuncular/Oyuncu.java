@@ -26,25 +26,24 @@ public abstract class Oyuncu {
     public int kartSayisi()
     {
         int count = 0;
-        for (int i = 0; i < this.kartListesi.length; i++) {
-            if(this.kartListesi[i]!=null && !this.kartListesi[i].kartKullanildiMi)
+        for (Pokemon kart : this.kartListesi) {
+            if (kart != null && !kart.kartKullanildiMi)
                 count++;
         }
         return count;
     }
 
-    public boolean kartVarMi(Pokemon kart)
+    public boolean kartVarMi(Pokemon hedef)
     {
         if(kartSayisi()==0)
             return false;
 
-        for (int i = 0; i < this.kartListesi.length; i++) {
-            if(this.kartListesi[i]==null)
+        for (Pokemon kart : this.kartListesi) {
+            if (kart == null)
                 continue;
 
-            if(this.kartListesi[i].getPokemonAdi()==kart.getPokemonAdi())
-            {
-                return !this.kartListesi[i].kartKullanildiMi;
+            if (kart.getPokemonAdi() == hedef.getPokemonAdi()) {
+                return !kart.kartKullanildiMi;
             }
         }
 
@@ -71,17 +70,16 @@ public abstract class Oyuncu {
         Boolean veri tipinde kartKullanildiMi bilgisi tutulmalıdır.
         Kullanılan kartların oyunda bir daha kullanılmasını engellemek için bu veri tipinden yararlanılacaktır.
      */
-    public void kartKullan(Pokemon kart)
+    public void kartKullan(Pokemon hedef)
     {
         if(kartSayisi()==0)
             return;
-        if(!kartVarMi(kart))
+        if(!kartVarMi(hedef))
             return;
-        for (int i = 0; i < this.kartListesi.length; i++) {
-            if(this.kartListesi[i].getPokemonAdi()==kart.getPokemonAdi())
-            {
-                System.out.println(this.getOyuncuAdi()+" "+kart.getPokemonAdi()+" kartini kullandi.");
-                this.kartListesi[i].kullan();
+        for (Pokemon kart : this.kartListesi) {
+            if (kart.getPokemonAdi() == hedef.getPokemonAdi()) {
+                System.out.println(this.getOyuncuAdi() + " " + hedef.getPokemonAdi() + " kartini kullandi.");
+                kart.kullan();
 
                 break;
             }

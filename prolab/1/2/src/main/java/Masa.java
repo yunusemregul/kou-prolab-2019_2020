@@ -1,3 +1,6 @@
+import Oyuncular.*;
+import Pokemonlar.*;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -5,12 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Random;
-
-import Pokemonlar.*;
-import Oyuncular.*;
 
 public class Masa extends JPanel{
     /*
@@ -37,9 +36,9 @@ public class Masa extends JPanel{
     private static String[] gameStates = {"Oyun Baslamadi","Oyuncular Hazir","Oyun","Kapisma","Oyun Bitti"};
 
     // masa envanterindeki kartları tutuyor
-    public Pokemon[] kartListesi;
+    private Pokemon[] kartListesi;
     // şuanda kapışan kartları tutuyor
-    public Pokemon[] kapisanKartlar = new Pokemon[2];
+    Pokemon[] kapisanKartlar = new Pokemon[2];
 
     // ana framemiz
     private JFrame frame;
@@ -50,7 +49,7 @@ public class Masa extends JPanel{
     // masadaki oyuncuları tutuyor
     // 0. oyuncu = kullanıcı veya bilgisayar
     // 1. oyuncu = bilgisayar
-    public Oyuncu[] oyuncular = new Oyuncu[2];
+    Oyuncu[] oyuncular = new Oyuncu[2];
 
     // açılmamış kart imajını tutuyor
     private Image img_kart;
@@ -151,21 +150,19 @@ public class Masa extends JPanel{
                     {
                         count = 0;
 
-                        for (int i = 0; i < kartListesi.length; i++) {
-                            if(kartListesi[i]!=null && !kartListesi[i].kartKullanildiMi)
-                            {
+                        for (Pokemon kart : kartListesi) {
+                            if (kart != null && !kart.kartKullanildiMi) {
                                 // 370/kartsayısı kısmı kart sayısı çoğaldığında kartlar arasındaki boşluğu
                                 // daraltmak için
                                 // 370 de deneyerek bulduğum özel ayar
                                 int x = 25;
-                                int y = 73+count*(370/(kartSayisi()));
+                                int y = 73 + count * (370 / (kartSayisi()));
 
-                                if(getOyunModu()==0 && (mouse.x>x && mouse.x<x+(369/2) && mouse.y>y && mouse.y<y+(370/(kartSayisi()))))
-                                {
+                                if (getOyunModu() == 0 && (mouse.x > x && mouse.x < x + (369 / 2) && mouse.y > y && mouse.y < y + (370 / (kartSayisi())))) {
                                     // oyuncuya masa destesinden seçtiği kartı ver
-                                    kartVer(oyuncular[0],kartListesi[i]);
+                                    kartVer(oyuncular[0], kart);
                                     // bilgisayara masa destesinden rastgele bir kart ver
-                                    kartVer(oyuncular[1],rastgeleKart());
+                                    kartVer(oyuncular[1], rastgeleKart());
                                 }
                                 count++;
                             }
@@ -225,8 +222,11 @@ public class Masa extends JPanel{
         direk fotoğrafların üzerine de yazılabilirdi ama böyle daha
         değiştirilebilir dinamik olacağını düşünüyorum bu proje için ne kadar gereksiz olsa da
      */
-    public void drawKartInfo(Graphics2D g2, Pokemon kart, int x, int y)
+    private void drawKartInfo(Graphics2D g2, Pokemon kart, int x, int y)
     {
+        if(kart==null)
+            return;
+
         // kartlar üzerindeki sarı şerit ve hasar puanını gösteren kısım
         // ile ilgili ayarlamalar
         int sy = 145; // şeritin kart'a relatif y konumu
@@ -238,7 +238,7 @@ public class Masa extends JPanel{
         g2.setColor(new Color(255, 224, 105));
         g2.fillRect(x,y+sy,369/2,sh);
         g2.setColor(Color.black);
-        g2.drawString("Hasar: "+ Integer.toString(kart.hasarPuaniGoster()),x+tx,y+sy+ty);
+        g2.drawString("Hasar: "+ kart.hasarPuaniGoster(),x+tx,y+sy+ty);
         g2.drawString("Tip: "+kart.getPokemonTip(),x+tx,y+sy+ty+20);
     }
 
@@ -266,28 +266,25 @@ public class Masa extends JPanel{
             int[] masadakiHoveredKartCoords = new int[2];
 
             int count = 0;
-            for (int i = 0; i < this.kartListesi.length; i++) {
-                if(this.kartListesi[i]!=null && !this.kartListesi[i].kartKullanildiMi)
-                {
+            for (Pokemon kart : this.kartListesi) {
+                if (kart != null && !kart.kartKullanildiMi) {
                     // 370/kartsayısı kısmı kart sayısı çoğaldığında kartlar arasındaki boşluğu
                     // daraltmak için
                     // 370 de deneyerek bulduğum özel ayar
                     int x = 25;
-                    int y = 73+count*(370/(this.kartSayisi()));
+                    int y = 73 + count * (370 / (this.kartSayisi()));
 
                     // eğer oyun modu kullanıcı vs bilgisayarsa ve kullanıcının kart sayısı 3 ten fazla değilse
                     // ve oyun kapışma anında değilse
-                    if(this.getOyunModu()==0 && this.oyuncular[0].kartSayisi()<3 && this.getGameState()!=3)
-                    {
+                    if (this.getOyunModu() == 0 && this.oyuncular[0].kartSayisi() < 3 && this.getGameState() != 3) {
                         // eğer kullanıcı mousesini masa destesindeki kartların birinin üzerine tutuyorsa
-                        if(mouse.x>x && mouse.x<x+(369/2) && mouse.y>y && mouse.y<y+(370/(this.kartSayisi())))
-                        {
-                            masadakiHoveredKart = this.kartListesi[i];
+                        if (mouse.x > x && mouse.x < x + (369 / 2) && mouse.y > y && mouse.y < y + (370 / (this.kartSayisi()))) {
+                            masadakiHoveredKart = kart;
                             masadakiHoveredKartCoords[0] = x;
                             masadakiHoveredKartCoords[1] = y;
                         }
                     }
-                    drawKartInfo(g2,this.kartListesi[i],x,y);
+                    drawKartInfo(g2, kart, x, y);
 
                     count++;
                 }
@@ -367,20 +364,19 @@ public class Masa extends JPanel{
     public int kartSayisi()
     {
         int count = 0;
-        for (int i = 0; i < this.kartListesi.length; i++) {
-            if(this.kartListesi[i]!=null && !this.kartListesi[i].kartKullanildiMi)
+        for (Pokemon kart : this.kartListesi) {
+            if (kart != null && !kart.kartKullanildiMi)
                 count++;
         }
         return count;
     }
 
     // masada belirli bir kartın varlığını ve kullanılıp kullanılmadığını döndüren fonksiyon
-    public boolean kartVarMi(Pokemon kart)
+    public boolean kartVarMi(Pokemon hedef)
     {
-        for (int i = 0; i < this.kartListesi.length; i++) {
-            if(this.kartListesi[i].getPokemonAdi()==kart.getPokemonAdi())
-            {
-                return !this.kartListesi[i].kartKullanildiMi;
+        for (Pokemon kart : this.kartListesi) {
+            if (kart.getPokemonAdi() == hedef.getPokemonAdi()) {
+                return !kart.kartKullanildiMi;
             }
         }
 
@@ -389,15 +385,14 @@ public class Masa extends JPanel{
 
     // masadaki belirlenen kartı kullanılmış hale getiren fonksiyon
     // kartın tekrar kullanılmasını engellemek için
-    private void kartKullan(Pokemon kart)
+    private void kartKullan(Pokemon hedef)
     {
-        if(!this.kartVarMi(kart))
+        if(!this.kartVarMi(hedef))
             return;
 
-        for (int i = 0; i < this.kartListesi.length; i++) {
-            if(this.kartListesi[i].getPokemonAdi()==kart.getPokemonAdi())
-            {
-                this.kartListesi[i].kartKullanildiMi = true;
+        for (Pokemon kart : this.kartListesi) {
+            if (kart.getPokemonAdi() == hedef.getPokemonAdi()) {
+                kart.kartKullanildiMi = true;
             }
         }
     }
@@ -477,12 +472,14 @@ public class Masa extends JPanel{
     {
         this.setOyunModu(oyunModu);
 
+        this.oyuncular[1] = new BilgisayarOyuncusu();
         if(oyunModu==0)
             this.oyuncular[0] = new InsanOyuncusu();
         else
+        {
             this.oyuncular[0] = new BilgisayarOyuncusu();
-
-        this.oyuncular[1] = new BilgisayarOyuncusu();
+            this.oyuncular[1].setOyuncuAdi("Bilgisayar 2");
+        }
 
         frame.remove(gui_oyunModu);
         SwingUtilities.updateComponentTreeUI(frame);
