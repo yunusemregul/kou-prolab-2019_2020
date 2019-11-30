@@ -95,8 +95,6 @@ public class Main {
                 }
             }
 
-            // çok cpu yiyor hiçbişey yapmadan sürekli while döndüğü için
-            // uzun uzun uyutalımda yemesin
             if(masa.getGameState()==4)
                 Thread.sleep(1000);
 

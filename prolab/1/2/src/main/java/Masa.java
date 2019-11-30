@@ -373,6 +373,10 @@ public class Masa extends JPanel{
                     y = y + (i==0 ? 1 : -1)*(int)(System.currentTimeMillis()-kapismaBaslangicTime-900);
                 this.drawKartInfo(g2,this.kapisanKartlar[this.kapisanKartlar.length-1-i],x,y);
             }
+
+            // bu oyun halinde sürekli çizim güncellenmesi gerektiğinden
+            // güncelle
+            repaint();
         }
         // eğer oyun bittiyse
         else if (this.getGameState()==4)
@@ -386,8 +390,6 @@ public class Masa extends JPanel{
             else
                 g2.drawString("Berabere!", 57, 356+36);
         }
-
-        repaint();
     }
 
     // masada kalan kullanılmamış kart sayısını döndüren fonksiyon
