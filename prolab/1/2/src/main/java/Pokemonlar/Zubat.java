@@ -2,7 +2,7 @@ package Pokemonlar;
 
 public class Zubat extends Pokemon {
     private int hasarPuani;
-    boolean kartKullanildiMi = false;
+    boolean kartKullanildiMi;
 
     public Zubat()
     {

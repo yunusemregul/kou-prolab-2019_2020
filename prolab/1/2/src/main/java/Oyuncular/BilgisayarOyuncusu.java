@@ -5,12 +5,24 @@ import Pokemonlar.Pokemon;
 import java.util.Random;
 
 public class BilgisayarOyuncusu extends Oyuncu {
+    public BilgisayarOyuncusu()
+    {
+        super(1,"Bilgisayar",0);
+    }
+
+    public BilgisayarOyuncusu(int oyuncuID, String oyuncuAdi, int Skor)
+    {
+        super(oyuncuID, oyuncuAdi, Skor);
+    }
+
     @Override
     public Pokemon kartSec(Pokemon kart)
     {
         /*
             eğer seçilecek kart belliyse? kartı kullan
             değilse devam edip rastgele bi kart seç
+
+            ilerde geliştirilebilmesi için eklediğim gereksiz bi özellik
          */
         if(kart!=null)
         {
@@ -38,15 +50,5 @@ public class BilgisayarOyuncusu extends Oyuncu {
         }
 
         return null;
-    }
-
-    public BilgisayarOyuncusu()
-    {
-        super(1,"Bilgisayar",0);
-    }
-
-    public BilgisayarOyuncusu(int oyuncuID, String oyuncuAdi, int Skor)
-    {
-        super(oyuncuID, oyuncuAdi, Skor);
     }
 }

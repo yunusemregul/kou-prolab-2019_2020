@@ -2,7 +2,7 @@ package Pokemonlar;
 
 public class Squirtle extends Pokemon {
     private int hasarPuani;
-    boolean kartKullanildiMi = false;
+    boolean kartKullanildiMi;
 
     public Squirtle()
     {

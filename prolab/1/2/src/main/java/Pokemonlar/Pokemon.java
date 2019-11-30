@@ -20,9 +20,11 @@ public class Pokemon{
         kartKullanildiMi = false;
     }
 
+    // pokemon sınıflarında override edileceğinden
+    // burada ne olduğunun önemi yok
     public int hasarPuaniGoster()
     {
-        return -1;
+        return 0;
     }
 
     public int getPokemonID() {

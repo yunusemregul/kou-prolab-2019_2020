@@ -17,7 +17,7 @@ public abstract class Oyuncu {
 
     public Oyuncu(int oyuncuID, String oyuncuAdi, int Skor)
     {
-        super();
+        this();
         this.setOyuncuID(oyuncuID);
         this.setOyuncuAdi(oyuncuAdi);
         this.setSkor(Skor);
@@ -86,7 +86,7 @@ public abstract class Oyuncu {
         }
     }
 
-    public int SkorGoster()
+    public int skorGoster()
     {
         return this.Skor;
     }

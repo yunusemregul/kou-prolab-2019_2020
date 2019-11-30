@@ -2,7 +2,7 @@ package Pokemonlar;
 
 public class Meowth extends Pokemon {
     private int hasarPuani;
-    boolean kartKullanildiMi = false;
+    boolean kartKullanildiMi;
 
     public Meowth()
     {

@@ -2,7 +2,7 @@ package Pokemonlar;
 
 public class Psyduck extends Pokemon {
     private int hasarPuani;
-    boolean kartKullanildiMi = false;
+    boolean kartKullanildiMi;
 
     public Psyduck()
     {

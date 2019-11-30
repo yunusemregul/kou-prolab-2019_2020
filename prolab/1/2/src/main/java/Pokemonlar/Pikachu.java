@@ -2,7 +2,7 @@ package Pokemonlar;
 
 public class Pikachu extends Pokemon {
     private int hasarPuani;
-    boolean kartKullanildiMi = false;
+    boolean kartKullanildiMi;
 
     public Pikachu()
     {
