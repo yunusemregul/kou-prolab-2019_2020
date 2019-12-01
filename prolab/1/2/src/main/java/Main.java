@@ -58,7 +58,7 @@ public class Main {
                 // eğer kapışan kartlar boş değilse, kapıştır sonuca göre puan ekle
                 if(masa.kapisanKartlar[0]!=null && masa.kapisanKartlar[1]!=null)
                 {
-                    Thread.sleep(1000);
+                    Thread.sleep(1500);
                     // eğer kartların hasarı birbirine eşit değilse
                     if(masa.kapisanKartlar[0].hasarPuaniGoster()!=masa.kapisanKartlar[1].hasarPuaniGoster())
                     {

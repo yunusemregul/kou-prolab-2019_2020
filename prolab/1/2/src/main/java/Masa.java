@@ -3,7 +3,17 @@ import Pokemonlar.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -119,7 +129,31 @@ public class Masa extends JPanel{
             public void actionPerformed(ActionEvent actionEvent) {
                 // kullanıcı vs bilgisayar seçimi yapıldığında oyunu
                 // ilgili mod ile başlat
-                startGame(0);
+                JPanel IP = new JPanel();
+                IP.setOpaque(false);
+                IP.setLayout(null);
+
+                JLabel IL = new JLabel("Kullanıcı ismi giriniz:");
+                IL.setForeground(new Color(255,255,255));
+
+                JTextField IF = new JTextField(16);
+                IF.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        startGame(0);
+                        oyuncular[0].setOyuncuAdi(IF.getText());
+                    }
+                });
+
+                IP.setBounds(1150/2-100,768/2-100,200,200);
+                IL.setBounds(0,0,200,20);
+                IF.setBounds(0,24,200,20);
+                IP.add(IL);
+                IP.add(IF);
+                gui_oyunModu.removeAll();
+                gui_oyunModu.add(IP);
+                gui_oyunModu.revalidate();
+                gui_oyunModu.repaint();
             }
         });
         JButton BB = new JButton("Bilgisayar vs Bilgisayar");
@@ -133,11 +167,19 @@ public class Masa extends JPanel{
         });
 
         // oluşturulan gui öğelerini gui_oyunmodu paneline ekliyoruz
+        int centerx = 1150/2;
+        int centery = 768/2;
+        int w = 200;
+        int h = 80;
+        OM.setBounds(centerx-w/2,centery-h/2,200,16);
+        KB.setBounds(centerx-w/2,centery+24-h/2,200,24);
+        BB.setBounds(centerx-w/2,centery+24+24+4-h/2,200,24);
         gui_oyunModu.add(OM);
         gui_oyunModu.add(KB);
         gui_oyunModu.add(BB);
 
-        gui_oyunModu.setLayout(new BoxLayout(gui_oyunModu,BoxLayout.Y_AXIS));
+        gui_oyunModu.setLayout(null);
+        gui_oyunModu.revalidate();
 
         // gui_oyunmodu panelini ana pencereye ekliyoruz
         frame.add(gui_oyunModu);
@@ -236,9 +278,6 @@ public class Masa extends JPanel{
      */
     private void drawKartInfo(Graphics2D g2, Pokemon kart, int x, int y)
     {
-        if(kart==null)
-            return;
-
         // kartlar üzerindeki sarı şerit ve hasar puanını gösteren kısım
         // ile ilgili ayarlamalar
         int sy = 145; // şeritin kart'a relatif y konumu
@@ -246,12 +285,19 @@ public class Masa extends JPanel{
         int ty = 25; // yazının şerit'e relatif y konumu
         int sh = 60; // şeritin uzunluğu
 
-        g2.drawImage(img_pokemonlar[kart.getPokemonID()],x,y,null);
-        g2.setColor(new Color(255, 224, 105));
-        g2.fillRect(x,y+sy,369/2,sh);
-        g2.setColor(Color.black);
-        g2.drawString("Hasar: "+ kart.hasarPuaniGoster(),x+tx,y+sy+ty);
-        g2.drawString("Tip: "+kart.getPokemonTip(),x+tx,y+sy+ty+20);
+        if(kart==null)
+        {
+            g2.drawImage(img_kart,x,y,null);
+        }
+        else
+        {
+            g2.drawImage(img_pokemonlar[kart.getPokemonID()],x,y,null);
+            g2.setColor(new Color(255, 224, 105));
+            g2.fillRect(x,y+sy,369/2,sh);
+            g2.setColor(Color.black);
+            g2.drawString("Hasar: "+ kart.hasarPuaniGoster(),x+tx,y+sy+ty);
+            g2.drawString("Tip: "+kart.getPokemonTip(),x+tx,y+sy+ty+20);
+        }
     }
 
     @Override
@@ -300,7 +346,8 @@ public class Masa extends JPanel{
                             masadakiHoveredKartCoords[1] = y;
                         }
                     }
-                    drawKartInfo(g2, kart, x, y);
+                    // kartlar görünür: drawKartInfo(g2, kart, x, y);
+                    drawKartInfo(g2, null, x, y);
 
                     count++;
                 }
@@ -314,7 +361,8 @@ public class Masa extends JPanel{
                 g2.setColor(Color.red);
                 g2.fillRect(x-4,y-4,369/2+8,512/2+8);
 
-                drawKartInfo(g2,masadakiHoveredKart,x,y);
+                // kartlar görünür: drawKartInfo(g2,masadakiHoveredKart,x,y);
+                drawKartInfo(g2,null,x,y);
             }
 
             // Oyuncu isimlerini ve skorlarını çiz
@@ -369,9 +417,14 @@ public class Masa extends JPanel{
 
                 int x = 855+72;
                 int y = 72+i*(512/2)+87*i;
-                if((System.currentTimeMillis()-kapismaBaslangicTime>900))
-                    y = y + (i==0 ? 1 : -1)*(int)(System.currentTimeMillis()-kapismaBaslangicTime-900);
-                this.drawKartInfo(g2,this.kapisanKartlar[this.kapisanKartlar.length-1-i],x,y);
+
+                if((System.currentTimeMillis()-kapismaBaslangicTime>1400))
+                    y = y + (i==0 ? 1 : -1)*(int)(System.currentTimeMillis()-kapismaBaslangicTime-1400);
+
+                if((System.currentTimeMillis())-kapismaBaslangicTime<700)
+                    this.drawKartInfo(g2,null,x,y);
+                else
+                    this.drawKartInfo(g2,this.kapisanKartlar[this.kapisanKartlar.length-1-i],x,y);
             }
 
             // bu oyun halinde sürekli çizim güncellenmesi gerektiğinden
@@ -386,9 +439,12 @@ public class Masa extends JPanel{
             g2.drawString("Oyun Bitti", 484, 356);
             g2.setFont(new Font("TimesRoman", Font.PLAIN, 16));
             if(kazanan!=null)
+            {
                 g2.drawString("Kazanan: "+this.kazanan.getOyuncuAdi(), 484, 356+36);
+                g2.drawString("Skor: "+this.kazanan.getSkor(), 484, 356+36+20);
+            }
             else
-                g2.drawString("Berabere!", 57, 356+36);
+                g2.drawString("Berabere!", 484, 356+36);
         }
     }
 
