@@ -216,7 +216,6 @@ void komsuSayisiVeKomsuIsmineGoreBilgiListele(struct sehirDugum *list, int minsa
         komşuların ekleneceği şehir düğümü parçalara ayrılmış yazıdaki 1. parçadaki plaka koduna göre bulunur
         komşuların belirtildiği kısımdan sonrası için her komşunun plaka kodu bulunur ve ilgili şehir düğümüne eklenir.
 */
-
 int main(void)
 {
     // şehirler dosyası
