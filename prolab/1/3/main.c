@@ -36,30 +36,45 @@ struct komsuDugum
 için)
 */
 
-// belirtilen şehir adına göre düğümü listede bulur ve döndürür
-struct sehirDugum* sehirAdinaDugumBul(struct sehirDugum *list, char sehiradi[40])
-{
-
-}
-
-// belirtilen plaka koduna göre düğümü listede bulur ve döndürür
-struct sehirDugum* plakaKodaDugumBul(struct sehirDugum *list, int plakaKod)
-{
-
-}
-
-// şehir adından listede plaka kodu bulur
-int plakaKodBul(struct sehirDugum *list, char sehirAdi[40])
+// belirtilen şehir adına göre şehri listede bulur ve döndürür
+struct sehirDugum* sehirAdinaSehirBul(struct sehirDugum *list, char sehirAdi[40])
 {
     struct sehirDugum *sehir = list;
 
     while(sehir!=NULL)
     {
-        if(strcmp(sehir->sehirAdi,&sehirAdi)==0)
-            return sehir->plakaKod;
+        if(strcmp(sehir->sehirAdi,sehirAdi)==0)
+            return sehir;
+        
+        sehir = sehir->next;
+    }
+    return NULL;
+}
+
+// belirtilen plaka koduna göre şehri listede bulur ve döndürür
+struct sehirDugum* plakaKodaSehirBul(struct sehirDugum *list, int plakaKod)
+{
+    struct sehirDugum *sehir = list;
+
+    while(sehir!=NULL)
+    {
+        if(sehir->plakaKod==plakaKod)
+            return sehir;
 
         sehir = sehir->next;
     }
+
+    return NULL;
+}
+
+// şehir adından listede plaka kodu bulur
+int plakaKodBul(struct sehirDugum *list, char sehirAdi[40])
+{
+    struct sehirDugum *sehir = sehirAdinaSehirBul(list,sehirAdi); 
+    if(sehir!=NULL)
+        return sehir->plakaKod;
+    else
+        return -1;
 }
 
 // belirtilen listeye şehri plaka sırasına uygun olacak şekilde ekler
@@ -69,6 +84,8 @@ void sehirEkle(struct sehirDugum **list, struct sehirDugum sehir)
     struct sehirDugum *yenisehir = (struct sehirDugum*)malloc(sizeof(sehir));
     // girilen şehrin bilgilerini kopyalıyoruz
     memcpy(yenisehir,&sehir,sizeof(sehir));
+    yenisehir->prev = NULL;
+    yenisehir->next = NULL;
 
     /*
         şehir için uygun yer bulunur:
@@ -80,7 +97,7 @@ void sehirEkle(struct sehirDugum **list, struct sehirDugum sehir)
     struct sehirDugum *temp = (*list);
     if(temp==NULL)
     {
-        printf("add to beginning\n");
+        printf("add %s to first\n",yenisehir->sehirAdi);
         (*list) = yenisehir;
         return;        
     }
@@ -91,18 +108,22 @@ void sehirEkle(struct sehirDugum **list, struct sehirDugum sehir)
             if(yenisehir->plakaKod<temp->plakaKod)
             {
                 yenisehir->next = temp;
-                yenisehir->prev = temp->prev;
                 if(temp->prev!=NULL)
                 {
                     temp->prev->next = yenisehir;
-                    temp->prev = yenisehir;
+                    yenisehir->prev = (temp->prev);
                 }
+                else
+                {
+                    (*list) = yenisehir;
+                }
+                temp->prev = yenisehir;
+
                 return;
             }
             else if(temp->next==NULL)
             {
                 yenisehir->prev = temp;
-                yenisehir->next = NULL;
                 temp->next = yenisehir;
                 return;
             }
@@ -119,15 +140,70 @@ void sehirSil(struct sehirDugum *list, struct sehirDugum sehir)
 }
 
 // belirtilen şehire plaka sırasına uygun olacak şekilde komşuluk ekler
-void komsulukEkle(struct sehirDugum *dugum, int plakaKod)
+void komsulukEkle(struct sehirDugum *sehir, int plakaKod)
+{
+    struct komsuDugum *yenikomsu = (struct komsuDugum *)malloc(sizeof(struct komsuDugum));
+    yenikomsu->plakaKod = plakaKod;
+    yenikomsu->next = NULL;
+    
+    struct komsuDugum *temp = sehir->firstKomsu;
+    struct komsuDugum *onceki = NULL;
+    if(temp==NULL)
+    {
+        sehir->firstKomsu = yenikomsu;
+        sehir->komsuSayisi++;
+        return;        
+    }
+    else
+    {
+        while(temp!=NULL)
+        {
+            if(yenikomsu->plakaKod<temp->plakaKod)
+            {
+                yenikomsu->next = temp;
+                if(onceki!=NULL)
+                    onceki->next = yenikomsu;
+                else
+                    sehir->firstKomsu = yenikomsu;
+                
+                sehir->komsuSayisi++;
+                return;
+            }
+            else if(temp->next==NULL)
+            {
+                temp->next = yenikomsu;
+
+                sehir->komsuSayisi++;
+                return;
+            }
+
+            onceki = temp;
+            temp = temp->next;
+        }
+    }
+}
+
+// belirtilen şehirden plaka sırasına uygun olacak şekilde komşuluk siler
+void komsulukSil(struct sehirDugum *sehir, int plakaKod)
 {
 
 }
 
-// belirtilen şehirden plaka sırasına uygun olacak şekilde komşuluk siler
-void komsulukSil(struct sehirDugum *dugum, int plakaKod)
+// bir şehrin üzerine kayıtlı olan n indisli komşuyu döndürür
+struct komsuDugum* nInciKomsu(struct sehirDugum *sehir, int n)
 {
+    int counter = 0;
 
+    struct komsuDugum *komsu = sehir->firstKomsu;
+    while(komsu!=NULL)
+    {
+        if(counter==n)
+            return komsu;
+        counter++;
+        komsu = komsu->next;
+    }
+
+    return NULL;
 }
 
 // listedeki bir şehri listele
@@ -136,28 +212,115 @@ void sehirBilgiListele(struct sehirDugum *sehir)
 {
     for (int i = 0; i < 16 + strlen(sehir->sehirAdi)+2; i++)
         printf("-");
+    printf("  ");
+    for (int i=0; i < sehir->komsuSayisi; i++)
+        printf("  --------  ");
     printf("\n");
     
-    printf("| Plaka kodu:\t%d",sehir->plakaKod);
+    printf("| Plaka kodu:\t%02d",sehir->plakaKod);
     for (int i = 0; i < strlen(sehir->sehirAdi)-1; i++)
         printf(" ");    
-    printf("|\n");
+    printf("|");
+    printf("    ");
+    int counter = 0;
+    // üst satır
+    for (int i=0; i < sehir->komsuSayisi*8+(sehir->komsuSayisi-1)*4; i++)
+    {
+        if(i%12==0 || (counter+1)%8==7)
+        {
+            printf("|");
+            counter = 0;
+        }
+        else
+        {
+            printf(" ");
+            counter++;
+        }
+        
+    }
+    printf("\n");
 
-    printf("| Sehir adi:\t%s |\n",sehir->sehirAdi);
+    printf("| Sehir adi:\t%s |",sehir->sehirAdi);
+    printf(" —►");
+    printf(" ");
+    counter = 0;
+    // orta satır
+    for (int i=0; i < sehir->komsuSayisi*8+(sehir->komsuSayisi-1)*4; i++)
+    {
+        if(i%12==0 || (counter+1)%8==7)
+        {
+            printf("|");
+            counter = 0;
+        }
+        else
+        {
+            if(i%12>7 && counter==1)
+            {
+                printf("—► ");
+                i+=2;
+                counter+=3;
+                continue;
+            }
+
+            if(counter==2)
+            {
+                printf("%02d",nInciKomsu(sehir,i/12)->plakaKod);
+                i+=1;
+                counter+=2;
+                continue;
+            }
+
+            printf(" ");
+            counter++;
+        }
+        
+    }
+    printf("\n");
 
     printf("| Bolge:\t%s",sehir->bolge);
     for (int i = 0; i < strlen(sehir->sehirAdi)-1; i++)
         printf(" ");    
-    printf("|\n");
+    printf("|");
+    printf("    ");
+    counter = 0;
+    // alt satır
+    for (int i=0; i < sehir->komsuSayisi*8+(sehir->komsuSayisi-1)*4; i++)
+    {
+        if(i%12==0 || (counter+1)%8==7)
+        {
+            printf("|");
+            counter = 0;
+        }
+        else
+        {
+            printf(" ");
+            counter++;
+        }
+        
+    }
+    printf("\n");
 
     for (int i = 0; i < 16 + strlen(sehir->sehirAdi)+2; i++)
         printf("-");
+
+    printf("  ");
+    for (int i=0; i < sehir->komsuSayisi; i++)
+        printf("  --------  ");
     printf("\n");
 
     if(sehir->next!=NULL)
     {
-        printf("\t|\t▲\n");
-        printf("\t▼\t|\n");
+        printf("\t|");
+        if(sehir->next->prev!=NULL)
+            printf("\t▲\n");
+        else
+            printf("\n");
+        
+        printf("\t▼");
+        if(sehir->next->prev!=NULL)
+            printf("\t|\n");
+        else
+            printf("\n");
     }
 }
 
@@ -221,7 +384,12 @@ int main(void)
     // şehirler dosyası
     FILE *fSehirler;
     fSehirler = fopen("sehirler_generated.txt","r");
-    
+    if(fSehirler==NULL)
+    {
+        printf("Dosya acilirken hata!\n");
+        return 0;
+    }
+
     // ana liste
     struct sehirDugum *list = NULL;
 
@@ -241,6 +409,7 @@ int main(void)
 
         // listeye yeni eklenecek şehir
         struct sehirDugum sehir;
+        sehir.komsuSayisi = 0;
 
         // yazıyı virgüller ile parçalara bölüyoruz, her parçayı tutacak değişken
         char *part = strtok(line,",");
@@ -260,14 +429,52 @@ int main(void)
             partNum++;
         }
         sehirEkle(&list,sehir);
-        bilgiListele(list);
     }
+    // dosyanın sonuna kadar oku
+    // komşuları listeye ekle
+    read = NULL;
+    rewind(fSehirler);
+    while ((read = fgets(line, 256, fSehirler)) != NULL)
+    {
+        // satır sonundaki alt satır işaretini karışıklık oluşturmaması için siliyoruz
+        char *ret = strchr(line,'\n');
+        if(ret!=NULL)
+            *ret = '\0';
 
-    // kullanıcı arayüzü program kapatılana kadar çalışsın
+        // yazıyı virgüller ile parçalara bölüyoruz, her parçayı tutacak değişken
+        char *part = strtok(line,",");
+        // bölünmüş yazıdaki kaçıncı parçada olduğumuzu tutacak değişken
+        int partNum = 0;
+
+        // komşu eklediğimiz şehir
+        struct sehirDugum *sehir;
+
+        while(part!=NULL)
+        {
+            if(partNum==0)
+                sehir = plakaKodaSehirBul(list, atoi(part));
+            if(partNum>2)
+            {
+                if(plakaKodBul(list,part)==-1)
+                {
+                    printf("Sehir listesinde '%s' sehri olmamasina ragmen komsuluga eklenmeye calisildi. Plakasi bulunamadigi icin program calismayacak.",part);
+                    return 0;
+                }
+                komsulukEkle(sehir, plakaKodBul(list, part));
+            }
+            part = strtok(NULL,",");
+            partNum++;
+        }
+    }     
+                    bilgiListele(list);
+
+    /*// kullanıcı arayüzü program kapatılana kadar çalışsın
     while(1)
     {
         
-    }
+    }*/
     
+    // to do: free better
+    free(list);
     fclose(fSehirler);
 }

@@ -2,7 +2,7 @@
 2,Adiyaman,GA,Sanliurfa,Diyarbakir,Malatya,Kahramanmaras,Gaziantep
 3,Afyon,EG,Isparta,Konya,Eskisehir,Kutahya,Usak,Denizli,Burdur
 4,Agri,DA,Van,Igdir,Kars,Erzurum,Mus,Bitlis
-5,Amasya,KA,Yozgat,Tokat,Samsin,Corum
+5,Amasya,KA,Yozgat,Tokat,Samsun,Corum
 6,Ankara,IA,Konya,Aksaray,Kirsehir,Kirikkale,Cankiri,Bolu,Eskisehir,Afyon
 7,Antalya,AK,Mersin,Karaman,Konya,Isparta,Burdur,Mugla
 8,Artvin,KA,Rize,Erzurum,Ardahan
@@ -49,7 +49,7 @@
 49,Mus,DA,Diyarbakir,Batman,Bitlis,Agri,Erzurum,Bingol
 50,Nevsehir,IA,Nigde,Kayseri,Yozgat,Kirsehir,Aksaray
 51,Nigde,IA,Nevsehir,Kayseri,Adana,Mersin,Konya,Aksaray
-52,Manisa,EG,Izmir,Aydin,Usak,Denizli,Kutahya,Balikesir
+52,Ordu,KA,Samsun,Amasya,Tokat,Sivas,Giresun
 53,Rize,KA,Artvin,Erzurum,Bayburt,Trabzon
 54,Sakarya,MA,Duzce,Bolu,Bilecik,Bursa,Kocaeli
 55,Samsun,KA,Ordu,Tokat,Amasya,Corum,Sinop
@@ -62,7 +62,7 @@
 62,Tunceli,DA,Elazig,Bingol,Erzincan
 63,Sanliurfa,GA,Gaziantep,Adiyaman,Diyarbakir,Mardin
 64,Usak,EG,Manisa,Denizli,Afyon,Kutahya
-65,Van,DA,Hakkari,Siranak,Siirt,Bitlis,Agri
+65,Van,DA,Hakkari,Sirnak,Siirt,Bitlis,Agri
 66,Yozgat,IA,Kayseri,Sivas,Tokat,Amasya,Corum,Kirikkale,Kirsehir,Nevsehir
 67,Zonguldak,KA,Bartin,Cankiri,Bolu,Duzce,Karabuk
 68,Aksaray,IA,Nigde,Nevsehir,Kirsehir,Ankara,Konya

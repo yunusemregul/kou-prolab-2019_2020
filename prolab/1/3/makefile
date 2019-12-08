@@ -1,8 +1,8 @@
 CC = gcc
 INCLUDES = -I./
 SETTINGS = -Wall
-LINKS = -lm
-OPTIMIZATION = -O2
+LINKS =
+OPTIMIZATION = 
 
 all: build
 
