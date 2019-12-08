@@ -30,6 +30,15 @@ struct komsuDugum
     int plakaKod;
 };
 
+// fflush alternatifi
+void clean_stdin(void)
+{
+    int c;
+    do {
+        c = getchar();
+    } while (c != '\n' && c != EOF);
+}
+
 /*
     Uyarı:
         Düğümler plaka koduna göre ardışık sıralı olmalıdır. (Hem şehir düğümleri hem de komşu düğümler
@@ -476,13 +485,59 @@ int main(void)
             partNum++;
         }
     }     
-                    bilgiListele(list);
-
-    /*// kullanıcı arayüzü program kapatılana kadar çalışsın
+    // kullanıcı arayüzü program kapatılana kadar çalışsın
+    int secim = 0;
     while(1)
     {
-        
-    }*/
+        printf("Secim yapiniz: ");
+        scanf(" %d",&secim);
+        clean_stdin(); // stdin bufferini temizliyoruz
+
+        switch(secim)
+        {
+            case 0:
+            {
+                printf("Secenekler:\n");
+                printf("\t-1) Cikis\n");
+                printf("\t 0) Secenekler\n");
+                printf("\t 1) Bilgileri Listele\n");
+                printf("\t 2) Sehir Ekle\n");
+                printf("\t 3) Komsu Ekle\n");
+                printf("\t 4) Sehir Sil\n");
+                printf("\t 5) Komsu Sil\n");
+                /*
+                    6-7:
+                        - Herhangi bir şehir ismi veya plaka kodu ile aratıldığında şehir bilgileri 
+                        (plaka no, şehir adı, bölgesi, komşu sayısı) ve komşu şehirlerinin bilgileri (plaka no, şehir adı ve bölgesi) gösterilmelidir. 
+                        Listede olmayan bir şehir için arama yapıldığında “şehir listede yok, eklemek ister misiniz?” gibi bir seçenek sunulmalıdır. (+15p)
+                */
+                printf("\t 6) Isim ile Sehir Ara\n");
+                printf("\t 7) Plaka ile Sehir Ara\n");
+
+                /*
+                    8:
+                        - Kullanıcı herhangi bir bölgede bulunan şehirlerin bilgilerini (plaka kodu, şehir adı, komşu sayısı) listeleyebilmelidir. (+10p)
+                */
+                printf("\t 8) Bolge ile Sehir Ara\n");
+
+                /*
+                    9:
+                        - Belli bir komşu sayısı kriterine uyan şehirler bulunabilmeli ve gösterilmelidir. (Örneğin: 3’ ten fazla komşusu olan illerin listesi) (+10p)
+                */
+               printf("\t 9) Komsu Sayisi ile Sehir Ara\n");
+
+               /*
+                    10:
+                        Bonus
+                        - Belli bir sayı aralığında komşu sayısına sahip şehirlerden belirli ortak komşulara sahip olan şehirlerin listelenmesi 
+                        (Örneğin: Komşu sayısı 3 ile 7 arasında olan illerden hem Ankara hem de Konya’ya komşu olan şehirler: Aksaray, Eskişehir) (+10p)
+                */
+                printf("\t\t*BONUS*\n");
+                printf("\t10) Komsu Sayisi ve Ortak Komsu ile Sehir Ara\n");
+                break;
+            }
+        }
+    }
     
     // to do: free better
     free(list);
