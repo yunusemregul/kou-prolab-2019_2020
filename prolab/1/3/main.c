@@ -536,10 +536,46 @@ int main(void)
                 printf("\t10) Komsu Sayisi ve Ortak Komsu ile Sehir Ara\n");
                 break;
             }
+            case -1:
+            {
+                printf("Kullanilan bellek temizleniyor..\n");
+                goto end;
+                break; // ?
+            }
+            case 1:
+            {
+                bilgiListele(list);
+                break;
+            }
+            case 2:
+            {
+
+                break;
+            }
         }
     }
     
-    // to do: free better
-    free(list);
-    fclose(fSehirler);
+    end:
+    
+    {
+        struct sehirDugum *head = list;
+        while(head!=NULL)
+        {
+            struct sehirDugum *temp = head;
+            struct komsuDugum *headkomsu = temp->firstKomsu;
+            while(headkomsu!=NULL)
+            {
+                struct komsuDUgum *tempkomsu = headkomsu;
+                headkomsu = headkomsu->next;
+                free(tempkomsu);
+            }
+            head = head->next;
+            free(temp);
+        }
+        fclose(fSehirler);
+    }
+
+    printf("Kullanilan bellek temizlendi. Herhangi bir tusa basarak kapatabilirsiniz.\n");
+    // hemen kapanmaması için
+    getchar();
 }
