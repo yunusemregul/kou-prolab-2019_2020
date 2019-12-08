@@ -97,30 +97,33 @@ void sehirEkle(struct sehirDugum **list, struct sehirDugum sehir)
     struct sehirDugum *temp = (*list);
     if(temp==NULL)
     {
-        printf("add %s to first\n",yenisehir->sehirAdi);
+        // eğer listede hiç şehir yoksa başa ekle
         (*list) = yenisehir;
         return;        
     }
     else
     {
+        // tüm şehirleri dolaş
         while(temp!=NULL)
         {
+            // eğer yeni eklenen şehrin plakası şuanki şehrin plakasından ufaksa önüne ekle
             if(yenisehir->plakaKod<temp->plakaKod)
             {
                 yenisehir->next = temp;
+                // eğer önü listenin başlangıcı değilse
                 if(temp->prev!=NULL)
                 {
                     temp->prev->next = yenisehir;
                     yenisehir->prev = (temp->prev);
                 }
                 else
-                {
+                // listenin başına ekle
                     (*list) = yenisehir;
-                }
                 temp->prev = yenisehir;
 
                 return;
             }
+            // eğer listenin sonuna gelindiyse ve hala returnlenmediyse listenin sonuna ekle
             else if(temp->next==NULL)
             {
                 yenisehir->prev = temp;
@@ -148,27 +151,34 @@ void komsulukEkle(struct sehirDugum *sehir, int plakaKod)
     
     struct komsuDugum *temp = sehir->firstKomsu;
     struct komsuDugum *onceki = NULL;
+    // eğer hiç komşu yoksa başa ekle
     if(temp==NULL)
     {
         sehir->firstKomsu = yenikomsu;
         sehir->komsuSayisi++;
         return;        
     }
+    // komşu varsa
     else
     {
+        // tüm komşuları dolaş
         while(temp!=NULL)
         {
+            // eğer yeni komşunun plakası şuanki plakadan ufaksa önüne ekle
             if(yenikomsu->plakaKod<temp->plakaKod)
             {
                 yenikomsu->next = temp;
+                // eğer önü listenin başı değilse
                 if(onceki!=NULL)
                     onceki->next = yenikomsu;
+                // başıysa
                 else
                     sehir->firstKomsu = yenikomsu;
-                
+                // komşu sayısını artır
                 sehir->komsuSayisi++;
                 return;
             }
+            // eğer returnlenmeden listenin sonuna geldiysek sona ekle
             else if(temp->next==NULL)
             {
                 temp->next = yenikomsu;
