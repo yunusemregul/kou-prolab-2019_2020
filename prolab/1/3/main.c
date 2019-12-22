@@ -491,11 +491,41 @@ void komsuSayisiVeKomsuIsmineGoreBilgiListele(struct sehirDugum *list, int minsa
 {
     struct sehirDugum *sehir = list;
 
-    while(sehir!=NULL)
+    // tüm şehirler gezilir
+    while (sehir!=NULL)
     {
-        if(sehir->komsuSayisi>=minsayi && sehir->komsuSayisi<=maxsayi)
+        // eğer şehrin komşu sayısı tutuyorsa
+        if (sehir->komsuSayisi>=minsayi && sehir->komsuSayisi<=maxsayi)
         {
-        }  
+            bool sehirTumOrtakKomsularaSahipMi = true;
+            // aranan ortak komşu yazısı gezilir, her ortak komşu için şehrin komşuları gezilip olup olmadığı sorgulanır
+            char komsuSehirlerTemp[128];
+            strcpy(komsuSehirlerTemp,komsuSehirler);
+            char *parca = strtok(komsuSehirlerTemp, ",");
+            while (parca!=NULL)
+            {
+                bool komsuyaSahipMi = false;
+                // şehrin komşuları gezilir
+                struct komsuDugum *komsu = sehir->firstKomsu;
+                while (komsu!=NULL)
+                {
+                    if (strcmp(plakaKodaSehirBul(list, komsu->plakaKod)->sehirAdi, parca) == 0)
+                    {
+                        komsuyaSahipMi = true;
+                        break;
+                    }
+                    komsu = komsu->next;
+                }
+                if (komsuyaSahipMi==false)
+                {
+                    sehirTumOrtakKomsularaSahipMi = false;
+                    break;
+                }
+                parca = strtok(NULL, ",");
+            }
+            if (sehirTumOrtakKomsularaSahipMi==true)
+                sehirBilgi(list, sehir, true);
+        }
 
         sehir = sehir->next;
     }
@@ -593,13 +623,9 @@ int main(void)
         while(part!=NULL)
         {
             if(partNum==0)
-            {
                 sehir = plakaKodaSehirBul(list, atoi(part));
-            }
             if(partNum>2)
-            {
                 komsulukEkle(sehir, plakaKodBul(list, part));
-            }
             part = strtok(NULL,",");
             partNum++;
         }
