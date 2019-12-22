@@ -10,6 +10,8 @@
     https://www.tutorialspoint.com/c_standard_library/c_function_strchr.htm
 */
 
+// normalde program tek bir listeye göre çalışsa da olur ama keyfi olarak birden çok listeye uyumlu yaptım
+
 // şehirleri tutacak düğüm yapısı
 struct sehirDugum
 {
@@ -100,65 +102,19 @@ int plakaKodBul(struct sehirDugum *list, char sehirAdi[40])
     }
 }
 
-// belirtilen listeye şehri plaka sırasına uygun olacak şekilde ekler
-void sehirEkle(struct sehirDugum **list, struct sehirDugum sehir)
+bool komsuyaSahipMi(struct sehirDugum *sehir, int plakaKod)
 {
-    // eklenecek yeni şehir için bellek ayırıyoruz
-    struct sehirDugum *yenisehir = (struct sehirDugum*)malloc(sizeof(sehir));
-    // girilen şehrin bilgilerini kopyalıyoruz
-    memcpy(yenisehir,&sehir,sizeof(sehir));
-    yenisehir->prev = NULL;
-    yenisehir->next = NULL;
-    yenisehir->firstKomsu = NULL;
-
-    /*
-        şehir için uygun yer bulunur:
-            eğer liste boşsa başına eklenir
-            eğer liste doluysa plaka koduna göre yer bulunup eklenir:
-                listedeki her şehir için eğer eklenecek şehrin plakası listedeki şehrin plakasından küçükse önüne ekle
-                listenin sonuna gelindiyse ekle
-    */
-    struct sehirDugum *temp = (*list);
-    if(temp==NULL)
+    // şehrin komşuları gezilir
+    struct komsuDugum *komsu = sehir->firstKomsu;
+    while (komsu != NULL)
     {
-        // eğer listede hiç şehir yoksa başa ekle
-        (*list) = yenisehir;
-        return;        
-    }
-    else
-    {
-        // tüm şehirleri dolaş
-        while(temp!=NULL)
+        if (komsu->plakaKod==plakaKod)
         {
-            // eğer yeni eklenen şehrin plakası şuanki şehrin plakasından ufaksa önüne ekle
-            if(yenisehir->plakaKod<temp->plakaKod)
-            {
-                yenisehir->next = temp;
-                // eğer önü listenin başlangıcı değilse
-                if(temp->prev!=NULL)
-                {
-                    temp->prev->next = yenisehir;
-                    yenisehir->prev = (temp->prev);
-                }
-                else
-                // listenin başına ekle
-                    (*list) = yenisehir;
-                temp->prev = yenisehir;
-
-                return;
-            }
-            // eğer listenin sonuna gelindiyse ve hala returnlenmediyse listenin sonuna ekle
-            else if(temp->next==NULL)
-            {
-                yenisehir->prev = temp;
-                temp->next = yenisehir;
-                yenisehir->next = NULL;
-                return;
-            }
-
-            temp = temp->next;
+            return true;
         }
+        komsu = komsu->next;
     }
+    return false;
 }
 
 // belirtilen şehirden plaka sırasına uygun olacak şekilde komşuluk siler
@@ -168,6 +124,12 @@ void komsulukSil(struct sehirDugum *sehir, int plakaKod)
         silinecek şehir bulunur
         silinir
     */
+    if(!komsuyaSahipMi(sehir, plakaKod))
+    {
+        printf("'%s' isimli sehirden olmayan komsu '%d' silinmeye calisildi.\n",sehir->sehirAdi,plakaKod);
+        return;
+    }
+
     struct komsuDugum *temp = sehir->firstKomsu;
     struct komsuDugum *onceki = NULL;
 
@@ -192,65 +154,16 @@ void komsulukSil(struct sehirDugum *sehir, int plakaKod)
     }
 }
 
-// belirtilen listeden şehri plaka sırasını düzgün tutacak şekilde siler
-// şehri silince tüm şehirlerden silinen şehre komşuluğuda siler
-void sehirSil(struct sehirDugum **list, int plakaKod)
-{
-    /*
-        silinecek şehir bulunur
-        silinir
-    */
-    struct sehirDugum *temp = (*list);
-
-    while(temp!=NULL)
-    {
-        if(temp->plakaKod==plakaKod)
-        {
-            if(temp==(*list))
-            {
-                temp->next->prev = NULL;
-                (*list) = temp->next;
-            }
-            else if(temp->next==NULL)
-            {
-                temp->prev->next = NULL;
-            }
-            else
-            {
-                temp->prev->next = temp->next;
-                temp->next->prev = temp->prev;
-            }
-
-            // tüm şehirlerin tüm komşularını gezip sildiğimiz şehre komşuysa komşuluğu sil
-            // innerTemp = tüm şehirleri bidaha gezerkenki geçici değişken
-            struct sehirDugum *innerTemp = (*list);
-            while(innerTemp!=NULL)
-            {
-                if(innerTemp->komsuSayisi>0)
-                {
-                    struct komsuDugum *komsu = innerTemp->firstKomsu;
-                    while(komsu!=NULL)
-                    {
-                        if(komsu->plakaKod==plakaKod)
-                            komsulukSil(innerTemp,plakaKod);
-
-                        komsu = komsu->next;
-                    }
-                }
-                innerTemp = innerTemp->next;
-            }
-
-            free(temp);
-            return;
-        }
-
-        temp = temp->next;
-    }
-}
-
 // belirtilen şehire plaka sırasına uygun olacak şekilde komşuluk ekler
-void komsulukEkle(struct sehirDugum *sehir, int plakaKod)
+void komsulukEkle(struct sehirDugum *list, struct sehirDugum *sehir, int plakaKod)
 {
+    // komşuya sahipse bir daha eklememek için
+    if(komsuyaSahipMi(sehir,plakaKod))
+    {
+        printf("'%s' sehrinde olan '%d' komsusu tekrar eklenmeye calisildi.\n",sehir->sehirAdi,plakaKod);
+        return;
+    }
+
     struct komsuDugum *yenikomsu = (struct komsuDugum *)malloc(sizeof(struct komsuDugum));
     yenikomsu->plakaKod = plakaKod;
     yenikomsu->next = NULL;
@@ -314,6 +227,130 @@ struct komsuDugum* nInciKomsu(struct sehirDugum *sehir, int n)
     }
 
     return NULL;
+}
+
+
+// belirtilen listeye şehri plaka sırasına uygun olacak şekilde ekler
+void sehirEkle(struct sehirDugum **list, struct sehirDugum sehir)
+{
+    if(sehirAdinaSehirBul(*list, sehir.sehirAdi)!=NULL)
+    {
+        printf("Listede olan '%s' sehri tekrar eklenmeye calisildi.\n",sehir.sehirAdi);
+        return;
+    }
+
+    // eklenecek yeni şehir için bellek ayırıyoruz
+    struct sehirDugum *yenisehir = (struct sehirDugum*)malloc(sizeof(sehir));
+    // girilen şehrin bilgilerini kopyalıyoruz
+    memcpy(yenisehir,&sehir,sizeof(sehir));
+    yenisehir->prev = NULL;
+    yenisehir->next = NULL;
+    yenisehir->firstKomsu = NULL;
+
+    /*
+        şehir için uygun yer bulunur:
+            eğer liste boşsa başına eklenir
+            eğer liste doluysa plaka koduna göre yer bulunup eklenir:
+                listedeki her şehir için eğer eklenecek şehrin plakası listedeki şehrin plakasından küçükse önüne ekle
+                listenin sonuna gelindiyse ekle
+    */
+    struct sehirDugum *temp = (*list);
+    if(temp==NULL)
+    {
+        // eğer listede hiç şehir yoksa başa ekle
+        (*list) = yenisehir;
+        return;        
+    }
+    else
+    {
+        // tüm şehirleri dolaş
+        while(temp!=NULL)
+        {
+            // eğer yeni eklenen şehrin plakası şuanki şehrin plakasından ufaksa önüne ekle
+            if(yenisehir->plakaKod<temp->plakaKod)
+            {
+                yenisehir->next = temp;
+                // eğer önü listenin başlangıcı değilse
+                if(temp->prev!=NULL)
+                {
+                    temp->prev->next = yenisehir;
+                    yenisehir->prev = (temp->prev);
+                }
+                else
+                // listenin başına ekle
+                    (*list) = yenisehir;
+                temp->prev = yenisehir;
+
+                return;
+            }
+            // eğer listenin sonuna gelindiyse ve hala returnlenmediyse listenin sonuna ekle
+            else if(temp->next==NULL)
+            {
+                yenisehir->prev = temp;
+                temp->next = yenisehir;
+                yenisehir->next = NULL;
+                return;
+            }
+
+            temp = temp->next;
+        }
+    }
+}
+
+// belirtilen listeden şehri plaka sırasını düzgün tutacak şekilde siler
+// şehri silince tüm şehirlerden silinen şehre komşuluğuda siler
+void sehirSil(struct sehirDugum **list, int plakaKod)
+{
+    /*
+        silinecek şehir bulunur
+        silinir
+    */
+    struct sehirDugum *temp = (*list);
+
+    while(temp!=NULL)
+    {
+        if(temp->plakaKod==plakaKod)
+        {
+            if(temp==(*list))
+            {
+                temp->next->prev = NULL;
+                (*list) = temp->next;
+            }
+            else if(temp->next==NULL)
+            {
+                temp->prev->next = NULL;
+            }
+            else
+            {
+                temp->prev->next = temp->next;
+                temp->next->prev = temp->prev;
+            }
+
+            // tüm şehirlerin tüm komşularını gezip sildiğimiz şehre komşuysa komşuluğu sil
+            // innerTemp = tüm şehirleri bidaha gezerkenki geçici değişken
+            struct sehirDugum *innerTemp = (*list);
+            while(innerTemp!=NULL)
+            {
+                if(innerTemp->komsuSayisi>0)
+                {
+                    struct komsuDugum *komsu = innerTemp->firstKomsu;
+                    while(komsu!=NULL)
+                    {
+                        if(komsu->plakaKod==plakaKod)
+                            komsulukSil(innerTemp,plakaKod);
+
+                        komsu = komsu->next;
+                    }
+                }
+                innerTemp = innerTemp->next;
+            }
+
+            free(temp);
+            return;
+        }
+
+        temp = temp->next;
+    }
 }
 
 // listedeki bir şehri listele
@@ -625,7 +662,7 @@ int main(void)
             if(partNum==0)
                 sehir = plakaKodaSehirBul(list, atoi(part));
             if(partNum>2)
-                komsulukEkle(sehir, plakaKodBul(list, part));
+                komsulukEkle(list, sehir, plakaKodBul(list, part));
             part = strtok(NULL,",");
             partNum++;
         }
@@ -728,7 +765,7 @@ int main(void)
 
                 printf("Komsunun plakasini girin: ");
                 scanf(" %d",&komsuPlakaKod);
-                komsulukEkle(sehir, komsuPlakaKod);
+                komsulukEkle(list, sehir, komsuPlakaKod);
                 printf("Eklenen komsu:\n");
                 sehirBilgi(list,plakaKodaSehirBul(list, komsuPlakaKod), false);
                 printf("Son durum:\n");
