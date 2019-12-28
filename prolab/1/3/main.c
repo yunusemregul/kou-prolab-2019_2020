@@ -68,8 +68,7 @@ struct sehirDugum* sehirAdinaSehirBul(struct sehirDugum *list, char sehirAdi[40]
         sehir = sehir->next;
     }
 
-    printf("'%s' isimli sehir aratildi, bulunamadi!\n",sehirAdi);
-    exit(0);
+    return NULL;
 }
 
 // belirtilen plaka koduna göre şehri listede bulur ve döndürür
@@ -85,8 +84,7 @@ struct sehirDugum* plakaKodaSehirBul(struct sehirDugum *list, int plakaKod)
         sehir = sehir->next;
     }
 
-    printf("'%d' plakali sehir aratildi, bulunamadi!!\n",plakaKod);
-    exit(1);
+    return NULL;
 }
 
 // şehir adından listede plaka kodu bulur
@@ -236,6 +234,11 @@ void sehirEkle(struct sehirDugum **list, struct sehirDugum sehir)
     if(sehirAdinaSehirBul(*list, sehir.sehirAdi)!=NULL)
     {
         printf("Listede olan '%s' sehri tekrar eklenmeye calisildi.\n",sehir.sehirAdi);
+        return;
+    }
+    if(plakaKodaSehirBul(*list, sehir.plakaKod)!=NULL)
+    {
+        printf("Listede olan bir plaka '%d' ile sehir eklenmeye calisildi.\n",sehir.plakaKod);
         return;
     }
 
@@ -458,7 +461,7 @@ void sehirBilgi(struct sehirDugum *list, struct sehirDugum *sehir, bool withKoms
     printf("\n");
 }
 
-// listedeki herşeyi listele güzel türkçem
+// listedeki her şeyi listele
 void bilgiListele(struct sehirDugum *list)
 {
     struct sehirDugum *sehir = list;
@@ -735,36 +738,56 @@ int main(void)
             // şehir ekle
             case 2:
             {
-                struct sehirDugum sehir;
-                printf("Sehir plakasi girin: ");
-                scanf(" %d",&sehir.plakaKod);
-                clean_stdin();
+                menu_sehirekle:
+                {
+                    struct sehirDugum sehir;
+                    printf("Eklenecek sehir plakasi girin: ");
+                    scanf(" %d",&sehir.plakaKod);
+                    clean_stdin();
 
-                printf("Sehir adi girin: ");
-                fgets(sehir.sehirAdi, 40, stdin);
-                clean_newline(sehir.sehirAdi);
+                    if(plakaKodaSehirBul(list,sehir.plakaKod)!=NULL)
+                        break;
 
-                printf("Sehir bolgesi girin (kisaltma): ");
-                fgets(sehir.bolge,3,stdin);
-                clean_stdin();
+                    printf("Sehir adi girin: ");
+                    fgets(sehir.sehirAdi, 40, stdin);
+                    clean_newline(sehir.sehirAdi);
 
-                sehirEkle(&list,sehir);
-                printf("Eklenen sehir:\n");
-                sehirBilgi(list,&sehir, false);
+                    printf("Sehir bolgesi girin (kisaltma): ");
+                    fgets(sehir.bolge,3,stdin);
+                    clean_stdin();
+
+                    sehirEkle(&list,sehir);
+                    printf("Eklenen sehir:\n");
+                    sehirBilgi(list,&sehir, false);
+                }
                 break;
             }
             // komşu ekle
             case 3:
             {
                 struct sehirDugum *sehir;
+                int sehirPlakaKod;
                 int komsuPlakaKod;
                 
                 printf("Hangi sehre komsu eklenecekse plakasini girin: ");
-                scanf(" %d",&(sehir->plakaKod));
-                sehir = plakaKodaSehirBul(list,sehir->plakaKod);
+                scanf(" %d",&sehirPlakaKod);
+                sehir = plakaKodaSehirBul(list,sehirPlakaKod);
+
+                if(sehir==NULL)
+                {
+                    printf("Sehir bulunamadi.\n");
+                    break;
+                }
 
                 printf("Komsunun plakasini girin: ");
                 scanf(" %d",&komsuPlakaKod);
+
+                if(plakaKodaSehirBul(list, komsuPlakaKod)==NULL)
+                {
+                    printf("Eklenmek istenen komsu listede bulunamadi.\n");
+                    break;
+                }
+
                 komsulukEkle(list, sehir, komsuPlakaKod);
                 printf("Eklenen komsu:\n");
                 sehirBilgi(list,plakaKodaSehirBul(list, komsuPlakaKod), false);
@@ -779,6 +802,12 @@ int main(void)
                 printf("Silinecek sehrin plakasini girin: ");
                 scanf(" %d",&plakaKod);
 
+                if(plakaKodaSehirBul(list,plakaKod)==NULL)
+                {
+                    printf("Sehir bulunamadi.\n");
+                    break;
+                }
+
                 sehirSil(&list, plakaKod);
                 printf("Son durum:\n");
                 bilgiListele(list);
@@ -788,20 +817,32 @@ int main(void)
             case 5:
             {
                 // komşusu silinecek şehir
+                struct sehirDugum *sehir;
                 int sehirPlakaKod;
                 // silinecek komşu
                 int plakaKod;
                 printf("Komsusu silinecek sehrin plakasini girin: ");
                 scanf(" %d",&sehirPlakaKod);
+                sehir = plakaKodaSehirBul(list,sehirPlakaKod);
+
+                if(sehir==NULL)
+                {
+                    printf("Sehir bulunamadi.\n");
+                    break;
+                }
+
                 printf("Silinecek komsunun plakasini girin: ");
                 scanf(" %d",&plakaKod);
 
-                printf("Silinecek komsu: \n");
-                sehirBilgi(list, plakaKodaSehirBul(list,plakaKod), false);
-                komsulukSil(plakaKodaSehirBul(list,sehirPlakaKod),plakaKod);
+                if(komsuyaSahipMi(sehir, plakaKod))
+                {
+                    printf("Silinecek komsu: \n");
+                    sehirBilgi(list, plakaKodaSehirBul(list,plakaKod), false);
+                }
+                komsulukSil(sehir,plakaKod);
                 
                 printf("Son durum: \n");
-                sehirBilgi(list,plakaKodaSehirBul(list,sehirPlakaKod),true);
+                sehirBilgi(list,sehir,true);
                 break;
             }
             // isim ile şehir ara
@@ -811,7 +852,17 @@ int main(void)
                 printf("Aranan sehrin ismini girin: "),
                 fgets(sehirAdi,40,stdin);
                 clean_newline(sehirAdi);
-                sehirBilgi(list,sehirAdinaSehirBul(list,sehirAdi),true);
+                if(sehirAdinaSehirBul(list,sehirAdi)==NULL)
+                {
+                    char eh;
+                    printf("Aradiginiz sehir bulunamadi eklemek ister misiniz? (e/h)\n");
+                    eh = getchar();
+
+                    if(eh=='e' || eh=='E')
+                        goto menu_sehirekle;
+                }
+                else
+                    sehirBilgi(list,sehirAdinaSehirBul(list,sehirAdi),true);
                 break;
             }
             // plaka ile şehir ara
@@ -820,7 +871,17 @@ int main(void)
                 int plakaKod;
                 printf("Aranan sehrin plakasini girin: "),
                 scanf(" %d",&plakaKod);
-                sehirBilgi(list,plakaKodaSehirBul(list,plakaKod),true);
+                if(plakaKodaSehirBul(list,plakaKod)==NULL)
+                {
+                    char eh;
+                    printf("Aradiginiz sehir bulunamadi eklemek ister misiniz? (e/h)\n");
+                    eh = getchar();
+
+                    if(eh=='e' || eh=='E')
+                        goto menu_sehirekle;
+                }
+                else
+                    sehirBilgi(list,plakaKodaSehirBul(list,plakaKod),true);
                 break;
             }
             // bölgeye göre şehir listele
