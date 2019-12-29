@@ -3,6 +3,14 @@
 #include <string.h>
 #include <stdbool.h>
 
+// dup2
+#include <unistd.h> 
+#include <fcntl.h> 
+
+// estetik
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
 /*
     sources:
     https://www.tutorialspoint.com/cprogramming/c_file_io.htm
@@ -10,7 +18,11 @@
     https://www.tutorialspoint.com/c_standard_library/c_function_strchr.htm
 */
 
-// normalde program tek bir listeye göre çalışsa da olur ama keyfi olarak birden çok listeye uyumlu yaptım
+/* 
+    normalde program tek bir listeye göre çalışsa da olur ama keyfi olarak birden çok listeye uyumlu yaptım
+    global bir list değişkeni yerine fonksiyonlar parametre olarak liste alıyor
+    işler zorlaşsa da böyle hoşuma gitti
+*/
 
 // şehirleri tutacak düğüm yapısı
 struct sehirDugum
@@ -19,8 +31,8 @@ struct sehirDugum
     struct sehirDugum *next;
 
     int plakaKod;
-    char sehirAdi[40];
-    char bolge[2];
+    char sehirAdi[41];
+    char bolge[3];
 
     struct komsuDugum *firstKomsu;
     int komsuSayisi;
@@ -95,6 +107,7 @@ int plakaKodBul(struct sehirDugum *list, char sehirAdi[40])
         return sehir->plakaKod;
     else
     {
+        printf("Sehir dosyasi hatali!\n");
         printf("Sehir listesinde '%s' sehri olmamasina ragmen komsuluga eklenmeye calisildi. Plakasi bulunamadigi icin program calismayacak.\n",sehirAdi);
         exit(2);
     }
@@ -153,13 +166,27 @@ void komsulukSil(struct sehirDugum *sehir, int plakaKod)
 }
 
 // belirtilen şehire plaka sırasına uygun olacak şekilde komşuluk ekler
-void komsulukEkle(struct sehirDugum *list, struct sehirDugum *sehir, int plakaKod)
+bool komsulukEkle(struct sehirDugum *list, struct sehirDugum *sehir, int plakaKod)
 {
+    if(plakaKodaSehirBul(list, plakaKod)==NULL)
+    {
+        printf("Sehir listesinde olmayan bir sehir (%d) komsu olarak eklenmeye calisildi.\n",plakaKod);
+        return false;
+    }
+    else
+    {
+        if(plakaKodaSehirBul(list, plakaKod)==sehir)
+        {
+            printf("Sehir kendine komsu olarak eklenmeye calisildi, izin verilmeyecek.\n");
+            return false;
+        }
+    }
+    
     // komşuya sahipse bir daha eklememek için
     if(komsuyaSahipMi(sehir,plakaKod))
     {
         printf("'%s' sehrinde olan '%d' komsusu tekrar eklenmeye calisildi.\n",sehir->sehirAdi,plakaKod);
-        return;
+        return false;
     }
 
     struct komsuDugum *yenikomsu = (struct komsuDugum *)malloc(sizeof(struct komsuDugum));
@@ -173,7 +200,7 @@ void komsulukEkle(struct sehirDugum *list, struct sehirDugum *sehir, int plakaKo
     {
         sehir->firstKomsu = yenikomsu;
         sehir->komsuSayisi++;
-        return;        
+        return true;        
     }
     // komşu varsa
     else
@@ -193,7 +220,7 @@ void komsulukEkle(struct sehirDugum *list, struct sehirDugum *sehir, int plakaKo
                     sehir->firstKomsu = yenikomsu;
                 // komşu sayısını artır
                 sehir->komsuSayisi++;
-                return;
+                return true;
             }
             // eğer returnlenmeden listenin sonuna geldiysek sona ekle
             else if(temp->next==NULL)
@@ -201,13 +228,15 @@ void komsulukEkle(struct sehirDugum *list, struct sehirDugum *sehir, int plakaKo
                 temp->next = yenikomsu;
 
                 sehir->komsuSayisi++;
-                return;
+                return true;
             }
 
             onceki = temp;
             temp = temp->next;
         }
     }
+
+    return false;
 }
 
 // bir şehrin üzerine kayıtlı olan n indisli komşuyu döndürür
@@ -489,6 +518,37 @@ void bilgiListele(struct sehirDugum *list)
     }
 }
 
+/*
+    stdout u dosyaya yönlendiren fonksiyon
+
+    bütün bilgiListele ve sehirBilgi fonksiyonlarının printf lerini dosyaya write fonksiyonuna çevirmektense
+    stdout streamini belirlediğim dosyaya yönlendirip tekrar stdouta yönlendirdim
+*/
+void dosyaBilgiYazdir(struct sehirDugum *list)
+{
+    int fileDesc = open("cikti.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
+    // stdout u tekrar eski haline (terminale) yönlendirebilmek için kaydediyoruz
+    int stdoutSave = dup(STDOUT_FILENO);
+
+    if(fileDesc==-1)
+    {
+        printf("'cikti.txt' dosyasini acarken hata!\n");
+        exit(5);
+    }
+    if(dup2(fileDesc, STDOUT_FILENO)==-1)
+    {
+        printf("dup2 islemi yapilirken hata!\n");
+        exit(6);
+    }
+
+    bilgiListele(list);
+
+    dup2(stdoutSave, 1);
+    close(fileDesc);
+    close(stdoutSave);
+    printf("Guncel model dosyaya kaydedildi.\n");
+}
+
 // belirtilen listede, girilen bölgedeki şehir bilgilerini (plaka kodu, şehir adı, komşu sayısı) listele
 void bolgeyeGoreBilgiListele(struct sehirDugum *list, char bolge[2])
 {
@@ -539,8 +599,8 @@ void komsuSayisiVeKomsuIsmineGoreBilgiListele(struct sehirDugum *list, int minsa
         {
             bool sehirTumOrtakKomsularaSahipMi = true;
             // aranan ortak komşu yazısı gezilir, her ortak komşu için şehrin komşuları gezilip olup olmadığı sorgulanır
-            char komsuSehirlerTemp[128];
-            strcpy(komsuSehirlerTemp,komsuSehirler);
+            char komsuSehirlerTemp[129];
+            strncpy(komsuSehirlerTemp,komsuSehirler,128);
             char *parca = strtok(komsuSehirlerTemp, ",");
             while (parca!=NULL)
             {
@@ -605,10 +665,17 @@ int main(void)
     // okunacak satırın içeriğini tutan değişken
     char line[256];
 
+    // hata yazdırırken hatanın kaçıncı satırda olduğunu söyleyebilmek için
+    int lineIndex = 0;
     // dosyanın sonuna kadar oku
     // şehirleri listeye ekle
     while ((read = fgets(line, 256, fSehirler)) != NULL)
     {
+        if(strlen(line)<=1)
+        {
+            printf("%d. satir bos! Dosya formata uygun degil, satir geciliyor.\n",lineIndex++);
+            continue;
+        }
         // satır sonundaki alt satır işaretini karışıklık oluşturmaması için siliyoruz
         char *ret = strchr(line,'\n');
         if(ret!=NULL)
@@ -625,17 +692,18 @@ int main(void)
 
         while(part!=NULL)
         {
-            if(partNum==0)
+            if(partNum==0)               
                 sehir.plakaKod = atoi(part);
             else if(partNum==1)
-                strcpy(sehir.sehirAdi,part);
+                strncpy(sehir.sehirAdi,part,40);
             else if(partNum==2)
-                strcpy(sehir.bolge,part);
+                strncpy(sehir.bolge,part,2);
 
             part = strtok(NULL,",");
             partNum++;
         }
         sehirEkle(&list,sehir);
+        lineIndex++;
     }
     // dosyanın sonuna kadar oku
     // komşuları listeye ekle
@@ -643,6 +711,8 @@ int main(void)
     rewind(fSehirler);
     while ((read = fgets(line, 256, fSehirler)) != NULL)
     {
+        if(strlen(line)<=1)
+            continue;
         // satır sonundaki alt satır işaretini karışıklık oluşturmaması için siliyoruz
         char *ret = strchr(line,'\n');
         if(ret!=NULL)
@@ -674,7 +744,7 @@ int main(void)
     int secim = 0;
     while(1)
     {
-        printf("Secim yapiniz: ");
+        printf(ANSI_COLOR_RED    "Secim yapiniz: " ANSI_COLOR_RESET);
         scanf(" %d",&secim);
         clean_stdin(); // stdin bufferini temizliyoruz
 
@@ -733,6 +803,8 @@ int main(void)
             case 1:
             {
                 bilgiListele(list);
+                printf("\n");
+                dosyaBilgiYazdir(list);
                 break;
             }
             // şehir ekle
@@ -746,7 +818,10 @@ int main(void)
                     clean_stdin();
 
                     if(plakaKodaSehirBul(list,sehir.plakaKod)!=NULL)
+                    {
+                        printf("Olan bir sehri (%s) tekrar ekleyemezsiniz.\n",plakaKodaSehirBul(list,sehir.plakaKod)->sehirAdi);
                         break;
+                    }
 
                     printf("Sehir adi girin: ");
                     fgets(sehir.sehirAdi, 40, stdin);
@@ -760,6 +835,7 @@ int main(void)
                     printf("Eklenen sehir:\n");
                     sehirBilgi(list,&sehir, false);
                 }
+                dosyaBilgiYazdir(list);
                 break;
             }
             // komşu ekle
@@ -782,17 +858,15 @@ int main(void)
                 printf("Komsunun plakasini girin: ");
                 scanf(" %d",&komsuPlakaKod);
 
-                if(plakaKodaSehirBul(list, komsuPlakaKod)==NULL)
+                bool success = komsulukEkle(list, sehir, komsuPlakaKod);
+                if(success)
                 {
-                    printf("Eklenmek istenen komsu listede bulunamadi.\n");
-                    break;
+                    printf("Eklenen komsu:\n");
+                    sehirBilgi(list,plakaKodaSehirBul(list, komsuPlakaKod), false);
+                    printf("Son durum:\n");
+                    sehirBilgi(list, sehir, true);
+                    dosyaBilgiYazdir(list);                    
                 }
-
-                komsulukEkle(list, sehir, komsuPlakaKod);
-                printf("Eklenen komsu:\n");
-                sehirBilgi(list,plakaKodaSehirBul(list, komsuPlakaKod), false);
-                printf("Son durum:\n");
-                sehirBilgi(list, sehir, true);
                 break;
             }
             // şehir sil
@@ -809,8 +883,8 @@ int main(void)
                 }
 
                 sehirSil(&list, plakaKod);
-                printf("Son durum:\n");
-                bilgiListele(list);
+                printf("'%2d' plakali sehir silindi.\n", plakaKod);
+                dosyaBilgiYazdir(list);
                 break;
             }
             // komşu sil
@@ -843,6 +917,7 @@ int main(void)
                 
                 printf("Son durum: \n");
                 sehirBilgi(list,sehir,true);
+                dosyaBilgiYazdir(list);
                 break;
             }
             // isim ile şehir ara
@@ -931,6 +1006,7 @@ int main(void)
     
     end:
     {
+        dosyaBilgiYazdir(list);
         struct sehirDugum *head = list;
         while(head!=NULL)
         {
