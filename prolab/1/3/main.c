@@ -394,9 +394,11 @@ void sehirSil(struct sehirDugum **list, int plakaKod)
     }
 }
 
-// listedeki bir şehri listele
-// karelerin çizilmesine gerek olmadığı söylendi ama denedim
-// tüm koddaki en anlaşılmaz kısım burasıdır
+/* 
+    listedeki bir şehri listele
+    karelerin çizilmesine gerek olmadığı söylendi ama denedim
+    tüm koddaki en anlaşılmaz kısım burasıdır
+*/
 void sehirBilgi(struct sehirDugum *list, struct sehirDugum *sehir, bool withKomsu)
 {
     for (int i = 0; i < 16 + strlen(sehir->sehirAdi)+2; i++)
@@ -1028,6 +1030,7 @@ int main(void)
         }
     }
     
+    // allocate edilen belleği temizle, açılan dosyaları kapat
     end:
     {
         dosyaBilgiYazdir(list);
