@@ -665,7 +665,7 @@ int main(void)
     fSehirler = fopen("sehirler.txt","r");
     if(fSehirler==NULL)
     {
-        printf(ANSI_COLOR_RED   "Dosya acilirken hata!\n"   ANSI_COLOR_RESET);
+        printf(ANSI_COLOR_RED   "Sehirler dosyasi acilirken hata!\n"   ANSI_COLOR_RESET);
         return 0;
     }
 
