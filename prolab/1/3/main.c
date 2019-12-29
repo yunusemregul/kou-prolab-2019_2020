@@ -956,8 +956,8 @@ int main(void)
                 if(sehirAdinaSehirBul(list,sehirAdi)==NULL)
                 {
                     char eh;
-                    printf(ANSI_COLOR_GREEN "Aradiginiz sehir bulunamadi eklemek ister misiniz? (e/h)\n"    ANSI_COLOR_RESET);
-                    eh = getchar();
+                    printf(ANSI_COLOR_BGREEN "Aradiginiz sehir bulunamadi yeni bir sehir eklemek ister misiniz? (e/h) "    ANSI_COLOR_RESET);
+                    scanf("%c",&eh);
 
                     if(eh=='e' || eh=='E')
                         goto menu_sehirekle;
@@ -972,11 +972,12 @@ int main(void)
                 int plakaKod;
                 printf(ANSI_COLOR_BGREEN    "Aranan sehrin plakasini girin: "   ANSI_COLOR_RESET),
                 scanf(" %d",&plakaKod);
+                clean_stdin();
                 if(plakaKodaSehirBul(list,plakaKod)==NULL)
                 {
                     char eh;
-                    printf(ANSI_COLOR_GREEN "Aradiginiz sehir bulunamadi eklemek ister misiniz? (e/h)\n"    ANSI_COLOR_RESET);
-                    eh = getchar();
+                    printf(ANSI_COLOR_BGREEN "Aradiginiz sehir bulunamadi yeni bir sehir eklemek ister misiniz? (e/h) "    ANSI_COLOR_RESET);
+                    scanf("%c",&eh);
 
                     if(eh=='e' || eh=='E')
                         goto menu_sehirekle;
