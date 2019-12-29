@@ -883,7 +883,7 @@ int main(void)
                 }
 
                 sehirSil(&list, plakaKod);
-                printf("'%2d' plakali sehir silindi.\n", plakaKod);
+                printf("'%02d' plakali sehir silindi.\n", plakaKod);
                 dosyaBilgiYazdir(list);
                 break;
             }
