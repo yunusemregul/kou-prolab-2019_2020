@@ -1,15 +1,20 @@
+// temel işlemler için
 #include <stdio.h>
 #include <stdlib.h>
+// strlen vs
 #include <string.h>
+// bool işlemleri için
 #include <stdbool.h>
 
-// dup2
+// stdoutu dosyaya yönlendirmek için
 #include <unistd.h> 
 #include <fcntl.h> 
 
 // estetik
-#define ANSI_COLOR_RED     "\x1b[31m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
+#define ANSI_COLOR_GREEN    "\e[0;34m"
+#define ANSI_COLOR_BGREEN    "\e[1;94m"
+#define ANSI_COLOR_RED     "\e[0;31m"
+#define ANSI_COLOR_RESET    "\x1b[0m"
 
 /*
     sources:
@@ -57,8 +62,8 @@ void clean_stdin(void)
 // yazının sonundaki alt satır işaretini siler
 void clean_newline(char *str)
 {
-    if(str[strlen(str)-1]=='\n')
-        str[strlen(str)-1] = 0;
+    if(strrchr(str, '\n')!=NULL)
+        *strrchr(str, '\n') = 0;
 }
 
 /*
@@ -107,8 +112,8 @@ int plakaKodBul(struct sehirDugum *list, char sehirAdi[40])
         return sehir->plakaKod;
     else
     {
-        printf("Sehir dosyasi hatali!\n");
-        printf("Sehir listesinde '%s' sehri olmamasina ragmen komsuluga eklenmeye calisildi. Plakasi bulunamadigi icin program calismayacak.\n",sehirAdi);
+        printf(ANSI_COLOR_RED  "Sehir dosyasi hatali!\n"   ANSI_COLOR_RESET);
+        printf(ANSI_COLOR_RED   "Sehir listesinde '%s' sehri olmamasina ragmen komsuluga eklenmeye calisildi. Plakasi bulunamadigi icin program calismayacak.\n"    ANSI_COLOR_RESET,sehirAdi);
         exit(2);
     }
 }
@@ -137,7 +142,7 @@ void komsulukSil(struct sehirDugum *sehir, int plakaKod)
     */
     if(!komsuyaSahipMi(sehir, plakaKod))
     {
-        printf("'%s' isimli sehirden olmayan komsu '%d' silinmeye calisildi.\n",sehir->sehirAdi,plakaKod);
+        printf(ANSI_COLOR_RED   "'%s' isimli sehirden olmayan komsu '%d' silinmeye calisildi.\n"    ANSI_COLOR_RESET,sehir->sehirAdi,plakaKod);
         return;
     }
 
@@ -170,14 +175,14 @@ bool komsulukEkle(struct sehirDugum *list, struct sehirDugum *sehir, int plakaKo
 {
     if(plakaKodaSehirBul(list, plakaKod)==NULL)
     {
-        printf("Sehir listesinde olmayan bir sehir (%d) komsu olarak eklenmeye calisildi.\n",plakaKod);
+        printf(ANSI_COLOR_RED   "Sehir listesinde olmayan bir sehir (%d) komsu olarak eklenmeye calisildi.\n"   ANSI_COLOR_RESET,plakaKod);
         return false;
     }
     else
     {
         if(plakaKodaSehirBul(list, plakaKod)==sehir)
         {
-            printf("Sehir kendine komsu olarak eklenmeye calisildi, izin verilmeyecek.\n");
+            printf(ANSI_COLOR_RED   "Sehir kendine komsu olarak eklenmeye calisildi, izin verilmeyecek.\n"  ANSI_COLOR_RESET);
             return false;
         }
     }
@@ -185,7 +190,7 @@ bool komsulukEkle(struct sehirDugum *list, struct sehirDugum *sehir, int plakaKo
     // komşuya sahipse bir daha eklememek için
     if(komsuyaSahipMi(sehir,plakaKod))
     {
-        printf("'%s' sehrinde olan '%d' komsusu tekrar eklenmeye calisildi.\n",sehir->sehirAdi,plakaKod);
+        printf(ANSI_COLOR_RED   "'%s' sehrinde olan '%d' komsusu tekrar eklenmeye calisildi.\n" ANSI_COLOR_RESET,sehir->sehirAdi,plakaKod);
         return false;
     }
 
@@ -258,23 +263,25 @@ struct komsuDugum* nInciKomsu(struct sehirDugum *sehir, int n)
 
 
 // belirtilen listeye şehri plaka sırasına uygun olacak şekilde ekler
-void sehirEkle(struct sehirDugum **list, struct sehirDugum sehir)
+bool sehirEkle(struct sehirDugum **list, struct sehirDugum sehir)
 {
     if(sehirAdinaSehirBul(*list, sehir.sehirAdi)!=NULL)
     {
-        printf("Listede olan '%s' sehri tekrar eklenmeye calisildi.\n",sehir.sehirAdi);
-        return;
+        printf(ANSI_COLOR_RED   "Listede olan '%s' sehri tekrar eklenmeye calisildi.\n" ANSI_COLOR_RESET,sehir.sehirAdi);
+        return false;
     }
     if(plakaKodaSehirBul(*list, sehir.plakaKod)!=NULL)
     {
-        printf("Listede olan bir plaka '%d' ile sehir eklenmeye calisildi.\n",sehir.plakaKod);
-        return;
+        printf(ANSI_COLOR_RED   "Listede olan bir plaka '%d' ile sehir eklenmeye calisildi.\n"  ANSI_COLOR_RESET,sehir.plakaKod);
+        return false;
     }
 
     // eklenecek yeni şehir için bellek ayırıyoruz
     struct sehirDugum *yenisehir = (struct sehirDugum*)malloc(sizeof(sehir));
     // girilen şehrin bilgilerini kopyalıyoruz
     memcpy(yenisehir,&sehir,sizeof(sehir));
+    clean_newline(yenisehir->sehirAdi);
+    clean_newline(yenisehir->bolge);
     yenisehir->prev = NULL;
     yenisehir->next = NULL;
     yenisehir->firstKomsu = NULL;
@@ -291,7 +298,7 @@ void sehirEkle(struct sehirDugum **list, struct sehirDugum sehir)
     {
         // eğer listede hiç şehir yoksa başa ekle
         (*list) = yenisehir;
-        return;        
+        return true;        
     }
     else
     {
@@ -313,7 +320,7 @@ void sehirEkle(struct sehirDugum **list, struct sehirDugum sehir)
                     (*list) = yenisehir;
                 temp->prev = yenisehir;
 
-                return;
+                return true;
             }
             // eğer listenin sonuna gelindiyse ve hala returnlenmediyse listenin sonuna ekle
             else if(temp->next==NULL)
@@ -321,12 +328,14 @@ void sehirEkle(struct sehirDugum **list, struct sehirDugum sehir)
                 yenisehir->prev = temp;
                 temp->next = yenisehir;
                 yenisehir->next = NULL;
-                return;
+                return true;
             }
 
             temp = temp->next;
         }
     }
+
+    return false;
 }
 
 // belirtilen listeden şehri plaka sırasını düzgün tutacak şekilde siler
@@ -532,12 +541,12 @@ void dosyaBilgiYazdir(struct sehirDugum *list)
 
     if(fileDesc==-1)
     {
-        printf("'cikti.txt' dosyasini acarken hata!\n");
+        printf(ANSI_COLOR_RED   "'cikti.txt' dosyasini acarken hata!\n" ANSI_COLOR_RESET);
         exit(5);
     }
     if(dup2(fileDesc, STDOUT_FILENO)==-1)
     {
-        printf("dup2 islemi yapilirken hata!\n");
+        printf(ANSI_COLOR_RED   "dup2 islemi yapilirken hata!\n"    ANSI_COLOR_RESET);
         exit(6);
     }
 
@@ -546,7 +555,7 @@ void dosyaBilgiYazdir(struct sehirDugum *list)
     dup2(stdoutSave, 1);
     close(fileDesc);
     close(stdoutSave);
-    printf("Guncel model dosyaya kaydedildi.\n");
+    printf(ANSI_COLOR_GREEN "Guncel model dosyaya kaydedildi.\n"    ANSI_COLOR_RESET);
 }
 
 // belirtilen listede, girilen bölgedeki şehir bilgilerini (plaka kodu, şehir adı, komşu sayısı) listele
@@ -650,10 +659,10 @@ int main(void)
 {
     // şehirler dosyası
     FILE *fSehirler;
-    fSehirler = fopen("sehirler_generated.txt","r");
+    fSehirler = fopen("sehirler.txt","r");
     if(fSehirler==NULL)
     {
-        printf("Dosya acilirken hata!\n");
+        printf(ANSI_COLOR_RED   "Dosya acilirken hata!\n"   ANSI_COLOR_RESET);
         return 0;
     }
 
@@ -671,9 +680,10 @@ int main(void)
     // şehirleri listeye ekle
     while ((read = fgets(line, 256, fSehirler)) != NULL)
     {
+        lineIndex++;
         if(strlen(line)<=1)
         {
-            printf("%d. satir bos! Dosya formata uygun degil, satir geciliyor.\n",lineIndex++);
+            printf(ANSI_COLOR_RED   "%d. satir bos! Dosya formata uygun degil, satir geciliyor.\n"  ANSI_COLOR_RESET,lineIndex);
             continue;
         }
         // satır sonundaki alt satır işaretini karışıklık oluşturmaması için siliyoruz
@@ -702,8 +712,12 @@ int main(void)
             part = strtok(NULL,",");
             partNum++;
         }
+        if(partNum<=2)
+        {
+            printf(ANSI_COLOR_RED   "%d. satirda eksik bilgili sehir tespit edildi! Sehir listeye eklenmeyecek!\n"  ANSI_COLOR_RESET, lineIndex);
+            continue;
+        }
         sehirEkle(&list,sehir);
-        lineIndex++;
     }
     // dosyanın sonuna kadar oku
     // komşuları listeye ekle
@@ -744,7 +758,7 @@ int main(void)
     int secim = 0;
     while(1)
     {
-        printf(ANSI_COLOR_RED    "Secim yapiniz: " ANSI_COLOR_RESET);
+        printf(ANSI_COLOR_BGREEN    "Secim yapiniz: " ANSI_COLOR_RESET);
         scanf(" %d",&secim);
         clean_stdin(); // stdin bufferini temizliyoruz
 
@@ -752,35 +766,35 @@ int main(void)
         {
             case 0:
             {
-                printf("Secenekler:\n");
-                printf("\t-1) Cikis\n");
-                printf("\t 0) Secenekler\n");
-                printf("\t 1) Bilgileri Listele\n");
-                printf("\t 2) Sehir Ekle\n");
-                printf("\t 3) Komsu Ekle\n");
-                printf("\t 4) Sehir Sil\n");
-                printf("\t 5) Komsu Sil\n");
+                printf(ANSI_COLOR_GREEN "Secenekler:\n" ANSI_COLOR_RESET);
+                printf(ANSI_COLOR_GREEN	"\t-1) "	ANSI_COLOR_RESET	"Cikis\n");
+                printf(ANSI_COLOR_GREEN	"\t 0) "	ANSI_COLOR_RESET	"Secenekler\n");
+                printf(ANSI_COLOR_GREEN	"\t 1) "	ANSI_COLOR_RESET	"Bilgileri Listele\n");
+                printf(ANSI_COLOR_GREEN	"\t 2) "	ANSI_COLOR_RESET	"Sehir Ekle\n");
+                printf(ANSI_COLOR_GREEN	"\t 3) "	ANSI_COLOR_RESET	"Komsu Ekle\n");
+                printf(ANSI_COLOR_GREEN	"\t 4) "	ANSI_COLOR_RESET	"Sehir Sil\n");
+                printf(ANSI_COLOR_GREEN	"\t 5) "	ANSI_COLOR_RESET	"Komsu Sil\n");
                 /*
                     6-7:
                         - Herhangi bir şehir ismi veya plaka kodu ile aratıldığında şehir bilgileri 
                         (plaka no, şehir adı, bölgesi, komşu sayısı) ve komşu şehirlerinin bilgileri (plaka no, şehir adı ve bölgesi) gösterilmelidir. 
                         Listede olmayan bir şehir için arama yapıldığında “şehir listede yok, eklemek ister misiniz?” gibi bir seçenek sunulmalıdır. (+15p)
                 */
-                printf("\t 6) Isim ile Sehir Ara\n");
-                printf("\t 7) Plaka ile Sehir Ara\n");
+                printf(ANSI_COLOR_GREEN	"\t 6) "	ANSI_COLOR_RESET	"Isim ile Sehir Ara\n");
+                printf(ANSI_COLOR_GREEN	"\t 7) "	ANSI_COLOR_RESET	"Plaka ile Sehir Ara\n");
 
                 /*
                     8:
                         - Kullanıcı herhangi bir bölgede bulunan şehirlerin bilgilerini (plaka kodu, şehir adı, komşu sayısı) listeleyebilmelidir. (+10p)
                 */
-                printf("\t 8) Bolge ile Sehir Ara\n");
+                printf(ANSI_COLOR_GREEN	"\t 8) "	ANSI_COLOR_RESET	"Bolge ile Sehir Ara\n");
 
                 /*
                     9:
                         - Belli bir komşu sayısı kriterine uyan şehirler bulunabilmeli ve gösterilmelidir. (Örneğin: 3’ ten fazla komşusu olan illerin listesi) (+10p)
                         min-max verilerek yapılacak
                 */
-               printf("\t 9) Komsu Sayisi ile Sehir Ara\n");
+               printf(ANSI_COLOR_GREEN	"\t 9) "	ANSI_COLOR_RESET	"Komsu Sayisi ile Sehir Ara\n");
 
                /*
                     10:
@@ -788,14 +802,14 @@ int main(void)
                         - Belli bir sayı aralığında komşu sayısına sahip şehirlerden belirli ortak komşulara sahip olan şehirlerin listelenmesi 
                         (Örneğin: Komşu sayısı 3 ile 7 arasında olan illerden hem Ankara hem de Konya’ya komşu olan şehirler: Aksaray, Eskişehir) (+10p)
                 */
-                printf("\t\t*BONUS*\n");
-                printf("\t10) Komsu Sayisi ve Ortak Komsu ile Sehir Ara\n");
+                printf(ANSI_COLOR_GREEN "\t\t*BONUS*\n" ANSI_COLOR_RESET);
+                printf(ANSI_COLOR_GREEN	"\t10) "	ANSI_COLOR_RESET	"Komsu Sayisi ve Ortak Komsu ile Sehir Ara\n");
                 break;
             }
             // programı kapat
             case -1:
             {
-                printf("Kullanilan bellek temizleniyor..\n");
+                printf(ANSI_COLOR_GREEN "Kullanilan bellek temizleniyor..\n"    ANSI_COLOR_RESET);
                 goto end;
                 break; // ?
             }
@@ -813,27 +827,30 @@ int main(void)
                 menu_sehirekle:
                 {
                     struct sehirDugum sehir;
-                    printf("Eklenecek sehir plakasi girin: ");
+                    printf(ANSI_COLOR_BGREEN    "Eklenecek sehir plakasi girin: "   ANSI_COLOR_RESET);
                     scanf(" %d",&sehir.plakaKod);
                     clean_stdin();
 
                     if(plakaKodaSehirBul(list,sehir.plakaKod)!=NULL)
                     {
-                        printf("Olan bir sehri (%s) tekrar ekleyemezsiniz.\n",plakaKodaSehirBul(list,sehir.plakaKod)->sehirAdi);
+                        printf(ANSI_COLOR_RED   "Olan bir sehri (%s) tekrar ekleyemezsiniz.\n"  ANSI_COLOR_RESET,plakaKodaSehirBul(list,sehir.plakaKod)->sehirAdi);
                         break;
                     }
 
-                    printf("Sehir adi girin: ");
+                    printf(ANSI_COLOR_BGREEN    "Sehir adi girin: " ANSI_COLOR_RESET);
                     fgets(sehir.sehirAdi, 40, stdin);
                     clean_newline(sehir.sehirAdi);
 
-                    printf("Sehir bolgesi girin (kisaltma): ");
+                    printf(ANSI_COLOR_BGREEN    "Sehir bolgesi girin (kisaltma): "  ANSI_COLOR_RESET);
                     fgets(sehir.bolge,3,stdin);
                     clean_stdin();
 
-                    sehirEkle(&list,sehir);
-                    printf("Eklenen sehir:\n");
-                    sehirBilgi(list,&sehir, false);
+                    bool success = sehirEkle(&list,sehir);
+                    if(success)
+                    {
+                        printf(ANSI_COLOR_GREEN "Eklenen sehir:\n"  ANSI_COLOR_RESET);
+                        sehirBilgi(list,&sehir, false);                        
+                    }
                 }
                 dosyaBilgiYazdir(list);
                 break;
@@ -845,25 +862,25 @@ int main(void)
                 int sehirPlakaKod;
                 int komsuPlakaKod;
                 
-                printf("Hangi sehre komsu eklenecekse plakasini girin: ");
+                printf(ANSI_COLOR_BGREEN    "Hangi sehre komsu eklenecekse plakasini girin: "   ANSI_COLOR_RESET);
                 scanf(" %d",&sehirPlakaKod);
                 sehir = plakaKodaSehirBul(list,sehirPlakaKod);
 
                 if(sehir==NULL)
                 {
-                    printf("Sehir bulunamadi.\n");
+                    printf(ANSI_COLOR_RED   "Sehir bulunamadi.\n"   ANSI_COLOR_RESET);
                     break;
                 }
 
-                printf("Komsunun plakasini girin: ");
+                printf(ANSI_COLOR_BGREEN    "Komsunun plakasini girin: "    ANSI_COLOR_RESET);
                 scanf(" %d",&komsuPlakaKod);
 
                 bool success = komsulukEkle(list, sehir, komsuPlakaKod);
                 if(success)
                 {
-                    printf("Eklenen komsu:\n");
+                    printf(ANSI_COLOR_GREEN "Eklenen komsu:\n"  ANSI_COLOR_RESET);
                     sehirBilgi(list,plakaKodaSehirBul(list, komsuPlakaKod), false);
-                    printf("Son durum:\n");
+                    printf(ANSI_COLOR_GREEN "Son durum:\n"  ANSI_COLOR_RESET);
                     sehirBilgi(list, sehir, true);
                     dosyaBilgiYazdir(list);                    
                 }
@@ -873,17 +890,17 @@ int main(void)
             case 4:
             {
                 int plakaKod;
-                printf("Silinecek sehrin plakasini girin: ");
+                printf(ANSI_COLOR_BGREEN    "Silinecek sehrin plakasini girin: "    ANSI_COLOR_RESET);
                 scanf(" %d",&plakaKod);
 
                 if(plakaKodaSehirBul(list,plakaKod)==NULL)
                 {
-                    printf("Sehir bulunamadi.\n");
+                    printf(ANSI_COLOR_RED   "Sehir bulunamadi.\n"   ANSI_COLOR_RESET);
                     break;
                 }
 
                 sehirSil(&list, plakaKod);
-                printf("'%02d' plakali sehir silindi.\n", plakaKod);
+                printf(ANSI_COLOR_GREEN "'%02d' plakali sehir silindi.\n"   ANSI_COLOR_RESET, plakaKod);
                 dosyaBilgiYazdir(list);
                 break;
             }
@@ -895,27 +912,33 @@ int main(void)
                 int sehirPlakaKod;
                 // silinecek komşu
                 int plakaKod;
-                printf("Komsusu silinecek sehrin plakasini girin: ");
+                printf(ANSI_COLOR_BGREEN    "Komsusu silinecek sehrin plakasini girin: "    ANSI_COLOR_RESET);
                 scanf(" %d",&sehirPlakaKod);
                 sehir = plakaKodaSehirBul(list,sehirPlakaKod);
 
                 if(sehir==NULL)
                 {
-                    printf("Sehir bulunamadi.\n");
+                    printf(ANSI_COLOR_RED   "Sehir bulunamadi.\n"   ANSI_COLOR_RESET);
                     break;
                 }
 
-                printf("Silinecek komsunun plakasini girin: ");
+                printf(ANSI_COLOR_BGREEN    "Silinecek komsunun plakasini girin: "  ANSI_COLOR_RESET);
                 scanf(" %d",&plakaKod);
 
                 if(komsuyaSahipMi(sehir, plakaKod))
                 {
-                    printf("Silinecek komsu: \n");
+                    printf(ANSI_COLOR_GREEN "Silinecek komsu: \n"   ANSI_COLOR_RESET);
                     sehirBilgi(list, plakaKodaSehirBul(list,plakaKod), false);
                 }
+                else
+                {
+                    printf(ANSI_COLOR_RED   "Sehrin boyle bir komsusu zaten yok.\n" ANSI_COLOR_RESET);
+                    break;
+                }
+                
                 komsulukSil(sehir,plakaKod);
                 
-                printf("Son durum: \n");
+                printf(ANSI_COLOR_GREEN "Son durum: \n" ANSI_COLOR_RESET);
                 sehirBilgi(list,sehir,true);
                 dosyaBilgiYazdir(list);
                 break;
@@ -924,13 +947,13 @@ int main(void)
             case 6:
             {
                 char sehirAdi[40];
-                printf("Aranan sehrin ismini girin: "),
+                printf(ANSI_COLOR_BGREEN    "Aranan sehrin ismini girin: "  ANSI_COLOR_RESET),
                 fgets(sehirAdi,40,stdin);
                 clean_newline(sehirAdi);
                 if(sehirAdinaSehirBul(list,sehirAdi)==NULL)
                 {
                     char eh;
-                    printf("Aradiginiz sehir bulunamadi eklemek ister misiniz? (e/h)\n");
+                    printf(ANSI_COLOR_GREEN "Aradiginiz sehir bulunamadi eklemek ister misiniz? (e/h)\n"    ANSI_COLOR_RESET);
                     eh = getchar();
 
                     if(eh=='e' || eh=='E')
@@ -944,12 +967,12 @@ int main(void)
             case 7:
             {
                 int plakaKod;
-                printf("Aranan sehrin plakasini girin: "),
+                printf(ANSI_COLOR_BGREEN    "Aranan sehrin plakasini girin: "   ANSI_COLOR_RESET),
                 scanf(" %d",&plakaKod);
                 if(plakaKodaSehirBul(list,plakaKod)==NULL)
                 {
                     char eh;
-                    printf("Aradiginiz sehir bulunamadi eklemek ister misiniz? (e/h)\n");
+                    printf(ANSI_COLOR_GREEN "Aradiginiz sehir bulunamadi eklemek ister misiniz? (e/h)\n"    ANSI_COLOR_RESET);
                     eh = getchar();
 
                     if(eh=='e' || eh=='E')
@@ -963,7 +986,7 @@ int main(void)
             case 8:
             {
                 char bolge[2];
-                printf("Bolge kisaltmasini girin: ");
+                printf(ANSI_COLOR_BGREEN    "Bolge kisaltmasini girin: "    ANSI_COLOR_RESET);
                 fgets(bolge,3,stdin);
                 bolgeyeGoreBilgiListele(list,bolge);
                 break;
@@ -972,9 +995,9 @@ int main(void)
             case 9:
             {
                 int min, max;
-                printf("Minimum komsu sayisini girin: ");
+                printf(ANSI_COLOR_BGREEN    "Minimum komsu sayisini girin: "    ANSI_COLOR_RESET);
                 scanf(" %d",&min);
-                printf("Maksimum komsu sayisini girin: ");
+                printf(ANSI_COLOR_BGREEN    "Maksimum komsu sayisini girin: "   ANSI_COLOR_RESET);
                 scanf(" %d",&max);                
                 komsuSayisinaGoreBilgiListele(list, min, max);
                 break;
@@ -983,14 +1006,14 @@ int main(void)
             case 10:
             {
                 int min, max;
-                printf("Minimum komsu sayisini girin: ");
+                printf(ANSI_COLOR_BGREEN    "Minimum komsu sayisini girin: "    ANSI_COLOR_RESET);
                 scanf(" %d",&min);
-                printf("Maksimum komsu sayisini girin: ");
+                printf(ANSI_COLOR_BGREEN    "Maksimum komsu sayisini girin: "   ANSI_COLOR_RESET);
                 scanf(" %d",&max);                
                 clean_stdin();
 
                 char ortakKomsular[128];
-                printf("Ortak komsulari aralarinda virgul ile giriniz (Ornek: Adana,Bursa,Denizli): ");
+                printf(ANSI_COLOR_BGREEN    "Ortak komsulari aralarinda virgul ile giriniz (Ornek: " ANSI_COLOR_RESET   "Adana,Bursa,Denizli" ANSI_COLOR_BGREEN    "): "  ANSI_COLOR_RESET);
                 fgets(ortakKomsular,128,stdin);
                 clean_newline(ortakKomsular);
                 komsuSayisiVeKomsuIsmineGoreBilgiListele(list, min, max, ortakKomsular);
@@ -998,7 +1021,7 @@ int main(void)
             }
             default:
             {
-                printf("Secim uygun degil. Tum secenekleri gormek icin 0 girebilirsiniz.\n");
+                printf(ANSI_COLOR_RED   "Secim uygun degil. Tum secenekleri gormek icin 0 girebilirsiniz.\n"    ANSI_COLOR_RESET);
                 break;
             }
         }
@@ -1024,5 +1047,5 @@ int main(void)
         fclose(fSehirler);
     }
 
-    printf("Kullanilan bellek temizlendi, program sonlandirildi.\n");
+    printf(ANSI_COLOR_GREEN "Kullanilan bellek temizlendi, program sonlandirildi.\n"    ANSI_COLOR_RESET);
 }
