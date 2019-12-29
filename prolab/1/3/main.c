@@ -927,6 +927,7 @@ int main(void)
 
                 printf(ANSI_COLOR_BGREEN    "Silinecek komsunun plakasini girin: "  ANSI_COLOR_RESET);
                 scanf(" %d",&plakaKod);
+                clean_stdin();
 
                 if(komsuyaSahipMi(sehir, plakaKod))
                 {
