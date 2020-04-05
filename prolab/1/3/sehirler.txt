@@ -19,7 +19,7 @@
 19,Corum,KA,Yozgat,Amasya,Samsun,Sinop,Kastamonu,Cankiri,Kirikkale
 20,Denizli,EG,Mugla,Burdur,Afyonkarahisar,Usak,Manisa,Aydin
 21,Diyarbakir,GA,Sanliurfa,Mardin,Batman,Mus,Bingol,Elazig,Malatya,Adiyaman
-22,Edirne,MA,Canakkale,Tekirdag,Kirikkale
+22,Edirne,MA,Canakkale,Tekirdag,Kirklareli
 23,Elazig,DA,Diyarbakir,Bingol,Tunceli,Erzincan,Malatya
 24,Erzincan,DA,Elazig,Tunceli,Bingol,Erzurum,Bayburt,Gumushane,Giresun,Sivas,Malatya
 25,Erzurum,DA,Bingol,Mus,Agri,Kars,Ardahan,Artvin,Rize,Bayburt,Erzincan
