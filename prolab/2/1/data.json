@@ -1,5 +1,5 @@
-{
-  "1": {
+[
+  {
     "connected": [
       31,
       80,
@@ -10,9 +10,10 @@
     ],
     "lat": 37.0,
     "lng": 35.3213,
-    "name": "Adana"
+    "name": "Adana",
+    "plateNum": 1
   },
-  "2": {
+  {
     "connected": [
       63,
       21,
@@ -22,9 +23,10 @@
     ],
     "lat": 37.7648,
     "lng": 38.2786,
-    "name": "Adıyaman"
+    "name": "Adıyaman",
+    "plateNum": 2
   },
-  "3": {
+  {
     "connected": [
       32,
       42,
@@ -36,9 +38,10 @@
     ],
     "lat": 38.7507,
     "lng": 30.5567,
-    "name": "Afyonkarahisar"
+    "name": "Afyonkarahisar",
+    "plateNum": 3
   },
-  "4": {
+  {
     "connected": [
       65,
       76,
@@ -49,9 +52,10 @@
     ],
     "lat": 39.7191,
     "lng": 43.0503,
-    "name": "Ağrı"
+    "name": "Ağrı",
+    "plateNum": 4
   },
-  "5": {
+  {
     "connected": [
       66,
       60,
@@ -60,9 +64,10 @@
     ],
     "lat": 40.6499,
     "lng": 35.8353,
-    "name": "Amasya"
+    "name": "Amasya",
+    "plateNum": 5
   },
-  "6": {
+  {
     "connected": [
       42,
       68,
@@ -74,9 +79,10 @@
     ],
     "lat": 39.9208,
     "lng": 32.8541,
-    "name": "Ankara"
+    "name": "Ankara",
+    "plateNum": 6
   },
-  "7": {
+  {
     "connected": [
       33,
       70,
@@ -87,9 +93,10 @@
     ],
     "lat": 36.8841,
     "lng": 30.7056,
-    "name": "Antalya"
+    "name": "Antalya",
+    "plateNum": 7
   },
-  "8": {
+  {
     "connected": [
       53,
       25,
@@ -97,9 +104,10 @@
     ],
     "lat": 41.1828,
     "lng": 41.8183,
-    "name": "Artvin"
+    "name": "Artvin",
+    "plateNum": 8
   },
-  "9": {
+  {
     "connected": [
       48,
       20,
@@ -108,9 +116,10 @@
     ],
     "lat": 37.856,
     "lng": 27.8416,
-    "name": "Aydın"
+    "name": "Aydın",
+    "plateNum": 9
   },
-  "10": {
+  {
     "connected": [
       35,
       45,
@@ -120,9 +129,10 @@
     ],
     "lat": 39.6484,
     "lng": 27.8826,
-    "name": "Balıkesir"
+    "name": "Balıkesir",
+    "plateNum": 10
   },
-  "11": {
+  {
     "connected": [
       43,
       26,
@@ -132,9 +142,10 @@
     ],
     "lat": 40.0567,
     "lng": 30.0665,
-    "name": "Bilecik"
+    "name": "Bilecik",
+    "plateNum": 11
   },
-  "12": {
+  {
     "connected": [
       21,
       49,
@@ -145,9 +156,10 @@
     ],
     "lat": 39.0626,
     "lng": 40.7696,
-    "name": "Bingöl"
+    "name": "Bingöl",
+    "plateNum": 12
   },
-  "13": {
+  {
     "connected": [
       56,
       65,
@@ -157,9 +169,10 @@
     ],
     "lat": 38.3938,
     "lng": 42.1232,
-    "name": "Bitlis"
+    "name": "Bitlis",
+    "plateNum": 13
   },
-  "14": {
+  {
     "connected": [
       26,
       6,
@@ -172,9 +185,10 @@
     ],
     "lat": 40.576,
     "lng": 31.5788,
-    "name": "Bolu"
+    "name": "Bolu",
+    "plateNum": 14
   },
-  "15": {
+  {
     "connected": [
       48,
       7,
@@ -184,9 +198,10 @@
     ],
     "lat": 37.4613,
     "lng": 30.0665,
-    "name": "Burdur"
+    "name": "Burdur",
+    "plateNum": 15
   },
-  "16": {
+  {
     "connected": [
       10,
       43,
@@ -197,9 +212,10 @@
     ],
     "lat": 40.2669,
     "lng": 29.0634,
-    "name": "Bursa"
+    "name": "Bursa",
+    "plateNum": 16
   },
-  "17": {
+  {
     "connected": [
       10,
       59,
@@ -207,9 +223,10 @@
     ],
     "lat": 40.1553,
     "lng": 26.4142,
-    "name": "Çanakkale"
+    "name": "Çanakkale",
+    "plateNum": 17
   },
-  "18": {
+  {
     "connected": [
       6,
       71,
@@ -220,9 +237,10 @@
     ],
     "lat": 40.6013,
     "lng": 33.6134,
-    "name": "Çankırı"
+    "name": "Çankırı",
+    "plateNum": 18
   },
-  "19": {
+  {
     "connected": [
       66,
       5,
@@ -234,9 +252,10 @@
     ],
     "lat": 40.5506,
     "lng": 34.9556,
-    "name": "Çorum"
+    "name": "Çorum",
+    "plateNum": 19
   },
-  "20": {
+  {
     "connected": [
       48,
       15,
@@ -247,9 +266,10 @@
     ],
     "lat": 37.7765,
     "lng": 29.0864,
-    "name": "Denizli"
+    "name": "Denizli",
+    "plateNum": 20
   },
-  "21": {
+  {
     "connected": [
       63,
       47,
@@ -262,9 +282,10 @@
     ],
     "lat": 37.9144,
     "lng": 40.2306,
-    "name": "Diyarbakır"
+    "name": "Diyarbakır",
+    "plateNum": 21
   },
-  "22": {
+  {
     "connected": [
       17,
       59,
@@ -272,9 +293,10 @@
     ],
     "lat": 41.6818,
     "lng": 26.5623,
-    "name": "Edirne"
+    "name": "Edirne",
+    "plateNum": 22
   },
-  "23": {
+  {
     "connected": [
       21,
       12,
@@ -284,9 +306,10 @@
     ],
     "lat": 38.681,
     "lng": 39.2264,
-    "name": "Elâzığ"
+    "name": "Elâzığ",
+    "plateNum": 23
   },
-  "24": {
+  {
     "connected": [
       23,
       62,
@@ -300,9 +323,10 @@
     ],
     "lat": 39.75,
     "lng": 39.5,
-    "name": "Erzincan"
+    "name": "Erzincan",
+    "plateNum": 24
   },
-  "25": {
+  {
     "connected": [
       12,
       49,
@@ -316,9 +340,10 @@
     ],
     "lat": 39.9,
     "lng": 41.27,
-    "name": "Erzurum"
+    "name": "Erzurum",
+    "plateNum": 25
   },
-  "26": {
+  {
     "connected": [
       3,
       42,
@@ -329,9 +354,10 @@
     ],
     "lat": 39.7767,
     "lng": 30.5206,
-    "name": "Eskişehir"
+    "name": "Eskişehir",
+    "plateNum": 26
   },
-  "27": {
+  {
     "connected": [
       79,
       63,
@@ -342,9 +368,10 @@
     ],
     "lat": 37.0662,
     "lng": 37.3833,
-    "name": "Gaziantep"
+    "name": "Gaziantep",
+    "plateNum": 27
   },
-  "28": {
+  {
     "connected": [
       29,
       61,
@@ -354,9 +381,10 @@
     ],
     "lat": 40.9128,
     "lng": 38.3895,
-    "name": "Giresun"
+    "name": "Giresun",
+    "plateNum": 28
   },
-  "29": {
+  {
     "connected": [
       24,
       69,
@@ -365,18 +393,20 @@
     ],
     "lat": 40.4386,
     "lng": 39.5086,
-    "name": "Gümüşhane"
+    "name": "Gümüşhane",
+    "plateNum": 29
   },
-  "30": {
+  {
     "connected": [
       65,
       73
     ],
     "lat": 37.5833,
     "lng": 43.7333,
-    "name": "Hakkâri"
+    "name": "Hakkâri",
+    "plateNum": 30
   },
-  "31": {
+  {
     "connected": [
       27,
       80,
@@ -384,9 +414,10 @@
     ],
     "lat": 36.4018,
     "lng": 36.3498,
-    "name": "Hatay"
+    "name": "Hatay",
+    "plateNum": 31
   },
-  "32": {
+  {
     "connected": [
       7,
       42,
@@ -395,9 +426,10 @@
     ],
     "lat": 37.7648,
     "lng": 30.5566,
-    "name": "Isparta"
+    "name": "Isparta",
+    "plateNum": 32
   },
-  "33": {
+  {
     "connected": [
       1,
       51,
@@ -407,18 +439,20 @@
     ],
     "lat": 36.8,
     "lng": 34.6333,
-    "name": "Mersin"
+    "name": "Mersin",
+    "plateNum": 33
   },
-  "34": {
+  {
     "connected": [
       41,
       59
     ],
     "lat": 41.0053,
     "lng": 28.977,
-    "name": "İstanbul"
+    "name": "İstanbul",
+    "plateNum": 34
   },
-  "35": {
+  {
     "connected": [
       9,
       45,
@@ -426,9 +460,10 @@
     ],
     "lat": 38.4189,
     "lng": 27.1287,
-    "name": "İzmir"
+    "name": "İzmir",
+    "plateNum": 35
   },
-  "36": {
+  {
     "connected": [
       4,
       76,
@@ -437,9 +472,10 @@
     ],
     "lat": 40.6167,
     "lng": 43.1,
-    "name": "Kars"
+    "name": "Kars",
+    "plateNum": 36
   },
-  "37": {
+  {
     "connected": [
       19,
       57,
@@ -449,9 +485,10 @@
     ],
     "lat": 41.3887,
     "lng": 33.7827,
-    "name": "Kastamonu"
+    "name": "Kastamonu",
+    "plateNum": 37
   },
-  "38": {
+  {
     "connected": [
       1,
       46,
@@ -462,18 +499,20 @@
     ],
     "lat": 38.7312,
     "lng": 35.4787,
-    "name": "Kayseri"
+    "name": "Kayseri",
+    "plateNum": 38
   },
-  "39": {
+  {
     "connected": [
       22,
       59
     ],
     "lat": 41.7333,
     "lng": 27.2167,
-    "name": "Kırklareli"
+    "name": "Kırklareli",
+    "plateNum": 39
   },
-  "40": {
+  {
     "connected": [
       50,
       66,
@@ -483,9 +522,10 @@
     ],
     "lat": 39.1425,
     "lng": 34.1709,
-    "name": "Kırşehir"
+    "name": "Kırşehir",
+    "plateNum": 40
   },
-  "41": {
+  {
     "connected": [
       77,
       34,
@@ -494,9 +534,10 @@
     ],
     "lat": 40.8533,
     "lng": 29.8815,
-    "name": "Kocaeli"
+    "name": "Kocaeli",
+    "plateNum": 41
   },
-  "42": {
+  {
     "connected": [
       7,
       70,
@@ -510,9 +551,10 @@
     ],
     "lat": 37.8667,
     "lng": 32.4833,
-    "name": "Konya"
+    "name": "Konya",
+    "plateNum": 42
   },
-  "43": {
+  {
     "connected": [
       45,
       64,
@@ -524,9 +566,10 @@
     ],
     "lat": 39.4167,
     "lng": 29.9833,
-    "name": "Kütahya"
+    "name": "Kütahya",
+    "plateNum": 43
   },
-  "44": {
+  {
     "connected": [
       46,
       2,
@@ -537,9 +580,10 @@
     ],
     "lat": 38.3552,
     "lng": 38.3095,
-    "name": "Malatya"
+    "name": "Malatya",
+    "plateNum": 44
   },
-  "45": {
+  {
     "connected": [
       35,
       9,
@@ -550,9 +594,10 @@
     ],
     "lat": 38.6191,
     "lng": 27.4289,
-    "name": "Manisa"
+    "name": "Manisa",
+    "plateNum": 45
   },
-  "46": {
+  {
     "connected": [
       27,
       2,
@@ -564,9 +609,10 @@
     ],
     "lat": 37.5858,
     "lng": 36.9371,
-    "name": "Kahramanmaraş"
+    "name": "Kahramanmaraş",
+    "plateNum": 46
   },
-  "47": {
+  {
     "connected": [
       63,
       21,
@@ -576,9 +622,10 @@
     ],
     "lat": 37.3212,
     "lng": 40.7245,
-    "name": "Mardin"
+    "name": "Mardin",
+    "plateNum": 47
   },
-  "48": {
+  {
     "connected": [
       7,
       15,
@@ -587,9 +634,10 @@
     ],
     "lat": 37.2153,
     "lng": 28.3636,
-    "name": "Muğla"
+    "name": "Muğla",
+    "plateNum": 48
   },
-  "49": {
+  {
     "connected": [
       21,
       72,
@@ -600,9 +648,10 @@
     ],
     "lat": 38.9462,
     "lng": 41.7539,
-    "name": "Muş"
+    "name": "Muş",
+    "plateNum": 49
   },
-  "50": {
+  {
     "connected": [
       51,
       38,
@@ -612,9 +661,10 @@
     ],
     "lat": 38.6939,
     "lng": 34.6857,
-    "name": "Nevşehir"
+    "name": "Nevşehir",
+    "plateNum": 50
   },
-  "51": {
+  {
     "connected": [
       50,
       38,
@@ -625,9 +675,10 @@
     ],
     "lat": 37.9667,
     "lng": 34.6833,
-    "name": "Niğde"
+    "name": "Niğde",
+    "plateNum": 51
   },
-  "52": {
+  {
     "connected": [
       55,
       60,
@@ -636,9 +687,10 @@
     ],
     "lat": 40.9839,
     "lng": 37.8764,
-    "name": "Ordu"
+    "name": "Ordu",
+    "plateNum": 52
   },
-  "53": {
+  {
     "connected": [
       8,
       25,
@@ -647,9 +699,10 @@
     ],
     "lat": 41.0201,
     "lng": 40.5234,
-    "name": "Rize"
+    "name": "Rize",
+    "plateNum": 53
   },
-  "54": {
+  {
     "connected": [
       81,
       14,
@@ -659,9 +712,10 @@
     ],
     "lat": 40.694,
     "lng": 30.4358,
-    "name": "Sakarya"
+    "name": "Sakarya",
+    "plateNum": 54
   },
-  "55": {
+  {
     "connected": [
       52,
       60,
@@ -671,9 +725,10 @@
     ],
     "lat": 41.2928,
     "lng": 36.3313,
-    "name": "Samsun"
+    "name": "Samsun",
+    "plateNum": 55
   },
-  "56": {
+  {
     "connected": [
       65,
       13,
@@ -683,9 +738,10 @@
     ],
     "lat": 37.9333,
     "lng": 41.95,
-    "name": "Siirt"
+    "name": "Siirt",
+    "plateNum": 56
   },
-  "57": {
+  {
     "connected": [
       55,
       19,
@@ -693,9 +749,10 @@
     ],
     "lat": 42.0231,
     "lng": 35.1531,
-    "name": "Sinop"
+    "name": "Sinop",
+    "plateNum": 57
   },
-  "58": {
+  {
     "connected": [
       38,
       46,
@@ -708,9 +765,10 @@
     ],
     "lat": 39.7477,
     "lng": 37.0179,
-    "name": "Sivas"
+    "name": "Sivas",
+    "plateNum": 58
   },
-  "59": {
+  {
     "connected": [
       34,
       39,
@@ -719,9 +777,10 @@
     ],
     "lat": 40.9833,
     "lng": 27.5167,
-    "name": "Tekirdağ"
+    "name": "Tekirdağ",
+    "plateNum": 59
   },
-  "60": {
+  {
     "connected": [
       58,
       52,
@@ -731,9 +790,10 @@
     ],
     "lat": 40.3167,
     "lng": 36.55,
-    "name": "Tokat"
+    "name": "Tokat",
+    "plateNum": 60
   },
-  "61": {
+  {
     "connected": [
       53,
       69,
@@ -742,9 +802,10 @@
     ],
     "lat": 41.0015,
     "lng": 39.7178,
-    "name": "Trabzon"
+    "name": "Trabzon",
+    "plateNum": 61
   },
-  "62": {
+  {
     "connected": [
       23,
       12,
@@ -752,9 +813,10 @@
     ],
     "lat": 39.3074,
     "lng": 39.4388,
-    "name": "Tunceli"
+    "name": "Tunceli",
+    "plateNum": 62
   },
-  "63": {
+  {
     "connected": [
       27,
       2,
@@ -763,9 +825,10 @@
     ],
     "lat": 37.1591,
     "lng": 38.7969,
-    "name": "Şanlıurfa"
+    "name": "Şanlıurfa",
+    "plateNum": 63
   },
-  "64": {
+  {
     "connected": [
       45,
       20,
@@ -774,9 +837,10 @@
     ],
     "lat": 38.6823,
     "lng": 29.4082,
-    "name": "Uşak"
+    "name": "Uşak",
+    "plateNum": 64
   },
-  "65": {
+  {
     "connected": [
       30,
       73,
@@ -786,9 +850,10 @@
     ],
     "lat": 38.4891,
     "lng": 43.4089,
-    "name": "Van"
+    "name": "Van",
+    "plateNum": 65
   },
-  "66": {
+  {
     "connected": [
       38,
       58,
@@ -801,9 +866,10 @@
     ],
     "lat": 39.8181,
     "lng": 34.8147,
-    "name": "Yozgat"
+    "name": "Yozgat",
+    "plateNum": 66
   },
-  "67": {
+  {
     "connected": [
       74,
       14,
@@ -812,9 +878,10 @@
     ],
     "lat": 41.4564,
     "lng": 31.7987,
-    "name": "Zonguldak"
+    "name": "Zonguldak",
+    "plateNum": 67
   },
-  "68": {
+  {
     "connected": [
       51,
       50,
@@ -824,9 +891,10 @@
     ],
     "lat": 38.3687,
     "lng": 34.037,
-    "name": "Aksaray"
+    "name": "Aksaray",
+    "plateNum": 68
   },
-  "69": {
+  {
     "connected": [
       24,
       25,
@@ -836,9 +904,10 @@
     ],
     "lat": 40.2552,
     "lng": 40.2249,
-    "name": "Bayburt"
+    "name": "Bayburt",
+    "plateNum": 69
   },
-  "70": {
+  {
     "connected": [
       33,
       42,
@@ -846,9 +915,10 @@
     ],
     "lat": 37.1759,
     "lng": 33.2287,
-    "name": "Karaman"
+    "name": "Karaman",
+    "plateNum": 70
   },
-  "71": {
+  {
     "connected": [
       40,
       66,
@@ -858,9 +928,10 @@
     ],
     "lat": 39.8468,
     "lng": 33.5153,
-    "name": "Kırıkkale"
+    "name": "Kırıkkale",
+    "plateNum": 71
   },
-  "72": {
+  {
     "connected": [
       47,
       56,
@@ -870,9 +941,10 @@
     ],
     "lat": 37.8812,
     "lng": 41.1351,
-    "name": "Batman"
+    "name": "Batman",
+    "plateNum": 72
   },
-  "73": {
+  {
     "connected": [
       47,
       56,
@@ -881,9 +953,10 @@
     ],
     "lat": 37.4187,
     "lng": 42.4918,
-    "name": "Şırnak"
+    "name": "Şırnak",
+    "plateNum": 73
   },
-  "74": {
+  {
     "connected": [
       37,
       67,
@@ -891,9 +964,10 @@
     ],
     "lat": 41.5811,
     "lng": 32.461,
-    "name": "Bartın"
+    "name": "Bartın",
+    "plateNum": 74
   },
-  "75": {
+  {
     "connected": [
       36,
       25,
@@ -901,27 +975,30 @@
     ],
     "lat": 41.1105,
     "lng": 42.7022,
-    "name": "Ardahan"
+    "name": "Ardahan",
+    "plateNum": 75
   },
-  "76": {
+  {
     "connected": [
       4,
       36
     ],
     "lat": 39.888,
     "lng": 44.0048,
-    "name": "Iğdır"
+    "name": "Iğdır",
+    "plateNum": 76
   },
-  "77": {
+  {
     "connected": [
       41,
       16
     ],
     "lat": 40.65,
     "lng": 29.2667,
-    "name": "Yalova"
+    "name": "Yalova",
+    "plateNum": 77
   },
-  "78": {
+  {
     "connected": [
       67,
       74,
@@ -931,17 +1008,19 @@
     ],
     "lat": 41.2061,
     "lng": 32.6204,
-    "name": "Karabük"
+    "name": "Karabük",
+    "plateNum": 78
   },
-  "79": {
+  {
     "connected": [
       27
     ],
     "lat": 36.7184,
     "lng": 37.1212,
-    "name": "Kilis"
+    "name": "Kilis",
+    "plateNum": 79
   },
-  "80": {
+  {
     "connected": [
       27,
       46,
@@ -950,9 +1029,10 @@
     ],
     "lat": 37.213,
     "lng": 36.1763,
-    "name": "Osmaniye"
+    "name": "Osmaniye",
+    "plateNum": 80
   },
-  "81": {
+  {
     "connected": [
       67,
       14,
@@ -960,6 +1040,7 @@
     ],
     "lat": 40.8438,
     "lng": 31.1565,
-    "name": "Düzce"
+    "name": "Düzce",
+    "plateNum": 81
   }
-}
+]

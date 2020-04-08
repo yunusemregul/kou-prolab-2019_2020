@@ -9,18 +9,19 @@ latlongDict = json.loads(latlongString)
 ilplakaDict = json.loads(ilplakaString)
 #print(json.dumps(latlongDict, ensure_ascii=False).encode('utf8'))
 
-finalDict = {}
+finalDict = []
 
 for city in latlongDict:
 	citynameinenglish = city['name'].lower().replace(u'â','a').replace(u'ş','s').replace(u'ü','u').replace(u'ı','i').replace(u'ğ','g').replace(u'ö','o').replace(u'ç','c')
 	connected = []
 
-	finalDict[city['id']] = {
+	finalDict.append({
+		'plateNum': city['id'],
 		'name': city['name'],
 		'lat': float(city['latitude']),
 		'lng': float(city['longitude']),
 		'connected': connected
-	}
+	})
 
 def plakaOf(cityname):
 	for city in ilplakaDict:
@@ -34,7 +35,7 @@ with open('komsular','r') as komsular:
 	while line:
 		line = line.replace('\n','')
 		sehirler = [plakaOf(x) for x in line.split(',')]
-		finalDict[linenum]['connected'] = sehirler
+		finalDict[linenum-1]['connected'] = sehirler
 
 		line = komsular.readline()
 		linenum += 1
