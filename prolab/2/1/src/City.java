@@ -1,10 +1,10 @@
 public class City
 {
-	private int plateNum; // plaka
-	private String name; // şehir adı
-	private float lat; // enlem
-	private float lng; // boylam
-	private int[] connected; // bağlı şehirler
+	private final int plateNum; // plaka
+	private final String name; // şehir adı
+	private final float lat; // enlem
+	private final float lng; // boylam
+	private final int[] connected; // bağlı şehirler
 
 	public City(int plateNum, String name, float lat, float lng, int[] connected)
 	{

@@ -75,7 +75,7 @@ public class MapDrawer
 		}
 	}
 
-	public void draw()
+	public void init()
 	{
 		JFrame frame = new JFrame();
 		frame.setTitle("Hello");
@@ -96,7 +96,7 @@ public class MapDrawer
 
 				drawCities(g2d);
 
-				repaint();
+				//repaint();
 			}
 		};
 		panel.setOpaque(false);
