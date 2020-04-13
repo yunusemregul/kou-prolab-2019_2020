@@ -5,9 +5,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Responsible of all UI
@@ -20,7 +17,8 @@ public class MapDrawer
 	private Point mouse = new Point(0, 0);
 	private Integer hoveredCity;
 	private ArrayList<Integer> selectedCities = new ArrayList<>();
-	private Map<Integer, Integer> markedPath = new HashMap<>();
+	private ArrayList<Integer> mainCities = new ArrayList<>();
+	private ArrayList<Edge> markedEdges = new ArrayList<>();
 
 	public MapDrawer(City[] cities)
 	{
@@ -45,7 +43,7 @@ public class MapDrawer
 		return new Point(x, y);
 	}
 
-	public void drawCities(Graphics2D g2d)
+	private void drawCities(Graphics2D g2d)
 	{
 		// first pass = lines
 		for (City city : cities)
@@ -61,16 +59,13 @@ public class MapDrawer
 				City tCity = cities[plate - 1]; // target city to draw lines to
 				Point tCityPos = getCity2DPos(tCity);
 
-				if (markedPath.containsKey(city.getPlateNum()) && markedPath.get(city.getPlateNum()) == plate)
-					g2d.setColor(Color.red);
-				if (markedPath.containsKey(plate) && markedPath.get(plate) == city.getPlateNum())
+				if (markedEdges.contains(new Edge(city, cities[plate - 1])))
 					g2d.setColor(Color.red);
 
 				g2d.drawLine(cityPos.x, cityPos.y, tCityPos.x, tCityPos.y);
 			}
 		}
 
-		g2d.drawString("HERE", mouse.x, mouse.y); // debug
 		hoveredCity = null;
 		// second pass = circles and text
 		for (City city : cities)
@@ -97,21 +92,36 @@ public class MapDrawer
 
 			for (int plate : city.getConnected())
 			{
-				if (markedPath.containsKey(city.getPlateNum()) && markedPath.get(city.getPlateNum()) == plate)
-					g2d.setColor(Color.red);
-				if (markedPath.containsKey(plate) && markedPath.get(plate) == city.getPlateNum())
+				if (markedEdges.contains(new Edge(city, cities[plate - 1])))
 					g2d.setColor(Color.red);
 			}
+
+			if (mainCities.contains(city.getPlateNum()))
+				g2d.setColor(Color.BLUE);
 
 			g2d.fill(circle);
 
 			g2d.setColor(Color.white);
-			Font font = new Font("TimesRoman", Font.PLAIN, 12);
+			Font font = new Font("", Font.PLAIN, 12);
 			g2d.setFont(font);
 			FontMetrics metrics = g2d.getFontMetrics(font);
 			String text = String.format("%02d", city.getPlateNum());
 			g2d.drawString(text, cityPos.x - metrics.stringWidth(text) / 2, cityPos.y + 4);
 		}
+	}
+
+	private void drawBottomPanels(Graphics2D g2d)
+	{
+		g2d.setColor(new Color(44, 44, 44));
+		int x = 5, y = 555;
+		int w = 450, h = 768 - 27 - 555 - 5;
+		g2d.fillRect(x, y, w, h);
+
+		g2d.setColor(Color.white);
+		Font font = new Font("", Font.PLAIN, 16);
+		g2d.setFont(font);
+		FontMetrics metrics = g2d.getFontMetrics(font);
+		g2d.drawString("Teslimat adresleri: ", x + 5, y + metrics.getHeight() + 5);
 	}
 
 	public void init()
@@ -134,6 +144,7 @@ public class MapDrawer
 				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 				drawCities(g2d);
+				drawBottomPanels(g2d);
 
 				//repaint();
 			}
@@ -165,22 +176,63 @@ public class MapDrawer
 			{
 				if (hoveredCity != null)
 				{
-					markedPath.clear();
+					markedEdges.clear();
 					selectedCities.add(hoveredCity);
-					System.out.println(cities[hoveredCity - 1].getName()); // debug
 
-					if (selectedCities.size() == 2)
+					if (selectedCities.size() == 10)
 					{
-						RouteFinder routeFinder = new RouteFinder(cities);
-						Route route = routeFinder.findRoute(cities[selectedCities.get(0) - 1], cities[selectedCities.get(1) - 1]);
-						System.out.println(route.cities.stream().map(City::getName).collect(Collectors.toList()));
-						System.out.println(route.cost);
-						for (int i = 0; i < route.cities.size() - 1; i++)
+						ArrayList<City> all = new ArrayList<>();
+						all.add(cities[40]);
+
+						for (Integer plate : selectedCities)
+							all.add(cities[plate - 1]);
+
+						ArrayList<City> visited = new ArrayList<>();
+						City current = all.get(0);
+
+						while (all.size() > 0)
 						{
-							markedPath.put(route.cities.get(i).getPlateNum(), route.cities.get(i + 1).getPlateNum());
+							all.remove(current);
+
+							double closestCost = Double.POSITIVE_INFINITY;
+							City closest = null;
+							for (City x : all)
+							{
+								double cost = HaversineScorer.computeCost(current, x);
+								if (cost < closestCost)
+								{
+									closestCost = cost;
+									closest = x;
+								}
+							}
+							visited.add(current);
+							current = closest;
 						}
 
+						visited.add(cities[40]);
+
+						for (City city :
+								visited)
+						{
+							System.out.print(city.getPlateNum() + " ");
+						}
+						System.out.println("");
+
+						int astaradet = 0;
+						RouteFinder routeFinder = new RouteFinder(cities);
+						for (int i = 0; i < visited.size() - 1; i++)
+						{
+							astaradet++;
+							Route route = routeFinder.findRoute(visited.get(i), visited.get(i + 1));
+							for (int i2 = 0; i2 < route.cities.size() - 1; i2++)
+							{
+								markedEdges.add(new Edge(route.cities.get(i2), route.cities.get(i2 + 1)));
+							}
+						}
+						System.out.println(astaradet);
+
 						panel.repaint();
+						mainCities = (ArrayList<Integer>) selectedCities.clone();
 						selectedCities.clear();
 					}
 				}
