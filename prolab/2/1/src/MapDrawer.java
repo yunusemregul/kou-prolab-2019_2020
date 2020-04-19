@@ -12,7 +12,10 @@ import java.util.ArrayList;
 public class MapDrawer
 {
 	private final City[] cities;
-	private final int scale = 75;
+
+	private final int mapScale = 75;
+	private final int width = 1366;
+	private final int height = 768;
 
 	private Point mouse = new Point(0, 0);
 	private Integer hoveredCity;
@@ -23,6 +26,11 @@ public class MapDrawer
 	public MapDrawer(City[] cities)
 	{
 		this.cities = cities;
+	}
+
+	private boolean isMouseInRectangle(int rx, int ry, int rw, int rh)
+	{
+		return (mouse.x > rx && mouse.y > ry && mouse.x < rx + rw && mouse.y < ry + rh);
 	}
 
 	/**
@@ -37,8 +45,8 @@ public class MapDrawer
 	 */
 	public Point getCity2DPos(City city)
 	{
-		int x = (int) ((city.getLng() - 26) * scale) - 10; // minus 10 to center the map on UI
-		int y = 50 + (int) ((42 - city.getLat()) * scale);
+		int x = (int) ((city.getLng() - 26) * mapScale) - 10; // minus 10 to center the map on UI
+		int y = 50 + (int) ((42 - city.getLat()) * mapScale);
 
 		return new Point(x, y);
 	}
@@ -59,7 +67,8 @@ public class MapDrawer
 				City tCity = cities[plate - 1]; // target city to draw lines to
 				Point tCityPos = getCity2DPos(tCity);
 
-				if (markedEdges.contains(new Edge(city, cities[plate - 1])))
+				// bu yoldan geçiliyorsa kırmızı olması için
+				if (markedEdges.contains(new Edge(city.getPlateNum(), cities[plate - 1].getPlateNum())))
 					g2d.setColor(Color.red);
 
 				g2d.drawLine(cityPos.x, cityPos.y, tCityPos.x, tCityPos.y);
@@ -74,28 +83,31 @@ public class MapDrawer
 
 			g2d.setColor(new Color(44, 44, 44));
 			int size = 20 + city.getConnected().length * 2;
-			double x = cityPos.x - size / 2.0d,
-					y = cityPos.y - size / 2.0d;
+			int x = cityPos.x - size / 2,
+					y = cityPos.y - size / 2;
 			Ellipse2D.Double circle = new Ellipse2D.Double(x, y, size, size);
 
-			if (mouse.x > x && mouse.y > y && mouse.x < x + size && mouse.y < y + size)
+			if (isMouseInRectangle(x, y, size, size))
 			{
 				g2d.setColor(Color.red);
-				g2d.drawRect((int) x, (int) y, size, size); // debug
+				g2d.drawRect(x, y, size, size); // debug
 				hoveredCity = city.getPlateNum();
 			}
 			else
 			{
+				// şehirleri seçerken kırmızı olmaları için
 				if (selectedCities.contains(city.getPlateNum()))
 					g2d.setColor(Color.red);
 			}
 
+			// eğer rota bu şehirden geçiyorsa kırmızı olması için
 			for (int plate : city.getConnected())
 			{
-				if (markedEdges.contains(new Edge(city, cities[plate - 1])))
+				if (markedEdges.contains(new Edge(city.getPlateNum(), cities[plate - 1].getPlateNum())))
 					g2d.setColor(Color.red);
 			}
 
+			// eğer bu şehir teslimat adresiyse mavi olması için
 			if (mainCities.contains(city.getPlateNum()))
 				g2d.setColor(Color.BLUE);
 
@@ -114,7 +126,7 @@ public class MapDrawer
 	{
 		g2d.setColor(new Color(44, 44, 44));
 		int x = 5, y = 555;
-		int w = 450, h = 768 - 27 - 555 - 5;
+		int w = 450, h = height - 27 - 555 - 5;
 		g2d.fillRect(x, y, w, h);
 
 		g2d.setColor(Color.white);
@@ -122,13 +134,25 @@ public class MapDrawer
 		g2d.setFont(font);
 		FontMetrics metrics = g2d.getFontMetrics(font);
 		g2d.drawString("Teslimat adresleri: ", x + 5, y + metrics.getHeight() + 5);
+		if (hoveredCity != null)
+			g2d.drawString(cities[hoveredCity - 1].getName(), x + 5, y + 40);
+
+		w = 200;
+		h = 40;
+		x = width - w - 5;
+		g2d.setColor(new Color(44, 44, 44));
+		g2d.fillRect(x, y, w, h);
+
+		g2d.setColor(Color.white);
+		String text = "ROTA BUL";
+		g2d.drawString(text, x + w / 2 - metrics.stringWidth(text) / 2, y + metrics.getHeight() + 7);
 	}
 
 	public void init()
 	{
 		JFrame frame = new JFrame();
 		frame.setTitle("Hello");
-		frame.setSize(1366, 768);
+		frame.setSize(width, height);
 		frame.setLocationRelativeTo(null);
 		frame.getContentPane().setBackground(new Color(66, 66, 66));
 
@@ -177,10 +201,12 @@ public class MapDrawer
 				if (hoveredCity != null)
 				{
 					markedEdges.clear();
+					mainCities.clear();
 					selectedCities.add(hoveredCity);
 
 					if (selectedCities.size() == 10)
 					{
+						RouteFinder routeFinder = new RouteFinder(cities);
 						ArrayList<City> all = new ArrayList<>();
 						all.add(cities[40]);
 
@@ -198,10 +224,10 @@ public class MapDrawer
 							City closest = null;
 							for (City x : all)
 							{
-								double cost = HaversineScorer.computeCost(current, x);
-								if (cost < closestCost)
+								Route route = routeFinder.findRoute(current, x);
+								if (route.cost < closestCost)
 								{
-									closestCost = cost;
+									closestCost = route.cost;
 									closest = x;
 								}
 							}
@@ -211,25 +237,23 @@ public class MapDrawer
 
 						visited.add(cities[40]);
 
-						for (City city :
-								visited)
+						for (City city : visited)
 						{
 							System.out.print(city.getPlateNum() + " ");
 						}
-						System.out.println("");
+						System.out.println();
 
-						int astaradet = 0;
-						RouteFinder routeFinder = new RouteFinder(cities);
+						int totalcost = 0;
 						for (int i = 0; i < visited.size() - 1; i++)
 						{
-							astaradet++;
 							Route route = routeFinder.findRoute(visited.get(i), visited.get(i + 1));
+							totalcost += route.cost;
 							for (int i2 = 0; i2 < route.cities.size() - 1; i2++)
 							{
-								markedEdges.add(new Edge(route.cities.get(i2), route.cities.get(i2 + 1)));
+								markedEdges.add(new Edge(route.cities.get(i2).getPlateNum(), route.cities.get(i2 + 1).getPlateNum()));
 							}
 						}
-						System.out.println(astaradet);
+						System.out.println("total cost : " + totalcost);
 
 						panel.repaint();
 						mainCities = (ArrayList<Integer>) selectedCities.clone();

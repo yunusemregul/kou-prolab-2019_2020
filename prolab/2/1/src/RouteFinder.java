@@ -17,7 +17,7 @@ public class RouteFinder
 		Queue<RouteCity> openSet = new PriorityQueue<>();
 		Map<City, RouteCity> allNodes = new HashMap<>();
 
-		RouteCity start = new RouteCity(from, null, 0d, HaversineScorer.computeCost(from, to));
+		RouteCity start = new RouteCity(from, null, 0d, City.getCost(from, to));
 		openSet.add(start);
 		allNodes.put(from, start);
 
@@ -43,12 +43,12 @@ public class RouteFinder
 				RouteCity nextNode = allNodes.getOrDefault(connection, new RouteCity(connection));
 				allNodes.put(connection, nextNode);
 
-				double newScore = next.getRouteScore() + HaversineScorer.computeCost(next.getCurrent(), connection);
+				double newScore = next.getRouteScore() + City.getCost(next.getCurrent(), connection);
 				if (newScore < nextNode.getRouteScore())
 				{
 					nextNode.setPrevious(next.getCurrent());
 					nextNode.setRouteScore(newScore);
-					nextNode.setEstimatedScore(newScore + HaversineScorer.computeCost(connection, to));
+					nextNode.setEstimatedScore(newScore + City.getCost(connection, to));
 					openSet.add(nextNode);
 				}
 			}
