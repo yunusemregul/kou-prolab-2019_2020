@@ -3,6 +3,15 @@ import java.util.List;
 
 public class Route
 {
-	double cost = 0;
-	List<City> cities = new ArrayList<>();
+	public double cost = 0;
+	public List<City> cities = new ArrayList<>();
+
+	public Route()
+	{
+	}
+
+	public Route(ArrayList<City> cities)
+	{
+		this.cities = (List<City>) cities.clone();
+	}
 }

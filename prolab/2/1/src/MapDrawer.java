@@ -18,6 +18,7 @@ public class MapDrawer
 	private final int height = 768;
 
 	private Point mouse = new Point(0, 0);
+	private String hoveredButton;
 	private Integer hoveredCity;
 	private ArrayList<Integer> selectedCities = new ArrayList<>();
 	private ArrayList<Integer> mainCities = new ArrayList<>();
@@ -67,9 +68,10 @@ public class MapDrawer
 				City tCity = cities[plate - 1]; // target city to draw lines to
 				Point tCityPos = getCity2DPos(tCity);
 
+
 				// bu yoldan geçiliyorsa kırmızı olması için
 				if (markedEdges.contains(new Edge(city.getPlateNum(), cities[plate - 1].getPlateNum())))
-					g2d.setColor(Color.red);
+					g2d.setColor(Color.RED);
 
 				g2d.drawLine(cityPos.x, cityPos.y, tCityPos.x, tCityPos.y);
 			}
@@ -124,6 +126,8 @@ public class MapDrawer
 
 	private void drawBottomPanels(Graphics2D g2d)
 	{
+		hoveredButton = null;
+
 		g2d.setColor(new Color(44, 44, 44));
 		int x = 5, y = 555;
 		int w = 450, h = height - 27 - 555 - 5;
@@ -140,11 +144,17 @@ public class MapDrawer
 		w = 200;
 		h = 40;
 		x = width - w - 5;
+		String text = "ROTA BUL";
+
 		g2d.setColor(new Color(44, 44, 44));
+		if (isMouseInRectangle(x, y, w, h))
+		{
+			hoveredButton = text;
+			g2d.setColor(Color.red);
+		}
 		g2d.fillRect(x, y, w, h);
 
 		g2d.setColor(Color.white);
-		String text = "ROTA BUL";
 		g2d.drawString(text, x + w / 2 - metrics.stringWidth(text) / 2, y + metrics.getHeight() + 7);
 	}
 
@@ -203,57 +213,27 @@ public class MapDrawer
 					markedEdges.clear();
 					mainCities.clear();
 					selectedCities.add(hoveredCity);
+				}
 
-					if (selectedCities.size() == 10)
+				if (hoveredButton != null)
+				{
+					if (hoveredButton.equals("ROTA BUL") && selectedCities.size() > 0)
 					{
 						RouteFinder routeFinder = new RouteFinder(cities);
 						ArrayList<City> all = new ArrayList<>();
-						all.add(cities[40]);
 
 						for (Integer plate : selectedCities)
 							all.add(cities[plate - 1]);
 
-						ArrayList<City> visited = new ArrayList<>();
-						City current = all.get(0);
-
-						while (all.size() > 0)
-						{
-							all.remove(current);
-
-							double closestCost = Double.POSITIVE_INFINITY;
-							City closest = null;
-							for (City x : all)
-							{
-								Route route = routeFinder.findRoute(current, x);
-								if (route.cost < closestCost)
-								{
-									closestCost = route.cost;
-									closest = x;
-								}
-							}
-							visited.add(current);
-							current = closest;
-						}
-
-						visited.add(cities[40]);
-
-						for (City city : visited)
-						{
+						Route route = routeFinder.findMultiRoute(all);
+						for (City city : route.cities)
 							System.out.print(city.getPlateNum() + " ");
-						}
 						System.out.println();
-
-						int totalcost = 0;
-						for (int i = 0; i < visited.size() - 1; i++)
+						for (int i2 = 0; i2 < route.cities.size() - 1; i2++)
 						{
-							Route route = routeFinder.findRoute(visited.get(i), visited.get(i + 1));
-							totalcost += route.cost;
-							for (int i2 = 0; i2 < route.cities.size() - 1; i2++)
-							{
-								markedEdges.add(new Edge(route.cities.get(i2).getPlateNum(), route.cities.get(i2 + 1).getPlateNum()));
-							}
+							markedEdges.add(new Edge(route.cities.get(i2).getPlateNum(), route.cities.get(i2 + 1).getPlateNum()));
 						}
-						System.out.println("total cost : " + totalcost);
+						System.out.println("total cost : " + route.cost);
 
 						panel.repaint();
 						mainCities = (ArrayList<Integer>) selectedCities.clone();

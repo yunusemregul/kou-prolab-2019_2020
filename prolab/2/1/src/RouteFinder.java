@@ -1,7 +1,4 @@
-import java.util.HashMap;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 public class RouteFinder
 {
@@ -57,8 +54,46 @@ public class RouteFinder
 		throw new IllegalStateException("No route found");
 	}
 
-	/*public Route findMultiRoute(int... ids)
+	public Route findMultiRoute(ArrayList<City> destinations)
 	{
+		destinations.add(0, cities[40]);
+		ArrayList<City> visited = new ArrayList<>();
+		City current = destinations.get(0);
 
-	}*/
+		while (destinations.size() > 0)
+		{
+			destinations.remove(current);
+
+			double closestCost = Double.POSITIVE_INFINITY;
+			City closest = null;
+			for (City x : destinations)
+			{
+				Route route = this.findRoute(current, x);
+				if (route.cost < closestCost)
+				{
+					closestCost = route.cost;
+					closest = x;
+				}
+			}
+			visited.add(current);
+			current = closest;
+		}
+
+		visited.add(cities[40]);
+
+		Route totalRoute = new Route();
+		for (int i = 0; i < visited.size() - 1; i++)
+		{
+			Route route = this.findRoute(visited.get(i), visited.get(i + 1));
+
+			// tüm parça rotaları birleştiriyoruz
+			if (i > 0)
+				route.cities = route.cities.subList(1, route.cities.size());
+
+			totalRoute.cities.addAll(route.cities);
+			totalRoute.cost += route.cost;
+		}
+
+		return totalRoute;
+	}
 }
