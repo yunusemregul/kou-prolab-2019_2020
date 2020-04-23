@@ -54,7 +54,32 @@ public class RouteFinder
 		throw new IllegalStateException("No route found");
 	}
 
+
+	/**
+	 * Gidilecek şehir dizisi arasındaki rotayı ve costunu bulan fonksiyon.
+	 *
+	 * @param destinations şehir dizisi
+	 * @return toplam costu belli
+	 */
 	public Route findMultiRoute(ArrayList<City> destinations)
+	{
+		Route totalRoute = new Route();
+		for (int i = 0; i < destinations.size() - 1; i++)
+		{
+			Route route = this.findRoute(destinations.get(i), destinations.get(i + 1));
+
+			// tüm parça rotaları birleştiriyoruz
+			if (i > 0)
+				route.cities = new ArrayList<>(route.cities.subList(1, route.cities.size()));
+
+			totalRoute.cities.addAll(route.cities);
+			totalRoute.cost += route.cost;
+		}
+
+		return totalRoute;
+	}
+
+	public GeneticPathOptimizer findOptimizedRoute(ArrayList<City> destinations, RouteFinderListener listener)
 	{
 		destinations.add(0, cities[40]);
 		ArrayList<City> visited = new ArrayList<>();
@@ -81,19 +106,17 @@ public class RouteFinder
 
 		visited.add(cities[40]);
 
-		Route totalRoute = new Route();
-		for (int i = 0; i < visited.size() - 1; i++)
+		System.out.println("initial greedy path: ");
+		for (City x : visited)
 		{
-			Route route = this.findRoute(visited.get(i), visited.get(i + 1));
-
-			// tüm parça rotaları birleştiriyoruz
-			if (i > 0)
-				route.cities = route.cities.subList(1, route.cities.size());
-
-			totalRoute.cities.addAll(route.cities);
-			totalRoute.cost += route.cost;
+			System.out.print(x.getPlateNum() + " ");
 		}
+		System.out.println();
 
-		return totalRoute;
+		GeneticPathOptimizer pathOptimizer = new GeneticPathOptimizer(cities, visited, listener);
+		Thread thread = new Thread(pathOptimizer);
+		thread.start();
+
+		return pathOptimizer;
 	}
 }

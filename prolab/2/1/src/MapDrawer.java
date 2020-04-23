@@ -24,6 +24,9 @@ public class MapDrawer
 	private ArrayList<Integer> mainCities = new ArrayList<>();
 	private ArrayList<Edge> markedEdges = new ArrayList<>();
 
+	private JPanel panel;
+	private GeneticPathOptimizer optimizer;
+
 	public MapDrawer(City[] cities)
 	{
 		this.cities = cities;
@@ -158,6 +161,23 @@ public class MapDrawer
 		g2d.drawString(text, x + w / 2 - metrics.stringWidth(text) / 2, y + metrics.getHeight() + 7);
 	}
 
+	private void drawRoute(Route route)
+	{
+		markedEdges.clear();
+		System.out.println("final path: ");
+		for (City city : route.cities)
+			System.out.print(city.getPlateNum() + " ");
+		System.out.println();
+		for (int i2 = 0; i2 < route.cities.size() - 1; i2++)
+		{
+			markedEdges.add(new Edge(route.cities.get(i2).getPlateNum(), route.cities.get(i2 + 1).getPlateNum()));
+		}
+		System.out.println("total cost : " + route.cost);
+
+		panel.repaint();
+		selectedCities.clear();
+	}
+
 	public void init()
 	{
 		JFrame frame = new JFrame();
@@ -166,7 +186,7 @@ public class MapDrawer
 		frame.setLocationRelativeTo(null);
 		frame.getContentPane().setBackground(new Color(66, 66, 66));
 
-		JPanel panel = new JPanel()
+		panel = new JPanel()
 		{
 			@Override
 			protected void paintComponent(Graphics g)
@@ -208,13 +228,18 @@ public class MapDrawer
 			@Override
 			public void mousePressed(MouseEvent mouseEvent)
 			{
+				// eğer kullanıcı bir şehire tıkladıysa
 				if (hoveredCity != null)
 				{
 					markedEdges.clear();
 					mainCities.clear();
 					selectedCities.add(hoveredCity);
+
+					if (optimizer != null && optimizer.isRunning())
+						optimizer.stop();
 				}
 
+				// eğer kullanıcı bir butona tıkladıysa
 				if (hoveredButton != null)
 				{
 					if (hoveredButton.equals("ROTA BUL") && selectedCities.size() > 0)
@@ -225,19 +250,17 @@ public class MapDrawer
 						for (Integer plate : selectedCities)
 							all.add(cities[plate - 1]);
 
-						Route route = routeFinder.findMultiRoute(all);
-						for (City city : route.cities)
-							System.out.print(city.getPlateNum() + " ");
-						System.out.println();
-						for (int i2 = 0; i2 < route.cities.size() - 1; i2++)
-						{
-							markedEdges.add(new Edge(route.cities.get(i2).getPlateNum(), route.cities.get(i2 + 1).getPlateNum()));
-						}
-						System.out.println("total cost : " + route.cost);
-
-						panel.repaint();
 						mainCities = (ArrayList<Integer>) selectedCities.clone();
-						selectedCities.clear();
+
+						optimizer = routeFinder.findOptimizedRoute(all, new RouteFinderListener()
+						{
+							@Override
+							public void onRouteFound(Route route)
+							{
+								if (optimizer.isRunning())
+									drawRoute(route);
+							}
+						});
 					}
 				}
 			}

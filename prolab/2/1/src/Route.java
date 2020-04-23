@@ -1,10 +1,12 @@
 import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * Bir sürü şehir içeren rota.
+ */
 public class Route
 {
 	public double cost = 0;
-	public List<City> cities = new ArrayList<>();
+	public ArrayList<City> cities = new ArrayList<>();
 
 	public Route()
 	{
@@ -12,6 +14,7 @@ public class Route
 
 	public Route(ArrayList<City> cities)
 	{
-		this.cities = (List<City>) cities.clone();
+		this.cities = (ArrayList<City>) cities.clone();
+		this.cost = Double.POSITIVE_INFINITY;
 	}
 }
