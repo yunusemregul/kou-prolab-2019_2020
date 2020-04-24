@@ -3,34 +3,36 @@ import java.util.Random;
 
 public class GeneticPathOptimizer implements Runnable
 {
-	private final RouteFinderListener listener;
-	private final RouteFinder routeFinder;
+	private final PathOptimizerListener listener;
+	private final PathFinder pathFinder;
 
 	private final int populationSize = 100;
-
-	ArrayList<ArrayList<City>> population = new ArrayList<>();
+	private final double mutationRate = .1;
+	ArrayList<City>[] population = new ArrayList[populationSize];
+	private volatile int generationNumber = 0;
+	private volatile long startTime;
 	float[] fitness = new float[populationSize];
 	private volatile boolean running = true;
-	private Route optimizedRoute;
+	private Path optimizedPath;
 
-	public GeneticPathOptimizer(City[] cities, ArrayList<City> path, RouteFinderListener listener)
+	public GeneticPathOptimizer(City[] cities, ArrayList<City> path, PathOptimizerListener listener)
 	{
 		ArrayList<City> pathCopy = (ArrayList<City>) path.clone();
-		this.routeFinder = new RouteFinder(cities);
+		this.pathFinder = new PathFinder(cities);
 		this.listener = listener;
-		optimizedRoute = routeFinder.findMultiRoute(pathCopy);
-		optimizedRoute.cities = pathCopy;
+		optimizedPath = pathFinder.findMultiRoute(pathCopy);
+		optimizedPath.cities = pathCopy;
 
 		for (int i = 0; i < populationSize; i++)
 		{
 			ArrayList<City> newPath = mutate(path);
-			population.add(newPath);
+			population[i] = newPath;
 		}
 	}
 
 	private ArrayList<City> mutate(ArrayList<City> toMutate)
 	{
-		if (Math.random() < .1)
+		if (Math.random() < mutationRate)
 		{
 			Random randommer = new Random();
 			int indexA = 1 + randommer.nextInt(toMutate.size() - 2);
@@ -70,18 +72,18 @@ public class GeneticPathOptimizer implements Runnable
 	{
 		for (int i = 0; i < populationSize; i++)
 		{
-			Route route = routeFinder.findMultiRoute(population.get(i));
-			fitness[i] = route.cost;
+			Path path = pathFinder.findMultiRoute(population[i]);
+			fitness[i] = path.cost;
 
-			if (fitness[i] < optimizedRoute.cost)
+			if (fitness[i] < optimizedPath.cost)
 			{
-				optimizedRoute.cost = fitness[i];
-				optimizedRoute.cities = population.get(i);
+				optimizedPath.cost = fitness[i];
+				optimizedPath.cities = population[i];
 
-				listener.onRouteFound(routeFinder.findMultiRoute(optimizedRoute.cities));
+				listener.onRouteFound(pathFinder.findMultiRoute(optimizedPath.cities));
 			}
 
-			fitness[i] = (float) (1 / (Math.pow(route.cost, 8) + 1));
+			fitness[i] = (float) (1 / (Math.pow(path.cost, 8) + 1));
 		}
 
 		float sum = 0;
@@ -101,12 +103,12 @@ public class GeneticPathOptimizer implements Runnable
 			index++;
 		}
 		index--;
-		return (ArrayList<City>) population.get(index).clone();
+		return (ArrayList<City>) population[index].clone();
 	}
 
 	private void generatePopulation()
 	{
-		ArrayList<ArrayList<City>> newPopulation = new ArrayList<>();
+		ArrayList<City>[] newPopulation = new ArrayList[populationSize];
 
 		for (int i = 0; i < populationSize; i++)
 		{
@@ -114,23 +116,18 @@ public class GeneticPathOptimizer implements Runnable
 			ArrayList<City> pathB = pickOneFromPopulation();
 			ArrayList<City> newPath = crossOver(pathA, pathB);
 			newPath = mutate(newPath);
-			newPopulation.add(newPath);
+			newPopulation[i] = newPath;
 		}
 
 		population = newPopulation;
+		generationNumber++;
+		listener.onNextGeneration();
 	}
 
 	void optimize()
 	{
 		generateFitness();
 		generatePopulation();
-
-		/*System.out.println("route found:");
-		for (City x : optimizedRoute.cities)
-		{
-			System.out.print(x.getPlateNum() + " ");
-		}
-		System.out.println();*/
 	}
 
 	public void stop()
@@ -143,9 +140,20 @@ public class GeneticPathOptimizer implements Runnable
 		return running;
 	}
 
+	public int getGenerationNumber()
+	{
+		return generationNumber;
+	}
+
+	public int secondsPastFromStart()
+	{
+		return (int) (System.currentTimeMillis() - startTime) / 1000;
+	}
+
 	@Override
 	public void run()
 	{
+		startTime = System.currentTimeMillis();
 		while (running)
 			optimize();
 	}

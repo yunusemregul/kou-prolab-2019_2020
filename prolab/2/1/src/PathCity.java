@@ -1,16 +1,16 @@
-public class RouteCity implements Comparable<RouteCity>
+public class PathCity implements Comparable<PathCity>
 {
 	private final City current;
 	private City previous;
 	private float routeScore;
 	private float estimatedScore;
 
-	public RouteCity(City current)
+	public PathCity(City current)
 	{
 		this(current, null, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
 	}
 
-	public RouteCity(City current, City previous, float routeScore, float estimatedScore)
+	public PathCity(City current, City previous, float routeScore, float estimatedScore)
 	{
 		this.current = current;
 		this.previous = previous;
@@ -19,7 +19,7 @@ public class RouteCity implements Comparable<RouteCity>
 	}
 
 	@Override
-	public int compareTo(RouteCity other)
+	public int compareTo(PathCity other)
 	{
 		if (this.estimatedScore > other.estimatedScore)
 			return 1;

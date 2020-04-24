@@ -1,43 +1,43 @@
 import java.util.*;
 
-public class RouteFinder
+public class PathFinder
 {
 	private final City[] cities;
 
-	public RouteFinder(City[] cities)
+	public PathFinder(City[] cities)
 	{
 		this.cities = cities;
 	}
 
-	public Route findRoute(City from, City to)
+	public Path findRoute(City from, City to)
 	{
-		Queue<RouteCity> openSet = new PriorityQueue<>();
-		Map<City, RouteCity> allNodes = new HashMap<>();
+		Queue<PathCity> openSet = new PriorityQueue<>();
+		Map<City, PathCity> allNodes = new HashMap<>();
 
-		RouteCity start = new RouteCity(from, null, 0.f, City.getCost(from, to));
+		PathCity start = new PathCity(from, null, 0.f, City.getCost(from, to));
 		openSet.add(start);
 		allNodes.put(from, start);
 
 		while (!openSet.isEmpty())
 		{
-			RouteCity next = openSet.poll();
+			PathCity next = openSet.poll();
 			if (next.getCurrent().equals(to))
 			{
-				Route route = new Route();
-				RouteCity current = next;
-				route.cost = current.getRouteScore();
+				Path path = new Path();
+				PathCity current = next;
+				path.cost = current.getRouteScore();
 				do
 				{
-					route.cities.add(0, current.getCurrent());
+					path.cities.add(0, current.getCurrent());
 					current = allNodes.get(current.getPrevious());
 				} while (current != null);
-				return route;
+				return path;
 			}
 
 			for (int plateNum : next.getCurrent().getConnected())
 			{
 				City connection = cities[plateNum - 1];
-				RouteCity nextNode = allNodes.getOrDefault(connection, new RouteCity(connection));
+				PathCity nextNode = allNodes.getOrDefault(connection, new PathCity(connection));
 				allNodes.put(connection, nextNode);
 
 				float newScore = next.getRouteScore() + City.getCost(next.getCurrent(), connection);
@@ -61,25 +61,25 @@ public class RouteFinder
 	 * @param destinations şehir dizisi
 	 * @return toplam costu belli
 	 */
-	public Route findMultiRoute(ArrayList<City> destinations)
+	public Path findMultiRoute(ArrayList<City> destinations)
 	{
-		Route totalRoute = new Route();
+		Path totalPath = new Path();
 		for (int i = 0; i < destinations.size() - 1; i++)
 		{
-			Route route = this.findRoute(destinations.get(i), destinations.get(i + 1));
+			Path path = this.findRoute(destinations.get(i), destinations.get(i + 1));
 
 			// tüm parça rotaları birleştiriyoruz
 			if (i > 0)
-				route.cities = new ArrayList<>(route.cities.subList(1, route.cities.size()));
+				path.cities = new ArrayList<>(path.cities.subList(1, path.cities.size()));
 
-			totalRoute.cities.addAll(route.cities);
-			totalRoute.cost += route.cost;
+			totalPath.cities.addAll(path.cities);
+			totalPath.cost += path.cost;
 		}
 
-		return totalRoute;
+		return totalPath;
 	}
 
-	public GeneticPathOptimizer findOptimizedRoute(ArrayList<City> destinations, RouteFinderListener listener)
+	public GeneticPathOptimizer findOptimizedRoute(ArrayList<City> destinations, PathOptimizerListener listener)
 	{
 		destinations.add(0, cities[40]);
 		ArrayList<City> visited = new ArrayList<>();
@@ -93,10 +93,10 @@ public class RouteFinder
 			City closest = null;
 			for (City x : destinations)
 			{
-				Route route = this.findRoute(current, x);
-				if (route.cost < closestCost)
+				Path path = this.findRoute(current, x);
+				if (path.cost < closestCost)
 				{
-					closestCost = route.cost;
+					closestCost = path.cost;
 					closest = x;
 				}
 			}

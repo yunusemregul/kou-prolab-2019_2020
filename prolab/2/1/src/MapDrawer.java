@@ -22,7 +22,7 @@ public class MapDrawer
 	private ArrayList<Integer> selectedCities = new ArrayList<>();
 	private ArrayList<Integer> mainCities = new ArrayList<>();
 	private ArrayList<Edge> markedEdges = new ArrayList<>();
-	private ArrayList<Route> routesSoFar = new ArrayList<>();
+	private ArrayList<Path> routesSoFar = new ArrayList<>();
 
 	private JPanel panel;
 	private GeneticPathOptimizer optimizer;
@@ -163,8 +163,7 @@ public class MapDrawer
 
 		g2d.setColor(new Color(44, 44, 44));
 		int x = 5, y = 555;
-		int w = 450, h = height - 27 - 555 - 5;
-		//g2d.fillRect(x, y, w, h);
+		int w, h;
 
 		g2d.setColor(Color.WHITE);
 		Font font = new Font("", Font.PLAIN, 16);
@@ -231,20 +230,24 @@ public class MapDrawer
 
 		g2d.setColor(Color.WHITE);
 		g2d.drawString(text, x + w / 2 - metrics.stringWidth(text) / 2, y + metrics.getHeight() + 7);
+
+		if (optimizer != null && optimizer.isRunning())
+		{
+			y += 56;
+			g2d.drawString("Geçen süre: " + optimizer.secondsPastFromStart() + "s", x, y);
+			y += 24;
+			g2d.drawString("Rota geliştiriliyor..", x, y);
+			y += 24;
+			g2d.drawString("Jenerasyon: " + optimizer.getGenerationNumber(), x, y);
+		}
 	}
 
-	private void drawRoute(Route route)
+	private void drawRoute(Path path)
 	{
 		markedEdges.clear();
-		/*System.out.println("final path: ");
-		for (City city : route.cities)
-			System.out.print(city.getPlateNum() + " ");
-		System.out.println();*/
-		for (int i2 = 0; i2 < route.cities.size() - 1; i2++)
-		{
-			markedEdges.add(new Edge(route.cities.get(i2).getPlateNum(), route.cities.get(i2 + 1).getPlateNum()));
-		}
-		//System.out.println("total cost : " + route.cost);
+
+		for (int i2 = 0; i2 < path.cities.size() - 1; i2++)
+			markedEdges.add(new Edge(path.cities.get(i2).getPlateNum(), path.cities.get(i2 + 1).getPlateNum()));
 
 		panel.repaint();
 		selectedCities.clear();
@@ -314,7 +317,7 @@ public class MapDrawer
 					{
 						optimizer = null;
 
-						RouteFinder routeFinder = new RouteFinder(cities);
+						PathFinder pathFinder = new PathFinder(cities);
 						ArrayList<City> all = new ArrayList<>();
 
 						for (Integer plate : selectedCities)
@@ -322,21 +325,27 @@ public class MapDrawer
 
 						mainCities = (ArrayList<Integer>) selectedCities.clone();
 
-						optimizer = routeFinder.findOptimizedRoute(all, new RouteFinderListener()
+						optimizer = pathFinder.findOptimizedRoute(all, new PathOptimizerListener()
 						{
 							@Override
-							public void onRouteFound(Route route)
+							public void onRouteFound(Path path)
 							{
-								if (!routesSoFar.contains(route))
-									routesSoFar.add(0, route);
+								if (!routesSoFar.contains(path))
+									routesSoFar.add(0, path);
 
 								if (optimizer != null)
 								{
 									if (optimizer.isRunning())
-										drawRoute(route);
+										drawRoute(path);
 								}
 								else
-									drawRoute(route);
+									drawRoute(path);
+							}
+
+							@Override
+							public void onNextGeneration()
+							{
+								panel.repaint();
 							}
 						});
 					}
