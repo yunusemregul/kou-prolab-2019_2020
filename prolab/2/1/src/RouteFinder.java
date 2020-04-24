@@ -113,6 +113,8 @@ public class RouteFinder
 		}
 		System.out.println();
 
+		listener.onRouteFound(this.findMultiRoute(visited));
+
 		GeneticPathOptimizer pathOptimizer = new GeneticPathOptimizer(cities, visited, listener);
 		Thread thread = new Thread(pathOptimizer);
 		thread.start();

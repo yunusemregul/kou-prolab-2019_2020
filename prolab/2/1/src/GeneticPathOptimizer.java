@@ -22,7 +22,7 @@ public class GeneticPathOptimizer implements Runnable
 	ArrayList<City> mutate(ArrayList<City> toMutate)
 	{
 		Random randommer = new Random();
-		for (int i = 0; i < randommer.nextInt(5); i++)
+		for (int i = 0; i < randommer.nextInt(4) + 1; i++)
 		{
 			int indexA = randommer.nextInt(toMutate.size() - 2);
 			int indexB = randommer.nextInt(toMutate.size() - 2);
@@ -52,12 +52,12 @@ public class GeneticPathOptimizer implements Runnable
 			}
 		}
 
-		System.out.println("route found:");
+		/*System.out.println("route found:");
 		for (City x : optimizedRoute.cities)
 		{
 			System.out.print(x.getPlateNum() + " ");
 		}
-		System.out.println();
+		System.out.println();*/
 		listener.onRouteFound(routeFinder.findMultiRoute(optimizedRoute.cities));
 	}
 

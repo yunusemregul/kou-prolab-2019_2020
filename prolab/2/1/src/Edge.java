@@ -1,5 +1,4 @@
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.Collection;
 
 public class Edge
 {
@@ -19,31 +18,19 @@ public class Edge
 		this.cost = cost;
 	}
 
-	public Edge findInEdges(HashSet<Edge> edges)
+	public Edge findInEdges(Collection<Edge> edges)
 	{
-		if (edges.contains(this))
+		for (Edge e : edges)
 		{
-			for (Edge e : edges)
-			{
-				if (e.equals(this))
-					return e;
-			}
+			if ((e.from == this.from && e.to == this.to) || (e.to == this.from && e.from == this.to))
+				return e;
 		}
 
 		return null;
 	}
 
-	@Override
-	public boolean equals(Object o)
+	public boolean isEqualDirectionless(Edge other)
 	{
-		if (o == null || getClass() != o.getClass()) return false;
-		Edge edge = (Edge) o;
-		return ((from == edge.from && to == edge.to) || (from == edge.to && to == edge.from));
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(from, to);
+		return ((other.from == this.from && other.to == this.to) || (other.to == this.from && other.from == this.to));
 	}
 }

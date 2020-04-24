@@ -69,9 +69,8 @@ public class MapDrawer
 				City tCity = cities[plate - 1]; // target city to draw lines to
 				Point tCityPos = getCity2DPos(tCity);
 
-
 				// bu yoldan geçiliyorsa kırmızı olması için
-				if (markedEdges.contains(new Edge(city.getPlateNum(), cities[plate - 1].getPlateNum())))
+				if (new Edge(city.getPlateNum(), cities[plate - 1].getPlateNum()).findInEdges(markedEdges) != null)
 					g2d.setColor(Color.RED);
 
 				g2d.drawLine(cityPos.x, cityPos.y, tCityPos.x, tCityPos.y);
@@ -106,7 +105,7 @@ public class MapDrawer
 			// eğer rota bu şehirden geçiyorsa kırmızı olması için
 			for (int plate : city.getConnected())
 			{
-				if (markedEdges.contains(new Edge(city.getPlateNum(), cities[plate - 1].getPlateNum())))
+				if (new Edge(city.getPlateNum(), cities[plate - 1].getPlateNum()).findInEdges(markedEdges) != null)
 					g2d.setColor(Color.red);
 			}
 
@@ -123,6 +122,37 @@ public class MapDrawer
 			String text = String.format("%02d", city.getPlateNum());
 			g2d.drawString(text, cityPos.x - metrics.stringWidth(text) / 2, cityPos.y + 4);
 		}
+
+		// üçüncü geçişte rota bulunduğunda kenarların üzerindeki adım sayısını yazıyoruz
+		for (City city : cities)
+		{
+			Point cityPos = getCity2DPos(city);
+
+			for (int plate : city.getConnected())
+			{
+				City tCity = cities[plate - 1]; // target city to draw lines to
+				Point tCityPos = getCity2DPos(tCity);
+
+				Edge edge = new Edge(city.getPlateNum(), cities[plate - 1].getPlateNum());
+				if (edge.findInEdges(markedEdges) != null)
+				{
+					g2d.setColor(Color.white);
+
+					String str = "";
+					for (int i = 0; i < markedEdges.size(); i++)
+					{
+						if (markedEdges.get(i).isEqualDirectionless(edge))
+						{
+							if (str.isEmpty())
+								str += (i + 1);
+							else
+								str += "/" + (i + 1);
+						}
+					}
+					g2d.drawString(str, (cityPos.x + tCityPos.x) / 2, (cityPos.y + tCityPos.y) / 2);
+				}
+			}
+		}
 	}
 
 	private void drawBottomPanels(Graphics2D g2d)
@@ -132,13 +162,13 @@ public class MapDrawer
 		g2d.setColor(new Color(44, 44, 44));
 		int x = 5, y = 555;
 		int w = 450, h = height - 27 - 555 - 5;
-		g2d.fillRect(x, y, w, h);
+		//g2d.fillRect(x, y, w, h);
 
 		g2d.setColor(Color.white);
 		Font font = new Font("", Font.PLAIN, 16);
 		g2d.setFont(font);
 		FontMetrics metrics = g2d.getFontMetrics(font);
-		g2d.drawString("Teslimat adresleri: ", x + 5, y + metrics.getHeight() + 5);
+		//g2d.drawString("Teslimat adresleri: ", x + 5, y + metrics.getHeight() + 5);
 		if (hoveredCity != null)
 			g2d.drawString(cities[hoveredCity - 1].getName(), x + 5, y + 40);
 
@@ -146,6 +176,9 @@ public class MapDrawer
 		h = 40;
 		x = width - w - 5;
 		String text = "ROTA BUL";
+
+		if (optimizer != null && optimizer.isRunning())
+			text = "DUR";
 
 		g2d.setColor(new Color(44, 44, 44));
 		if (isMouseInRectangle(x, y, w, h))
@@ -162,15 +195,15 @@ public class MapDrawer
 	private void drawRoute(Route route)
 	{
 		markedEdges.clear();
-		System.out.println("final path: ");
+		/*System.out.println("final path: ");
 		for (City city : route.cities)
 			System.out.print(city.getPlateNum() + " ");
-		System.out.println();
+		System.out.println();*/
 		for (int i2 = 0; i2 < route.cities.size() - 1; i2++)
 		{
 			markedEdges.add(new Edge(route.cities.get(i2).getPlateNum(), route.cities.get(i2 + 1).getPlateNum()));
 		}
-		System.out.println("total cost : " + route.cost);
+		//System.out.println("total cost : " + route.cost);
 
 		panel.repaint();
 		selectedCities.clear();
@@ -179,7 +212,7 @@ public class MapDrawer
 	public void init()
 	{
 		JFrame frame = new JFrame();
-		frame.setTitle("Hello");
+		frame.setTitle("Prolab 2 - 1");
 		frame.setSize(width, height);
 		frame.setLocationRelativeTo(null);
 		frame.getContentPane().setBackground(new Color(66, 66, 66));
@@ -207,8 +240,6 @@ public class MapDrawer
 
 				drawCities(g2d);
 				drawBottomPanels(g2d);
-
-				//repaint();
 			}
 		};
 		panel.addMouseMotionListener(new MouseMotionAdapter()
@@ -239,6 +270,8 @@ public class MapDrawer
 				{
 					if (hoveredButton.equals("ROTA BUL") && selectedCities.size() > 0)
 					{
+						optimizer = null;
+
 						RouteFinder routeFinder = new RouteFinder(cities);
 						ArrayList<City> all = new ArrayList<>();
 
@@ -252,11 +285,19 @@ public class MapDrawer
 							@Override
 							public void onRouteFound(Route route)
 							{
-								if (optimizer.isRunning())
+								if (optimizer != null)
+								{
+									if (optimizer.isRunning())
+										drawRoute(route);
+								}
+								else
 									drawRoute(route);
 							}
 						});
 					}
+
+					if (hoveredButton.equals("DUR") && optimizer != null && optimizer.isRunning())
+						optimizer.stop();
 				}
 			}
 		});
