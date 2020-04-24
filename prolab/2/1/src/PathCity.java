@@ -1,8 +1,11 @@
+/**
+ * A* algoritmasındaki bir düğümü temsil eden sınıf.
+ */
 public class PathCity implements Comparable<PathCity>
 {
 	private final City current;
 	private City previous;
-	private float routeScore;
+	private float pathScore;
 	private float estimatedScore;
 
 	public PathCity(City current)
@@ -10,11 +13,11 @@ public class PathCity implements Comparable<PathCity>
 		this(current, null, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
 	}
 
-	public PathCity(City current, City previous, float routeScore, float estimatedScore)
+	public PathCity(City current, City previous, float pathScore, float estimatedScore)
 	{
 		this.current = current;
 		this.previous = previous;
-		this.routeScore = routeScore;
+		this.pathScore = pathScore;
 		this.estimatedScore = estimatedScore;
 	}
 
@@ -44,14 +47,14 @@ public class PathCity implements Comparable<PathCity>
 		this.previous = previous;
 	}
 
-	public float getRouteScore()
+	public float getPathScore()
 	{
-		return routeScore;
+		return pathScore;
 	}
 
-	public void setRouteScore(float routeScore)
+	public void setPathScore(float pathScore)
 	{
-		this.routeScore = routeScore;
+		this.pathScore = pathScore;
 	}
 
 	public float getEstimatedScore()

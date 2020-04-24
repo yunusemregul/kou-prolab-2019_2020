@@ -1,6 +1,11 @@
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Genetik algoritma kullanarak verilen rotayı optimize eden sınıf.
+ * Kendi threadında çalışır.
+ */
+
 public class PathOptimizer implements Runnable
 {
 	private final PathOptimizerListener listener;
@@ -8,11 +13,14 @@ public class PathOptimizer implements Runnable
 
 	private final int populationSize = 100;
 	private final double mutationRate = .1;
+
 	ArrayList<City>[] population = new ArrayList[populationSize];
-	private volatile int generationNumber = 0;
-	private volatile long startTime;
-	float[] fitness = new float[populationSize];
+	private int generationNumber = 0;
+	private long startTime;
+	private long endTime;
 	private volatile boolean running = true;
+
+	float[] fitness = new float[populationSize];
 	private Path optimizedPath;
 
 	public PathOptimizer(City[] cities, ArrayList<City> path, PathOptimizerListener listener)
@@ -20,7 +28,7 @@ public class PathOptimizer implements Runnable
 		ArrayList<City> pathCopy = (ArrayList<City>) path.clone();
 		this.pathFinder = new PathFinder(cities);
 		this.listener = listener;
-		optimizedPath = pathFinder.findMultiRoute(pathCopy);
+		optimizedPath = pathFinder.findMultiPath(pathCopy);
 		optimizedPath.cities = pathCopy;
 
 		for (int i = 0; i < populationSize; i++)
@@ -72,7 +80,7 @@ public class PathOptimizer implements Runnable
 	{
 		for (int i = 0; i < populationSize; i++)
 		{
-			Path path = pathFinder.findMultiRoute(population[i]);
+			Path path = pathFinder.findMultiPath(population[i]);
 			fitness[i] = path.cost;
 
 			if (fitness[i] < optimizedPath.cost)
@@ -80,7 +88,7 @@ public class PathOptimizer implements Runnable
 				optimizedPath.cost = fitness[i];
 				optimizedPath.cities = population[i];
 
-				listener.onRouteFound(pathFinder.findMultiRoute(optimizedPath.cities));
+				listener.onPathFound(pathFinder.findMultiPath(optimizedPath.cities));
 			}
 
 			fitness[i] = (float) (1 / (Math.pow(path.cost, 8) + 1));
@@ -147,14 +155,19 @@ public class PathOptimizer implements Runnable
 
 	public int secondsPastFromStart()
 	{
-		return (int) (System.currentTimeMillis() - startTime) / 1000;
+		if (endTime > startTime)
+			return (int) (endTime - startTime) / 1000;
+		else
+			return (int) (System.currentTimeMillis() - startTime) / 1000;
 	}
 
 	@Override
 	public void run()
 	{
+		endTime = System.currentTimeMillis();
 		startTime = System.currentTimeMillis();
 		while (running)
 			optimize();
+		endTime = System.currentTimeMillis();
 	}
 }

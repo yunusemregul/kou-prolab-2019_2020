@@ -1,5 +1,8 @@
 import java.util.HashSet;
 
+/**
+ * Bir şehri temsil eden sınıf.
+ */
 public class City
 {
 	public static HashSet<Edge> costs; // bir şehirden diğerine giden costları içerecek dizi

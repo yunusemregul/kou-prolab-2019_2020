@@ -22,7 +22,8 @@ public class MapDrawer
 	private ArrayList<Integer> selectedCities = new ArrayList<>();
 	private ArrayList<Integer> mainCities = new ArrayList<>();
 	private ArrayList<Edge> markedEdges = new ArrayList<>();
-	private ArrayList<Path> routesSoFar = new ArrayList<>();
+	private ArrayList<Path> pathsSoFar = new ArrayList<>();
+	private long lastPathFoundTime;
 
 	private JPanel panel;
 	private PathOptimizer optimizer;
@@ -166,18 +167,18 @@ public class MapDrawer
 		int w, h;
 
 		g2d.setColor(Color.WHITE);
-		Font font = new Font("", Font.PLAIN, 16);
+		Font font = new Font("", Font.BOLD, 16);
 		Font fontSmaller = new Font("", Font.PLAIN, 12);
 		g2d.setFont(font);
 		FontMetrics metrics = g2d.getFontMetrics(font);
 		FontMetrics smetrics = g2d.getFontMetrics(fontSmaller);
-		for (int i = 0; i < routesSoFar.size(); i++)
+		for (int i = 0; i < Math.min(pathsSoFar.size(), 6); i++)
 		{
-			ArrayList<City> routeCities = routesSoFar.get(i).cities;
+			ArrayList<City> pathCities = pathsSoFar.get(i).cities;
 			int size = 25;
-			for (int j = 0; j < routeCities.size(); j++)
+			for (int j = 0; j < pathCities.size(); j++)
 			{
-				City city = routeCities.get(j);
+				City city = pathCities.get(j);
 
 				g2d.setColor(Color.RED);
 
@@ -192,7 +193,7 @@ public class MapDrawer
 				g2d.fill(circle);
 
 				g2d.setColor(Color.RED);
-				if (j != routeCities.size() - 1)
+				if (j != pathCities.size() - 1)
 					g2d.drawLine(cx + size, cy + size / 2, x + (j + 1) * (size + 9), cy + size / 2);
 
 				g2d.setColor(Color.WHITE);
@@ -200,14 +201,18 @@ public class MapDrawer
 				g2d.drawString(String.format("%02d", city.getPlateNum()), cx + 4, cy + 16);
 			}
 
-			int sx = x + routeCities.size() * (size + 9), sy = y + (i * (size + 5) + 16);
+			int sx = x + pathCities.size() * (size + 9), sy = y + (i * (size + 5) + 16);
 
 			g2d.setColor(Color.RED);
-			String costStr = (int) routesSoFar.get(i).cost + "km";
+			String costStr = (int) pathsSoFar.get(i).cost + "km";
 			g2d.drawRect(sx - 4, sy - 14, smetrics.stringWidth(costStr) + 8, 20);
 
 			g2d.setColor(Color.WHITE);
 			g2d.drawString(costStr, sx, sy);
+
+			g2d.setColor(new Color(44, 44, 44));
+			String showStr = "GÖSTER";
+			g2d.fillRect(sx + smetrics.stringWidth(costStr) + 8, sy - 14, smetrics.stringWidth(showStr), 20);
 		}
 
 		g2d.setFont(font);
@@ -231,18 +236,32 @@ public class MapDrawer
 		g2d.setColor(Color.WHITE);
 		g2d.drawString(text, x + w / 2 - metrics.stringWidth(text) / 2, y + metrics.getHeight() + 7);
 
-		if (optimizer != null && optimizer.isRunning())
+		g2d.setFont(fontSmaller);
+		if (optimizer != null && !markedEdges.isEmpty())
 		{
-			y += 56;
+			y += 62;
+			int yGap = smetrics.getHeight() + 4;
 			g2d.drawString("Geçen süre: " + optimizer.secondsPastFromStart() + "s", x, y);
-			y += 24;
-			g2d.drawString("Rota geliştiriliyor..", x, y);
-			y += 24;
+			if (optimizer.isRunning())
+			{
+				y += yGap;
+				g2d.drawString("Rota geliştiriliyor..", x, y);
+			}
+			y += yGap;
+			if ((int) (System.currentTimeMillis() - lastPathFoundTime) / 1000 > 8)
+			{
+				y += yGap / 4;
+				g2d.drawString("(Bulunan rota muhtemelen-", x, y);
+				y += yGap;
+				g2d.drawString("en iyisi.)", x, y);
+				y += yGap;
+				y += yGap / 4;
+			}
 			g2d.drawString("Jenerasyon: " + optimizer.getGenerationNumber(), x, y);
 		}
 	}
 
-	private void drawRoute(Path path)
+	private void drawPath(Path path)
 	{
 		markedEdges.clear();
 
@@ -301,7 +320,7 @@ public class MapDrawer
 				// eğer kullanıcı bir şehire tıkladıysa
 				if (hoveredCity != null)
 				{
-					routesSoFar.clear();
+					pathsSoFar.clear();
 					markedEdges.clear();
 					mainCities.clear();
 					selectedCities.add(hoveredCity);
@@ -325,21 +344,24 @@ public class MapDrawer
 
 						mainCities = (ArrayList<Integer>) selectedCities.clone();
 
-						optimizer = pathFinder.findOptimizedRoute(all, new PathOptimizerListener()
+						optimizer = pathFinder.findOptimizedPath(all, new PathOptimizerListener()
 						{
 							@Override
-							public void onRouteFound(Path path)
+							public void onPathFound(Path path)
 							{
-								if (!routesSoFar.contains(path))
-									routesSoFar.add(0, path);
+								if (!pathsSoFar.contains(path))
+								{
+									pathsSoFar.add(0, path);
+									lastPathFoundTime = System.currentTimeMillis();
+								}
 
 								if (optimizer != null)
 								{
 									if (optimizer.isRunning())
-										drawRoute(path);
+										drawPath(path);
 								}
 								else
-									drawRoute(path);
+									drawPath(path);
 							}
 
 							@Override

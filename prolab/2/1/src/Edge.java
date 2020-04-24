@@ -1,5 +1,8 @@
 import java.util.Collection;
 
+/**
+ * Şehirler arasındaki kenarları temsil eden sınıf.
+ */
 public class Edge
 {
 	int from; // başlangıç şehrin plakası

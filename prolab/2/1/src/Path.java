@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 /**
- * Bir sürü şehir içeren rota.
+ * Bir sürü şehir içeren wrapper yol sınıfı.
  */
 public class Path
 {

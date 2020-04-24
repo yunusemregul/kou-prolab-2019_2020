@@ -1,5 +1,8 @@
 import java.util.*;
 
+/**
+ * A* algoritması kullanarak en kısa mesafeyi bulan sınıf.
+ */
 public class PathFinder
 {
 	private final City[] cities;
@@ -9,7 +12,7 @@ public class PathFinder
 		this.cities = cities;
 	}
 
-	public Path findRoute(City from, City to)
+	public Path findPath(City from, City to)
 	{
 		Queue<PathCity> openSet = new PriorityQueue<>();
 		Map<City, PathCity> allNodes = new HashMap<>();
@@ -25,7 +28,7 @@ public class PathFinder
 			{
 				Path path = new Path();
 				PathCity current = next;
-				path.cost = current.getRouteScore();
+				path.cost = current.getPathScore();
 				do
 				{
 					path.cities.add(0, current.getCurrent());
@@ -40,18 +43,18 @@ public class PathFinder
 				PathCity nextNode = allNodes.getOrDefault(connection, new PathCity(connection));
 				allNodes.put(connection, nextNode);
 
-				float newScore = next.getRouteScore() + City.getCost(next.getCurrent(), connection);
-				if (newScore < nextNode.getRouteScore())
+				float newScore = next.getPathScore() + City.getCost(next.getCurrent(), connection);
+				if (newScore < nextNode.getPathScore())
 				{
 					nextNode.setPrevious(next.getCurrent());
-					nextNode.setRouteScore(newScore);
+					nextNode.setPathScore(newScore);
 					nextNode.setEstimatedScore(newScore + City.getCost(connection, to));
 					openSet.add(nextNode);
 				}
 			}
 		}
 
-		throw new IllegalStateException("No route found");
+		throw new IllegalStateException("No path found");
 	}
 
 
@@ -61,12 +64,12 @@ public class PathFinder
 	 * @param destinations şehir dizisi
 	 * @return toplam costu belli
 	 */
-	public Path findMultiRoute(ArrayList<City> destinations)
+	public Path findMultiPath(ArrayList<City> destinations)
 	{
 		Path totalPath = new Path();
 		for (int i = 0; i < destinations.size() - 1; i++)
 		{
-			Path path = this.findRoute(destinations.get(i), destinations.get(i + 1));
+			Path path = this.findPath(destinations.get(i), destinations.get(i + 1));
 
 			// tüm parça rotaları birleştiriyoruz
 			if (i > 0)
@@ -79,7 +82,7 @@ public class PathFinder
 		return totalPath;
 	}
 
-	public PathOptimizer findOptimizedRoute(ArrayList<City> destinations, PathOptimizerListener listener)
+	public PathOptimizer findOptimizedPath(ArrayList<City> destinations, PathOptimizerListener listener)
 	{
 		destinations.add(0, cities[40]);
 		ArrayList<City> visited = new ArrayList<>();
@@ -93,7 +96,7 @@ public class PathFinder
 			City closest = null;
 			for (City x : destinations)
 			{
-				Path path = this.findRoute(current, x);
+				Path path = this.findPath(current, x);
 				if (path.cost < closestCost)
 				{
 					closestCost = path.cost;
@@ -113,7 +116,7 @@ public class PathFinder
 		}
 		System.out.println();
 
-		listener.onRouteFound(this.findMultiRoute(visited));
+		listener.onPathFound(this.findMultiPath(visited));
 
 		PathOptimizer pathOptimizer = new PathOptimizer(cities, visited, listener);
 		Thread thread = new Thread(pathOptimizer);
