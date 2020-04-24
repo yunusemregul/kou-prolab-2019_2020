@@ -18,9 +18,11 @@ public class MapDrawer
 	private Point mouse = new Point(0, 0);
 	private String hoveredButton;
 	private Integer hoveredCity;
+
 	private ArrayList<Integer> selectedCities = new ArrayList<>();
 	private ArrayList<Integer> mainCities = new ArrayList<>();
 	private ArrayList<Edge> markedEdges = new ArrayList<>();
+	private ArrayList<Route> routesSoFar = new ArrayList<>();
 
 	private JPanel panel;
 	private GeneticPathOptimizer optimizer;
@@ -91,7 +93,7 @@ public class MapDrawer
 
 			if (isMouseInRectangle(x, y, size, size))
 			{
-				g2d.setColor(Color.red);
+				g2d.setColor(Color.RED);
 				g2d.drawRect(x, y, size, size); // debug
 				hoveredCity = city.getPlateNum();
 			}
@@ -99,14 +101,14 @@ public class MapDrawer
 			{
 				// şehirleri seçerken kırmızı olmaları için
 				if (selectedCities.contains(city.getPlateNum()))
-					g2d.setColor(Color.red);
+					g2d.setColor(Color.RED);
 			}
 
 			// eğer rota bu şehirden geçiyorsa kırmızı olması için
 			for (int plate : city.getConnected())
 			{
 				if (new Edge(city.getPlateNum(), cities[plate - 1].getPlateNum()).findInEdges(markedEdges) != null)
-					g2d.setColor(Color.red);
+					g2d.setColor(Color.RED);
 			}
 
 			// eğer bu şehir teslimat adresiyse mavi olması için
@@ -115,7 +117,7 @@ public class MapDrawer
 
 			g2d.fill(circle);
 
-			g2d.setColor(Color.white);
+			g2d.setColor(Color.WHITE);
 			Font font = new Font("", Font.PLAIN, 12);
 			g2d.setFont(font);
 			FontMetrics metrics = g2d.getFontMetrics(font);
@@ -136,7 +138,7 @@ public class MapDrawer
 				Edge edge = new Edge(city.getPlateNum(), cities[plate - 1].getPlateNum());
 				if (edge.findInEdges(markedEdges) != null)
 				{
-					g2d.setColor(Color.white);
+					g2d.setColor(Color.WHITE);
 
 					String str = "";
 					for (int i = 0; i < markedEdges.size(); i++)
@@ -146,7 +148,7 @@ public class MapDrawer
 							if (str.isEmpty())
 								str += (i + 1);
 							else
-								str += "/" + (i + 1);
+								str += "|" + (i + 1);
 						}
 					}
 					g2d.drawString(str, (cityPos.x + tCityPos.x) / 2, (cityPos.y + tCityPos.y) / 2);
@@ -164,13 +166,52 @@ public class MapDrawer
 		int w = 450, h = height - 27 - 555 - 5;
 		//g2d.fillRect(x, y, w, h);
 
-		g2d.setColor(Color.white);
+		g2d.setColor(Color.WHITE);
 		Font font = new Font("", Font.PLAIN, 16);
+		Font fontSmaller = new Font("", Font.PLAIN, 12);
 		g2d.setFont(font);
 		FontMetrics metrics = g2d.getFontMetrics(font);
-		//g2d.drawString("Teslimat adresleri: ", x + 5, y + metrics.getHeight() + 5);
-		if (hoveredCity != null)
-			g2d.drawString(cities[hoveredCity - 1].getName(), x + 5, y + 40);
+		FontMetrics smetrics = g2d.getFontMetrics(fontSmaller);
+		for (int i = 0; i < routesSoFar.size(); i++)
+		{
+			ArrayList<City> routeCities = routesSoFar.get(i).cities;
+			int size = 25;
+			for (int j = 0; j < routeCities.size(); j++)
+			{
+				City city = routeCities.get(j);
+
+				g2d.setColor(Color.RED);
+
+				if (mainCities.contains(city.getPlateNum()))
+					g2d.setColor(Color.BLUE);
+
+				int cx, cy;
+				cx = x + j * (size + 9);
+				cy = y + (i * (size + 5));
+
+				Ellipse2D.Double circle = new Ellipse2D.Double(cx, cy, size, size);
+				g2d.fill(circle);
+
+				g2d.setColor(Color.RED);
+				if (j != routeCities.size() - 1)
+					g2d.drawLine(cx + size, cy + size / 2, x + (j + 1) * (size + 9), cy + size / 2);
+
+				g2d.setColor(Color.WHITE);
+				g2d.setFont(fontSmaller);
+				g2d.drawString(String.format("%02d", city.getPlateNum()), cx + 4, cy + 16);
+			}
+
+			int sx = x + routeCities.size() * (size + 9), sy = y + (i * (size + 5) + 16);
+
+			g2d.setColor(Color.RED);
+			String costStr = (int) routesSoFar.get(i).cost + "km";
+			g2d.drawRect(sx - 4, sy - 14, smetrics.stringWidth(costStr) + 8, 20);
+
+			g2d.setColor(Color.WHITE);
+			g2d.drawString(costStr, sx, sy);
+		}
+
+		g2d.setFont(font);
 
 		w = 200;
 		h = 40;
@@ -184,11 +225,11 @@ public class MapDrawer
 		if (isMouseInRectangle(x, y, w, h))
 		{
 			hoveredButton = text;
-			g2d.setColor(Color.red);
+			g2d.setColor(Color.RED);
 		}
 		g2d.fillRect(x, y, w, h);
 
-		g2d.setColor(Color.white);
+		g2d.setColor(Color.WHITE);
 		g2d.drawString(text, x + w / 2 - metrics.stringWidth(text) / 2, y + metrics.getHeight() + 7);
 	}
 
@@ -257,6 +298,7 @@ public class MapDrawer
 				// eğer kullanıcı bir şehire tıkladıysa
 				if (hoveredCity != null)
 				{
+					routesSoFar.clear();
 					markedEdges.clear();
 					mainCities.clear();
 					selectedCities.add(hoveredCity);
@@ -285,6 +327,9 @@ public class MapDrawer
 							@Override
 							public void onRouteFound(Route route)
 							{
+								if (!routesSoFar.contains(route))
+									routesSoFar.add(0, route);
+
 								if (optimizer != null)
 								{
 									if (optimizer.isRunning())

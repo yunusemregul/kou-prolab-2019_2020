@@ -5,7 +5,7 @@ public class GeneticPathOptimizer implements Runnable
 {
 	private final RouteFinderListener listener;
 	private final RouteFinder routeFinder;
-	int populationSize = 250;
+	private final int populationSize = 250;
 	ArrayList<ArrayList<City>> population = new ArrayList<>();
 	private volatile boolean running = true;
 	private Route optimizedRoute;
@@ -39,6 +39,8 @@ public class GeneticPathOptimizer implements Runnable
 	void optimize()
 	{
 		population.clear();
+
+		boolean newRouteFound = false;
 		for (int i = 0; i < populationSize; i++)
 		{
 			ArrayList<City> newPath = mutate((ArrayList<City>) optimizedRoute.cities.clone());
@@ -49,6 +51,7 @@ public class GeneticPathOptimizer implements Runnable
 			{
 				optimizedRoute.cities = newPath;
 				optimizedRoute.cost = pathCost;
+				newRouteFound = true;
 			}
 		}
 
@@ -58,7 +61,8 @@ public class GeneticPathOptimizer implements Runnable
 			System.out.print(x.getPlateNum() + " ");
 		}
 		System.out.println();*/
-		listener.onRouteFound(routeFinder.findMultiRoute(optimizedRoute.cities));
+		if (newRouteFound)
+			listener.onRouteFound(routeFinder.findMultiRoute(optimizedRoute.cities));
 	}
 
 	public void stop()
