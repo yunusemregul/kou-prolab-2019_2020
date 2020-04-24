@@ -5,6 +5,6 @@ import java.util.ArrayList;
  */
 public class Route
 {
-	public double cost = 0;
+	public float cost = 0;
 	public ArrayList<City> cities = new ArrayList<>();
 }

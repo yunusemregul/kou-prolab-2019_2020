@@ -14,7 +14,7 @@ public class RouteFinder
 		Queue<RouteCity> openSet = new PriorityQueue<>();
 		Map<City, RouteCity> allNodes = new HashMap<>();
 
-		RouteCity start = new RouteCity(from, null, 0d, City.getCost(from, to));
+		RouteCity start = new RouteCity(from, null, 0.f, City.getCost(from, to));
 		openSet.add(start);
 		allNodes.put(from, start);
 
@@ -40,7 +40,7 @@ public class RouteFinder
 				RouteCity nextNode = allNodes.getOrDefault(connection, new RouteCity(connection));
 				allNodes.put(connection, nextNode);
 
-				double newScore = next.getRouteScore() + City.getCost(next.getCurrent(), connection);
+				float newScore = next.getRouteScore() + City.getCost(next.getCurrent(), connection);
 				if (newScore < nextNode.getRouteScore())
 				{
 					nextNode.setPrevious(next.getCurrent());
@@ -89,7 +89,7 @@ public class RouteFinder
 		{
 			destinations.remove(current);
 
-			double closestCost = Double.POSITIVE_INFINITY;
+			float closestCost = Float.POSITIVE_INFINITY;
 			City closest = null;
 			for (City x : destinations)
 			{

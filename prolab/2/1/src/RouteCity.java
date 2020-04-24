@@ -2,15 +2,15 @@ public class RouteCity implements Comparable<RouteCity>
 {
 	private final City current;
 	private City previous;
-	private double routeScore;
-	private double estimatedScore;
+	private float routeScore;
+	private float estimatedScore;
 
 	public RouteCity(City current)
 	{
-		this(current, null, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+		this(current, null, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
 	}
 
-	public RouteCity(City current, City previous, double routeScore, double estimatedScore)
+	public RouteCity(City current, City previous, float routeScore, float estimatedScore)
 	{
 		this.current = current;
 		this.previous = previous;
@@ -44,22 +44,22 @@ public class RouteCity implements Comparable<RouteCity>
 		this.previous = previous;
 	}
 
-	public double getRouteScore()
+	public float getRouteScore()
 	{
 		return routeScore;
 	}
 
-	public void setRouteScore(double routeScore)
+	public void setRouteScore(float routeScore)
 	{
 		this.routeScore = routeScore;
 	}
 
-	public double getEstimatedScore()
+	public float getEstimatedScore()
 	{
 		return estimatedScore;
 	}
 
-	public void setEstimatedScore(double estimatedScore)
+	public void setEstimatedScore(float estimatedScore)
 	{
 		this.estimatedScore = estimatedScore;
 	}
