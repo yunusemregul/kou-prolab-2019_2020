@@ -5,7 +5,7 @@ public class GeneticPathOptimizer implements Runnable
 {
 	private final RouteFinderListener listener;
 	private final RouteFinder routeFinder;
-	int populationSize = 500;
+	int populationSize = 250;
 	ArrayList<ArrayList<City>> population = new ArrayList<>();
 	private volatile boolean running = true;
 	private Route optimizedRoute;
@@ -22,7 +22,7 @@ public class GeneticPathOptimizer implements Runnable
 	ArrayList<City> mutate(ArrayList<City> toMutate)
 	{
 		Random randommer = new Random();
-		for (int i = 0; i < randommer.nextInt(10); i++)
+		for (int i = 0; i < randommer.nextInt(5); i++)
 		{
 			int indexA = randommer.nextInt(toMutate.size() - 2);
 			int indexB = randommer.nextInt(toMutate.size() - 2);

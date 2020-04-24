@@ -1,13 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
 /**
- * Responsible of all UI
+ * Tüm UI işlemlerinden sorumlu
  */
 public class MapDrawer
 {
@@ -49,7 +47,7 @@ public class MapDrawer
 	 */
 	public Point getCity2DPos(City city)
 	{
-		int x = (int) ((city.getLng() - 26) * mapScale) - 10; // minus 10 to center the map on UI
+		int x = (int) ((city.getLng() - 26) * mapScale) - 10; // 10 çıkartmak haritayı ortalamak için bi değer deneyerek buldum
 		int y = 50 + (int) ((42 - city.getLat()) * mapScale);
 
 		return new Point(x, y);
@@ -57,7 +55,7 @@ public class MapDrawer
 
 	private void drawCities(Graphics2D g2d)
 	{
-		// first pass = lines
+		// ilk geçişte şehirler arası çizgileri çiziyoruz
 		for (City city : cities)
 		{
 			Point cityPos = getCity2DPos(city);
@@ -81,7 +79,7 @@ public class MapDrawer
 		}
 
 		hoveredCity = null;
-		// second pass = circles and text
+		// ikinci geçişte şehirlerin yuvarlaklarını ve plakalarını çiziyoruz
 		for (City city : cities)
 		{
 			Point cityPos = getCity2DPos(city);
@@ -185,6 +183,16 @@ public class MapDrawer
 		frame.setSize(width, height);
 		frame.setLocationRelativeTo(null);
 		frame.getContentPane().setBackground(new Color(66, 66, 66));
+		// genetic optimizer threadını ui threadı kapandığında kapat
+		frame.addWindowListener(new WindowAdapter()
+		{
+			public void windowClosing(WindowEvent windowEvent)
+			{
+				super.windowClosing(windowEvent);
+				if (optimizer != null && optimizer.isRunning())
+					optimizer.stop();
+			}
+		});
 
 		panel = new JPanel()
 		{
@@ -203,29 +211,16 @@ public class MapDrawer
 				//repaint();
 			}
 		};
-		panel.addMouseMotionListener(new MouseMotionListener()
+		panel.addMouseMotionListener(new MouseMotionAdapter()
 		{
-			@Override
-			public void mouseDragged(MouseEvent mouseEvent)
-			{
-
-			}
-
-			@Override
 			public void mouseMoved(MouseEvent mouseEvent)
 			{
 				panel.repaint();
 				mouse = mouseEvent.getPoint();
 			}
 		});
-		panel.addMouseListener(new MouseListener()
+		panel.addMouseListener(new MouseAdapter()
 		{
-			@Override
-			public void mouseClicked(MouseEvent mouseEvent)
-			{
-			}
-
-			@Override
 			public void mousePressed(MouseEvent mouseEvent)
 			{
 				// eğer kullanıcı bir şehire tıkladıysa
@@ -263,21 +258,6 @@ public class MapDrawer
 						});
 					}
 				}
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent mouseEvent)
-			{
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent mouseEvent)
-			{
-			}
-
-			@Override
-			public void mouseExited(MouseEvent mouseEvent)
-			{
 			}
 		});
 		panel.setOpaque(false);
