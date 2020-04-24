@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Random;
 
-public class GeneticPathOptimizer implements Runnable
+public class PathOptimizer implements Runnable
 {
 	private final PathOptimizerListener listener;
 	private final PathFinder pathFinder;
@@ -15,7 +15,7 @@ public class GeneticPathOptimizer implements Runnable
 	private volatile boolean running = true;
 	private Path optimizedPath;
 
-	public GeneticPathOptimizer(City[] cities, ArrayList<City> path, PathOptimizerListener listener)
+	public PathOptimizer(City[] cities, ArrayList<City> path, PathOptimizerListener listener)
 	{
 		ArrayList<City> pathCopy = (ArrayList<City>) path.clone();
 		this.pathFinder = new PathFinder(cities);

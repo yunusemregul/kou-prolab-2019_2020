@@ -79,7 +79,7 @@ public class PathFinder
 		return totalPath;
 	}
 
-	public GeneticPathOptimizer findOptimizedRoute(ArrayList<City> destinations, PathOptimizerListener listener)
+	public PathOptimizer findOptimizedRoute(ArrayList<City> destinations, PathOptimizerListener listener)
 	{
 		destinations.add(0, cities[40]);
 		ArrayList<City> visited = new ArrayList<>();
@@ -115,7 +115,7 @@ public class PathFinder
 
 		listener.onRouteFound(this.findMultiRoute(visited));
 
-		GeneticPathOptimizer pathOptimizer = new GeneticPathOptimizer(cities, visited, listener);
+		PathOptimizer pathOptimizer = new PathOptimizer(cities, visited, listener);
 		Thread thread = new Thread(pathOptimizer);
 		thread.start();
 

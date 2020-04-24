@@ -25,7 +25,7 @@ public class MapDrawer
 	private ArrayList<Path> routesSoFar = new ArrayList<>();
 
 	private JPanel panel;
-	private GeneticPathOptimizer optimizer;
+	private PathOptimizer optimizer;
 
 	public MapDrawer(City[] cities)
 	{
