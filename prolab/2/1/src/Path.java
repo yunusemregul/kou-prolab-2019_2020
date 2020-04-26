@@ -6,5 +6,6 @@ import java.util.ArrayList;
 public class Path
 {
 	public float cost = 0;
+	public int findTime = 0;
 	public ArrayList<City> cities = new ArrayList<>();
 }

@@ -36,7 +36,6 @@ public class Main
 		BufferedReader citiesReader = new BufferedReader(new FileReader("cities.json"));
 		City[] cities = gson.fromJson(citiesReader, City[].class);
 
-		MapDrawer mapDrawer = new MapDrawer(cities);
-		mapDrawer.init();
+		new MapDrawer(cities);
 	}
 }

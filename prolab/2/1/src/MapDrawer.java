@@ -18,11 +18,13 @@ public class MapDrawer
 	private Point mouse = new Point(0, 0);
 	private String hoveredButton;
 	private Integer hoveredCity;
+	private Integer hoveredShowPath;
 
 	private ArrayList<Integer> selectedCities = new ArrayList<>();
 	private ArrayList<Integer> mainCities = new ArrayList<>();
 	private ArrayList<Edge> markedEdges = new ArrayList<>();
 	private ArrayList<Path> pathsSoFar = new ArrayList<>();
+	private int drawnPathIndex = 0;
 	private long lastPathFoundTime;
 
 	private JPanel panel;
@@ -31,6 +33,117 @@ public class MapDrawer
 	public MapDrawer(City[] cities)
 	{
 		this.cities = cities;
+
+		JFrame frame = new JFrame();
+		frame.setTitle("Prolab 2 - 1");
+		frame.setSize(width, height);
+		frame.setLocationRelativeTo(null);
+		frame.getContentPane().setBackground(new Color(66, 66, 66));
+		// genetic optimizer threadını ui threadı kapandığında kapat
+		frame.addWindowListener(new WindowAdapter()
+		{
+			public void windowClosing(WindowEvent windowEvent)
+			{
+				super.windowClosing(windowEvent);
+				if (optimizer != null && optimizer.isRunning())
+					optimizer.stop();
+			}
+		});
+
+		panel = new JPanel()
+		{
+			@Override
+			protected void paintComponent(Graphics g)
+			{
+				super.paintComponent(g);
+
+				Graphics2D g2d = (Graphics2D) g;
+				g2d.setStroke(new BasicStroke(2));
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+				drawCities(g2d);
+				drawBottomPanels(g2d);
+			}
+		};
+		panel.addMouseMotionListener(new MouseMotionAdapter()
+		{
+			public void mouseMoved(MouseEvent mouseEvent)
+			{
+				panel.repaint();
+				mouse = mouseEvent.getPoint();
+			}
+		});
+		panel.addMouseListener(new MouseAdapter()
+		{
+			public void mousePressed(MouseEvent mouseEvent)
+			{
+				// eğer kullanıcı bir şehire tıkladıysa
+				if (hoveredCity != null)
+				{
+					pathsSoFar.clear();
+					markedEdges.clear();
+					mainCities.clear();
+					selectedCities.add(hoveredCity);
+
+					if (optimizer != null && optimizer.isRunning())
+						optimizer.stop();
+				}
+
+				// eğer kullanıcı bir butona tıkladıysa
+				if (hoveredButton != null)
+				{
+					if (hoveredButton.equals("ROTA BUL") && selectedCities.size() > 0)
+					{
+						optimizer = null;
+
+						PathFinder pathFinder = new PathFinder(cities);
+						ArrayList<City> all = new ArrayList<>();
+
+						for (Integer plate : selectedCities)
+							all.add(cities[plate - 1]);
+
+						mainCities = (ArrayList<Integer>) selectedCities.clone();
+
+						optimizer = pathFinder.findOptimizedPath(all, new PathOptimizerListener()
+						{
+							@Override
+							public void onPathFound(Path path)
+							{
+								path.findTime = optimizer != null ? optimizer.secondsPastFromStart() : 0;
+								if (!pathsSoFar.contains(path))
+								{
+									pathsSoFar.add(0, path);
+									lastPathFoundTime = System.currentTimeMillis();
+								}
+
+								if (optimizer != null)
+								{
+									if (optimizer.isRunning())
+										drawPath(path);
+								}
+								else
+									drawPath(path);
+							}
+
+							@Override
+							public void onNextGeneration()
+							{
+								panel.repaint();
+							}
+						});
+					}
+
+					if (hoveredButton.equals("DUR") && optimizer != null && optimizer.isRunning())
+						optimizer.stop();
+				}
+
+				if (hoveredShowPath != null && hoveredShowPath < pathsSoFar.size())
+					drawPath(pathsSoFar.get(hoveredShowPath));
+			}
+		});
+		panel.setOpaque(false);
+		frame.add(panel);
+		frame.setVisible(true);
 	}
 
 	private boolean isMouseInRectangle(int rx, int ry, int rw, int rh)
@@ -161,6 +274,7 @@ public class MapDrawer
 	private void drawBottomPanels(Graphics2D g2d)
 	{
 		hoveredButton = null;
+		hoveredShowPath = null;
 
 		g2d.setColor(new Color(44, 44, 44));
 		int x = 5, y = 555;
@@ -210,9 +324,32 @@ public class MapDrawer
 			g2d.setColor(Color.WHITE);
 			g2d.drawString(costStr, sx, sy);
 
+			sx += smetrics.stringWidth(costStr) + 12;
+
+			g2d.setColor(Color.RED);
+			String timeStr = pathsSoFar.get(i).findTime + "sn";
+			g2d.drawRect(sx - 4, sy - 14, smetrics.stringWidth(timeStr) + 8, 20);
+
+			g2d.setColor(Color.WHITE);
+			g2d.drawString(timeStr, sx, sy);
+
 			g2d.setColor(new Color(44, 44, 44));
-			String showStr = "GÖSTER";
-			g2d.fillRect(sx + smetrics.stringWidth(costStr) + 8, sy - 14, smetrics.stringWidth(showStr), 20);
+			String showStr = "☐ GÖSTER";
+			if (i == drawnPathIndex)
+			{
+				showStr = "☑ GÖSTERİLİYOR";
+				g2d.setColor(Color.RED);
+			}
+			sx = sx + smetrics.stringWidth(timeStr) + 8;
+			if (isMouseInRectangle(sx, sy - 14, smetrics.stringWidth(showStr) + 8, 20) && showStr.equals("☐ GÖSTER"))
+			{
+				showStr = "☑ GÖSTER";
+				g2d.setColor(Color.RED);
+				hoveredShowPath = i;
+			}
+			g2d.fillRect(sx, sy - 14, smetrics.stringWidth(showStr) + 8, 20);
+			g2d.setColor(Color.WHITE);
+			g2d.drawString(showStr, sx + 4, sy);
 		}
 
 		g2d.setFont(font);
@@ -241,7 +378,7 @@ public class MapDrawer
 		{
 			y += 62;
 			int yGap = smetrics.getHeight() + 4;
-			g2d.drawString("Geçen süre: " + optimizer.secondsPastFromStart() + "s", x, y);
+			g2d.drawString("Geçen süre: " + optimizer.secondsPastFromStart() + "sn", x, y);
 			if (optimizer.isRunning())
 			{
 				y += yGap;
@@ -251,9 +388,9 @@ public class MapDrawer
 			if ((int) (System.currentTimeMillis() - lastPathFoundTime) / 1000 > 8)
 			{
 				y += yGap / 4;
-				g2d.drawString("(Bulunan rota muhtemelen-", x, y);
+				g2d.drawString("(Bulunan rota muhtemelen", x, y);
 				y += yGap;
-				g2d.drawString("en iyisi.)", x, y);
+				g2d.drawString("en iyisi)", x, y);
 				y += yGap;
 				y += yGap / 4;
 			}
@@ -268,117 +405,8 @@ public class MapDrawer
 		for (int i2 = 0; i2 < path.cities.size() - 1; i2++)
 			markedEdges.add(new Edge(path.cities.get(i2).getPlateNum(), path.cities.get(i2 + 1).getPlateNum()));
 
+		drawnPathIndex = pathsSoFar.indexOf(path);
 		panel.repaint();
 		selectedCities.clear();
-	}
-
-	public void init()
-	{
-		JFrame frame = new JFrame();
-		frame.setTitle("Prolab 2 - 1");
-		frame.setSize(width, height);
-		frame.setLocationRelativeTo(null);
-		frame.getContentPane().setBackground(new Color(66, 66, 66));
-		// genetic optimizer threadını ui threadı kapandığında kapat
-		frame.addWindowListener(new WindowAdapter()
-		{
-			public void windowClosing(WindowEvent windowEvent)
-			{
-				super.windowClosing(windowEvent);
-				if (optimizer != null && optimizer.isRunning())
-					optimizer.stop();
-			}
-		});
-
-		panel = new JPanel()
-		{
-			@Override
-			protected void paintComponent(Graphics g)
-			{
-				super.paintComponent(g);
-
-				Graphics2D g2d = (Graphics2D) g;
-				g2d.setStroke(new BasicStroke(2));
-				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-				drawCities(g2d);
-				drawBottomPanels(g2d);
-			}
-		};
-		panel.addMouseMotionListener(new MouseMotionAdapter()
-		{
-			public void mouseMoved(MouseEvent mouseEvent)
-			{
-				panel.repaint();
-				mouse = mouseEvent.getPoint();
-			}
-		});
-		panel.addMouseListener(new MouseAdapter()
-		{
-			public void mousePressed(MouseEvent mouseEvent)
-			{
-				// eğer kullanıcı bir şehire tıkladıysa
-				if (hoveredCity != null)
-				{
-					pathsSoFar.clear();
-					markedEdges.clear();
-					mainCities.clear();
-					selectedCities.add(hoveredCity);
-
-					if (optimizer != null && optimizer.isRunning())
-						optimizer.stop();
-				}
-
-				// eğer kullanıcı bir butona tıkladıysa
-				if (hoveredButton != null)
-				{
-					if (hoveredButton.equals("ROTA BUL") && selectedCities.size() > 0)
-					{
-						optimizer = null;
-
-						PathFinder pathFinder = new PathFinder(cities);
-						ArrayList<City> all = new ArrayList<>();
-
-						for (Integer plate : selectedCities)
-							all.add(cities[plate - 1]);
-
-						mainCities = (ArrayList<Integer>) selectedCities.clone();
-
-						optimizer = pathFinder.findOptimizedPath(all, new PathOptimizerListener()
-						{
-							@Override
-							public void onPathFound(Path path)
-							{
-								if (!pathsSoFar.contains(path))
-								{
-									pathsSoFar.add(0, path);
-									lastPathFoundTime = System.currentTimeMillis();
-								}
-
-								if (optimizer != null)
-								{
-									if (optimizer.isRunning())
-										drawPath(path);
-								}
-								else
-									drawPath(path);
-							}
-
-							@Override
-							public void onNextGeneration()
-							{
-								panel.repaint();
-							}
-						});
-					}
-
-					if (hoveredButton.equals("DUR") && optimizer != null && optimizer.isRunning())
-						optimizer.stop();
-				}
-			}
-		});
-		panel.setOpaque(false);
-		frame.add(panel);
-		frame.setVisible(true);
 	}
 }

@@ -105,7 +105,7 @@ public class PathOptimizer implements Runnable
 	{
 		int index = 0;
 		float r = (float) Math.random();
-		while (r > 0)
+		while (r > 0 && fitness.length > index)
 		{
 			r = r - fitness[index];
 			index++;
