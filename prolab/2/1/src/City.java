@@ -1,3 +1,4 @@
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -5,7 +6,7 @@ import java.util.HashSet;
  */
 public class City
 {
-	public static HashSet<Edge> costs; // bir şehirden diğerine giden costları içerecek dizi
+	public static HashMap<HashSet<Integer>, Integer> costs; // bir şehirden diğerine giden costları içerecek dizi
 
 	private final int plateNum; // plaka
 	private final String name; // şehir adı
@@ -13,14 +14,9 @@ public class City
 	private final float lng; // boylam
 	private final int[] connected; // bağlı şehirler
 
-	public static void loadCosts(HashSet<Edge> c)
+	public static void loadCosts(HashMap<HashSet<Integer>, Integer> c)
 	{
 		costs = c;
-	}
-
-	public static Edge getEdge(City from, City to)
-	{
-		return (new Edge(from.getPlateNum(), to.getPlateNum())).findInEdges(costs);
 	}
 
 	public static int getCost(City from, City to)
@@ -28,7 +24,11 @@ public class City
 		if (from == to)
 			return 0;
 
-		return getEdge(from, to).cost;
+		HashSet<Integer> set = new HashSet<>();
+		set.add(from.plateNum);
+		set.add(to.plateNum);
+
+		return costs.get(set);
 	}
 
 	public City(int plateNum, String name, float lat, float lng, int[] connected)

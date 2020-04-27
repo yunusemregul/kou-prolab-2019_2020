@@ -3,6 +3,7 @@ import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class Main
@@ -12,7 +13,7 @@ public class Main
 		BufferedReader costsReader = new BufferedReader(new FileReader("costs.txt"));
 		String line = costsReader.readLine();
 
-		HashSet<Edge> costs = new HashSet<>();
+		HashMap<HashSet<Integer>, Integer> costs = new HashMap<>();
 		for (int lineNum = 0; line != null; lineNum++)
 		{
 			String[] sCosts = line.split(" ");
@@ -23,8 +24,11 @@ public class Main
 					continue;
 
 				int cost = Integer.parseInt(sCosts[i]);
-				Edge edge = new Edge(lineNum + 1, i + 1, cost);
-				costs.add(edge);
+				HashSet<Integer> set = new HashSet<>();
+				set.add(lineNum + 1);
+				set.add(i + 1);
+
+				costs.put(set, cost);
 			}
 
 			line = costsReader.readLine();

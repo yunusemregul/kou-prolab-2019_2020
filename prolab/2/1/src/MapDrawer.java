@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Tüm UI işlemlerinden sorumlu
@@ -24,7 +25,7 @@ public class MapDrawer
 
 	private ArrayList<Integer> selectedCities = new ArrayList<>();
 	private ArrayList<Integer> mainCities = new ArrayList<>();
-	private ArrayList<Edge> markedEdges = new ArrayList<>();
+	private ArrayList<HashSet<Integer>> markedEdges = new ArrayList<>();
 	private ArrayList<Path> pathsSoFar = new ArrayList<>();
 	private int drawnPathIndex = 0;
 	private long lastPathFoundTime;
@@ -178,8 +179,11 @@ public class MapDrawer
 				City tCity = cities[plate - 1]; // target city to draw lines to
 				Point tCityPos = getCity2DPos(tCity);
 
+				HashSet<Integer> set = new HashSet<>();
+				set.add(city.getPlateNum());
+				set.add(cities[plate - 1].getPlateNum());
 				// bu yoldan geçiliyorsa kırmızı olması için
-				if (new Edge(city.getPlateNum(), cities[plate - 1].getPlateNum()).findInEdges(markedEdges) != null)
+				if (markedEdges.contains(set))
 					g2d.setColor(Color.RED);
 
 				g2d.drawLine(cityPos.x, cityPos.y, tCityPos.x, tCityPos.y);
@@ -214,7 +218,11 @@ public class MapDrawer
 			// eğer rota bu şehirden geçiyorsa kırmızı olması için
 			for (int plate : city.getConnected())
 			{
-				if (new Edge(city.getPlateNum(), cities[plate - 1].getPlateNum()).findInEdges(markedEdges) != null)
+				HashSet<Integer> set = new HashSet<>();
+				set.add(city.getPlateNum());
+				set.add(cities[plate - 1].getPlateNum());
+
+				if (markedEdges.contains(set))
 					g2d.setColor(Color.RED);
 			}
 
@@ -242,15 +250,18 @@ public class MapDrawer
 				City tCity = cities[plate - 1]; // target city to draw lines to
 				Point tCityPos = getCity2DPos(tCity);
 
-				Edge edge = new Edge(city.getPlateNum(), cities[plate - 1].getPlateNum());
-				if (edge.findInEdges(markedEdges) != null)
+				HashSet<Integer> set = new HashSet<>();
+				set.add(city.getPlateNum());
+				set.add(cities[plate - 1].getPlateNum());
+
+				if (markedEdges.contains(set))
 				{
 					g2d.setColor(Color.WHITE);
 
 					String str = "";
 					for (int i = 0; i < markedEdges.size(); i++)
 					{
-						if (markedEdges.get(i).isEqualDirectionless(edge))
+						if (markedEdges.get(i).equals(set))
 						{
 							if (str.isEmpty())
 								str += (i + 1);
@@ -397,8 +408,13 @@ public class MapDrawer
 		markedEdges.clear();
 
 		for (int i2 = 0; i2 < path.cities.size() - 1; i2++)
-			markedEdges.add(new Edge(path.cities.get(i2).getPlateNum(), path.cities.get(i2 + 1).getPlateNum()));
+		{
+			HashSet<Integer> set = new HashSet<>();
+			set.add(path.cities.get(i2).getPlateNum());
+			set.add(path.cities.get(i2 + 1).getPlateNum());
 
+			markedEdges.add(set);
+		}
 		drawnPathIndex = pathsSoFar.indexOf(path);
 		panel.repaint();
 		selectedCities.clear();
