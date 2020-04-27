@@ -11,7 +11,7 @@ public class PathOptimizer implements Runnable
 	private final PathOptimizerListener listener;
 	private final PathFinder pathFinder;
 
-	private final int populationSize = 100;
+	private final int populationSize = 300;
 	private double mutationRate = .4;
 
 	ArrayList<City>[] population = new ArrayList[populationSize];

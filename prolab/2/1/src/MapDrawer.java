@@ -202,17 +202,16 @@ public class MapDrawer
 					y = cityPos.y - size / 2;
 			Ellipse2D.Double circle = new Ellipse2D.Double(x, y, size, size);
 
-			if (isMouseInRectangle(x, y, size, size))
+			if (isMouseInRectangle(x, y, size, size) && city.getPlateNum() != 41 && !selectedCities.contains(city.getPlateNum()))
 			{
 				g2d.setColor(Color.RED);
-				g2d.drawRect(x, y, size, size); // debug
 				hoveredCity = city.getPlateNum();
 			}
 			else
 			{
 				// şehirleri seçerken kırmızı olmaları için
 				if (selectedCities.contains(city.getPlateNum()))
-					g2d.setColor(Color.RED);
+					g2d.setColor(Color.BLUE);
 			}
 
 			// eğer rota bu şehirden geçiyorsa kırmızı olması için
@@ -229,6 +228,9 @@ public class MapDrawer
 			// eğer bu şehir teslimat adresiyse mavi olması için
 			if (mainCities.contains(city.getPlateNum()))
 				g2d.setColor(Color.BLUE);
+
+			if (city.getPlateNum() == 41)
+				g2d.setColor(new Color(21, 173, 72));
 
 			g2d.fill(circle);
 
@@ -261,7 +263,7 @@ public class MapDrawer
 					String str = "";
 					for (int i = 0; i < markedEdges.size(); i++)
 					{
-						if (markedEdges.get(i).equals(set))
+						if (markedEdges.get(i) != null && markedEdges.get(i).equals(set))
 						{
 							if (str.isEmpty())
 								str += (i + 1);
@@ -308,6 +310,10 @@ public class MapDrawer
 				cy = y + (i * (size + 5));
 
 				Ellipse2D.Double circle = new Ellipse2D.Double(cx, cy, size, size);
+
+				if (city.getPlateNum() == 41)
+					g2d.setColor(new Color(21, 173, 72));
+
 				g2d.fill(circle);
 
 				g2d.setColor(Color.RED);
