@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
@@ -39,16 +41,7 @@ public class MapDrawer
 		frame.setSize(width, height);
 		frame.setLocationRelativeTo(null);
 		frame.getContentPane().setBackground(new Color(66, 66, 66));
-		// genetic optimizer threadını ui threadı kapandığında kapat
-		frame.addWindowListener(new WindowAdapter()
-		{
-			public void windowClosing(WindowEvent windowEvent)
-			{
-				super.windowClosing(windowEvent);
-				if (optimizer != null && optimizer.isRunning())
-					optimizer.stop();
-			}
-		});
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		panel = new JPanel()
 		{
@@ -356,7 +349,8 @@ public class MapDrawer
 
 		w = 200;
 		h = 40;
-		x = width - w - 5;
+		x = width - w - 15;
+		y = 440;
 		String text = "ROTA BUL";
 
 		if (optimizer != null && optimizer.isRunning())
@@ -376,7 +370,7 @@ public class MapDrawer
 		g2d.setFont(fontSmaller);
 		if (optimizer != null && !markedEdges.isEmpty())
 		{
-			y += 62;
+			y += 57;
 			int yGap = smetrics.getHeight() + 4;
 			g2d.drawString("Geçen süre: " + optimizer.secondsPastFromStart() + "sn", x, y);
 			if (optimizer.isRunning())
@@ -388,9 +382,9 @@ public class MapDrawer
 			if ((int) (System.currentTimeMillis() - lastPathFoundTime) / 1000 > 8)
 			{
 				y += yGap / 4;
-				g2d.drawString("(Bulunan rota muhtemelen", x, y);
+				g2d.drawString("(Bulunan rota en iyisi", x, y);
 				y += yGap;
-				g2d.drawString("en iyisi)", x, y);
+				g2d.drawString("olabilir)", x, y);
 				y += yGap;
 				y += yGap / 4;
 			}

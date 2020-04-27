@@ -23,9 +23,18 @@ public class Edge
 
 	public Edge findInEdges(Collection<Edge> edges)
 	{
+		if (edges.size() == 0)
+			return null;
+
 		for (Edge e : edges)
 		{
-			if ((e.from == this.from && e.to == this.to) || (e.to == this.from && e.from == this.to))
+			if (e == null)
+				continue;
+
+			if (e.from == this.from && e.to == this.to)
+				return e;
+
+			if (e.to == this.from && e.from == this.to)
 				return e;
 		}
 

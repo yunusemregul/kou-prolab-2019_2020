@@ -12,7 +12,7 @@ public class PathOptimizer implements Runnable
 	private final PathFinder pathFinder;
 
 	private final int populationSize = 100;
-	private final double mutationRate = .1;
+	private double mutationRate = .4;
 
 	ArrayList<City>[] population = new ArrayList[populationSize];
 	private int generationNumber = 0;
@@ -50,6 +50,7 @@ public class PathOptimizer implements Runnable
 			toMutate.set(indexA, toMutate.get(indexB));
 			toMutate.set(indexB, temp);
 		}
+		mutationRate = Math.max(mutationRate - 0.00001, 0.1);
 		return toMutate;
 	}
 
@@ -78,9 +79,11 @@ public class PathOptimizer implements Runnable
 
 	private void generateFitness()
 	{
+		float sum = 0;
 		for (int i = 0; i < populationSize; i++)
 		{
 			Path path = pathFinder.findMultiPath(population[i]);
+
 			fitness[i] = path.cost;
 
 			if (fitness[i] < optimizedPath.cost)
@@ -91,12 +94,10 @@ public class PathOptimizer implements Runnable
 				listener.onPathFound(pathFinder.findMultiPath(optimizedPath.cities));
 			}
 
-			fitness[i] = (float) (1 / (Math.pow(path.cost, 8) + 1));
+			fitness[i] = (float) (1 / Math.pow(path.cost, 8));
+			sum += fitness[i];
 		}
 
-		float sum = 0;
-		for (int i = 0; i < populationSize; i++)
-			sum += fitness[i];
 		for (int i = 0; i < populationSize; i++)
 			fitness[i] = fitness[i] / sum;
 	}
