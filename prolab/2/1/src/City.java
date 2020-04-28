@@ -14,11 +14,41 @@ public class City
 	private final float lng; // boylam
 	private final int[] connected; // bağlı şehirler
 
+	/**
+	 * Şehir yapıcı metodu.
+	 *
+	 * @param plateNum  plaka
+	 * @param name      isim
+	 * @param lat       enlem
+	 * @param lng       boylam
+	 * @param connected komşu şehirler
+	 */
+	public City(int plateNum, String name, float lat, float lng, int[] connected)
+	{
+		this.plateNum = plateNum;
+		this.name = name;
+		this.lat = lat;
+		this.lng = lng;
+		this.connected = connected;
+	}
+
+	/**
+	 * Şehirler arası mesafeleri bu sınıfın üzerine static olarak kaydeden metot.
+	 *
+	 * @param c şehirler arası mesafeler
+	 */
 	public static void loadCosts(HashMap<HashSet<Integer>, Integer> c)
 	{
 		costs = c;
 	}
 
+	/**
+	 * Bir şehirden diğerine mesafeyi döndüren metot.
+	 *
+	 * @param from başlangıç şehri
+	 * @param to   hedef şehir
+	 * @return mesafe
+	 */
 	public static int getCost(City from, City to)
 	{
 		if (from == to)
@@ -29,15 +59,6 @@ public class City
 		set.add(to.plateNum);
 
 		return costs.get(set);
-	}
-
-	public City(int plateNum, String name, float lat, float lng, int[] connected)
-	{
-		this.plateNum = plateNum;
-		this.name = name;
-		this.lat = lat;
-		this.lng = lng;
-		this.connected = connected;
 	}
 
 	public int getPlateNum()

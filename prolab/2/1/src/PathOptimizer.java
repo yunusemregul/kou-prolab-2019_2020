@@ -5,7 +5,6 @@ import java.util.Random;
  * Genetik algoritma kullanarak verilen rotayı optimize eden sınıf.
  * Kendi threadında çalışır.
  */
-
 public class PathOptimizer implements Runnable
 {
 	private final PathOptimizerListener listener;
@@ -23,6 +22,13 @@ public class PathOptimizer implements Runnable
 	float[] fitness = new float[populationSize];
 	private Path optimizedPath;
 
+	/**
+	 * PathOptimizer sınıfı yapıcı metodu.
+	 *
+	 * @param cities   tüm şehirler
+	 * @param path     optimize edilecek yol
+	 * @param listener bu sınıftan gelecek cevapları dinleyen nesne
+	 */
 	public PathOptimizer(City[] cities, ArrayList<City> path, PathOptimizerListener listener)
 	{
 		ArrayList<City> pathCopy = (ArrayList<City>) path.clone();
@@ -38,6 +44,18 @@ public class PathOptimizer implements Runnable
 		}
 	}
 
+	/**
+	 * Bir rota üzerinde mutationRate değişkenine bağlı olarak rastgele bir mutasyon yapan metot.
+	 * <p>
+	 * Örneğin rota:
+	 * 2 -> 5 -> 8 ise
+	 * 2 -> 8 -> 5 haline gelebilir.
+	 * <p>
+	 * Mutasyonlar çeşitliliğe katkı sağlar.
+	 *
+	 * @param toMutate mutasyona uğratılacak rota
+	 * @return mutasyona uğratılmış hali
+	 */
 	private ArrayList<City> mutate(ArrayList<City> toMutate)
 	{
 		if (Math.random() < mutationRate)
@@ -54,6 +72,17 @@ public class PathOptimizer implements Runnable
 		return toMutate;
 	}
 
+	/**
+	 * İki rotayı rastgele şekilde çaprazlayan metot.
+	 * Bir rotadan rastgele bir aralığı alır, diğer rotadan kalan kısmı alır.
+	 * Alınan kısımlarla yeni bir rota oluşturur.
+	 * <p>
+	 * Çaprazlama işlemi çeşitliliğe katkı sağlar.
+	 *
+	 * @param pathA çaprazlanacak 1. rota
+	 * @param pathB çaprazlanacak 2. rota
+	 * @return çaprazlanmış rota
+	 */
 	private ArrayList<City> crossOver(ArrayList<City> pathA, ArrayList<City> pathB)
 	{
 		ArrayList<City> crossed = new ArrayList<>();
@@ -77,6 +106,11 @@ public class PathOptimizer implements Runnable
 		return crossed;
 	}
 
+	/**
+	 * Popülasyondaki rotalar için genetik algoritmada bir kavram olan fitness değerini hesaplayan metot.
+	 * Bu uygulama için fitness değeri o rotanın ne kadar kısa olduğuna dayanıyor.
+	 * Bir rota ne kadar kısaysa fit olma oranı o kadar yüksektir.
+	 */
 	private void generateFitness()
 	{
 		float sum = 0;
@@ -102,6 +136,11 @@ public class PathOptimizer implements Runnable
 			fitness[i] = fitness[i] / sum;
 	}
 
+	/**
+	 * Popülasyondaki rotalardan en fit olanlardan bir tane seçip döndüren metot.
+	 *
+	 * @return fitliği yüksek olan bir rota
+	 */
 	private ArrayList<City> pickOneFromPopulation()
 	{
 		int index = 0;
@@ -115,6 +154,10 @@ public class PathOptimizer implements Runnable
 		return (ArrayList<City>) population[index].clone();
 	}
 
+	/**
+	 * Sınıfta belirlenen popülasyon nüfusu kadar rota oluşturan metot.
+	 * Rotaları oluştururken crossover ve mutate metodlarını kullanarak çeşitlilik sağlar.
+	 */
 	private void generatePopulation()
 	{
 		ArrayList<City>[] newPopulation = new ArrayList[populationSize];
@@ -133,15 +176,47 @@ public class PathOptimizer implements Runnable
 		listener.onNextGeneration();
 	}
 
+	/**
+	 * Optimize işlemini uygun sırada çalıştıran metot.
+	 */
 	void optimize()
 	{
 		generateFitness();
 		generatePopulation();
 	}
 
+	/**
+	 * Optimize işlemini durduran metot.
+	 */
 	public void stop()
 	{
 		this.running = false;
+	}
+
+	/**
+	 * Optimizer in kaç saniyedir çalıştığını döndüren metot.
+	 *
+	 * @return kaç saniyedir çalışıyor
+	 */
+	public int secondsPastFromStart()
+	{
+		if (endTime > startTime)
+			return (int) (endTime - startTime) / 1000;
+		else
+			return (int) (System.currentTimeMillis() - startTime) / 1000;
+	}
+
+	/**
+	 * Bu sınıfın başka bir threaddan çalıştırılabilmesini sağlayan başlangıç metotu.
+	 */
+	@Override
+	public void run()
+	{
+		endTime = System.currentTimeMillis();
+		startTime = System.currentTimeMillis();
+		while (running)
+			optimize();
+		endTime = System.currentTimeMillis();
 	}
 
 	public boolean isRunning()
@@ -154,21 +229,11 @@ public class PathOptimizer implements Runnable
 		return generationNumber;
 	}
 
-	public int secondsPastFromStart()
+	public long getEndTime()
 	{
 		if (endTime > startTime)
-			return (int) (endTime - startTime) / 1000;
+			return endTime;
 		else
-			return (int) (System.currentTimeMillis() - startTime) / 1000;
-	}
-
-	@Override
-	public void run()
-	{
-		endTime = System.currentTimeMillis();
-		startTime = System.currentTimeMillis();
-		while (running)
-			optimize();
-		endTime = System.currentTimeMillis();
+			return System.currentTimeMillis();
 	}
 }

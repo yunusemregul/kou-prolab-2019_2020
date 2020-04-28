@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
- * Tüm UI işlemlerinden sorumlu
+ * Tüm UI işlemlerinden sorumlu sınıf.
  */
 public class MapDrawer
 {
@@ -33,6 +33,11 @@ public class MapDrawer
 	private JPanel panel;
 	private PathOptimizer optimizer;
 
+	/**
+	 * MapDrawer sınıfı yapıcı metodu.
+	 *
+	 * @param cities tüm şehirler
+	 */
 	public MapDrawer(City[] cities)
 	{
 		this.cities = cities;
@@ -133,6 +138,8 @@ public class MapDrawer
 
 				if (hoveredShowPath != null && hoveredShowPath < pathsSoFar.size())
 					drawPath(pathsSoFar.get(hoveredShowPath));
+
+				panel.repaint();
 			}
 		});
 		panel.setOpaque(false);
@@ -140,20 +147,29 @@ public class MapDrawer
 		frame.setVisible(true);
 	}
 
-	private boolean isMouseInRectangle(int rx, int ry, int rw, int rh)
+	/**
+	 * Mousenin ekrandaki bir alanın içinde olup olmadığını döndüren metot.
+	 *
+	 * @param x alanın x konumu
+	 * @param y alanın y konumu
+	 * @param w alanın genişliği
+	 * @param h alanın uzunluğu
+	 * @return içindeyse true değilse false
+	 */
+	private boolean isMouseInRectangle(int x, int y, int w, int h)
 	{
-		return (mouse.x > rx && mouse.y > ry && mouse.x < rx + rw && mouse.y < ry + rh);
+		return (mouse.x > x && mouse.y > y && mouse.x < x + w && mouse.y < y + h);
 	}
 
 	/**
-	 * Calculates the cities 2D position based on its latitude and longitude.
-	 * x position = (cities longitude) - (Turkey's longitude)
-	 * y position = (Turkey's latitude) - (cities latitude)
+	 * Bir şehrin enlem boylamlarına göre ekrandaki konumunu döndüren metot.
+	 * x pozisyonu = (şehrin boylamı) - (Türkiye'nin boylamı)
+	 * y pozisyonu = (Türkiye'nin enlemi) - (şehrin enlemi)
 	 * <p>
-	 * y is reversed because latitudes increase from bottom to top instead top to bottom
+	 * y değeri x e göre ters çünkü enlemler aşağıdan yukarı doğru artıyor
 	 *
-	 * @param city to calculate 2D position
-	 * @return 2D Point position of city
+	 * @param city ekrandaki konumu hesaplanacak şehir
+	 * @return şehrin ekrandaki konumu
 	 */
 	public Point getCity2DPos(City city)
 	{
@@ -163,6 +179,11 @@ public class MapDrawer
 		return new Point(x, y);
 	}
 
+	/**
+	 * Haritayı çizen metot.
+	 *
+	 * @param g2d çizim yapılacak graphics2d nesnesi
+	 */
 	private void drawCities(Graphics2D g2d)
 	{
 		// ilk geçişte şehirler arası çizgileri çiziyoruz
@@ -277,6 +298,11 @@ public class MapDrawer
 		}
 	}
 
+	/**
+	 * Haritanın altındaki tüm rotaları ve diğer butonları çizen metot.
+	 *
+	 * @param g2d çizim yapılacak graphics2d nesnesi
+	 */
 	private void drawBottomPanels(Graphics2D g2d)
 	{
 		hoveredButton = null;
@@ -390,13 +416,13 @@ public class MapDrawer
 			y += 57;
 			int yGap = smetrics.getHeight() + 4;
 			g2d.drawString("Geçen süre: " + optimizer.secondsPastFromStart() + "sn", x, y);
-			if (optimizer.isRunning())
-			{
-				y += yGap;
-				g2d.drawString("Rota geliştiriliyor..", x, y);
-			}
 			y += yGap;
-			if ((int) (System.currentTimeMillis() - lastPathFoundTime) / 1000 > 8)
+			if (optimizer.isRunning())
+				g2d.drawString("Rota geliştiriliyor..", x, y);
+			else
+				g2d.drawString("Geliştirici durduruldu.", x, y);
+			y += yGap;
+			if ((int) (optimizer.getEndTime() - lastPathFoundTime) / 1000 > 8)
 			{
 				y += yGap / 4;
 				g2d.drawString("(Bulunan rota en iyisi", x, y);
@@ -409,6 +435,11 @@ public class MapDrawer
 		}
 	}
 
+	/**
+	 * Haritadaki bir yolu çizmeyi sağlayan metot. Rotalar bulunduğunda kullanılıyor.
+	 *
+	 * @param path çizilecek yol
+	 */
 	private void drawPath(Path path)
 	{
 		markedEdges.clear();

@@ -1,17 +1,29 @@
 import java.util.*;
 
 /**
- * A* algoritması kullanarak en kısa mesafeyi bulan sınıf.
+ * A* algoritması kullanarak iki şehir/bir çok şehir arasındaki en kısa mesafeyi bulan sınıf.
  */
 public class PathFinder
 {
 	private final City[] cities;
 
+	/**
+	 * PathFinder sınıfı yapıcı metodu.
+	 *
+	 * @param cities tüm şehirler
+	 */
 	public PathFinder(City[] cities)
 	{
 		this.cities = cities;
 	}
 
+	/**
+	 * İki şehir arasındaki en kısa yolu A* algoritması kullanarak bulan metot.
+	 *
+	 * @param from başlangıç şehri
+	 * @param to   varış şehri
+	 * @return en kısa yol
+	 */
 	public Path findPath(City from, City to)
 	{
 		Queue<PathCity> openSet = new PriorityQueue<>();
@@ -54,15 +66,17 @@ public class PathFinder
 			}
 		}
 
-		throw new IllegalStateException("No path found");
+		return null;
 	}
 
 
 	/**
-	 * Gidilecek şehir dizisi arasındaki rotayı ve costunu bulan fonksiyon.
+	 * Gidilecek şehir dizisi arasındaki rotayı bulan metot.
+	 * Gidilecek şehirler arasında A* algoritmasını çağırmaya dayanıyor.
+	 * Bu metot gidilecek şehirler arasındaki en kısa rota hangisi olduğunu umursamadan verilen sıraya göre gider.
 	 *
-	 * @param destinations şehir dizisi
-	 * @return toplam costu belli
+	 * @param destinations gidilecek şehir dizisi
+	 * @return bulunan rota
 	 */
 	public Path findMultiPath(ArrayList<City> destinations)
 	{
@@ -82,6 +96,22 @@ public class PathFinder
 		return totalPath;
 	}
 
+	/**
+	 * Gidilecek şehirler arasındaki en kısa, optimize edilmiş rotayı bulan metot.
+	 * Optimize etme işlemini PathOptimizer sınıfı genetik optimizasyon algoritması kullanarak yapıyor.
+	 * <p>
+	 * Bu metot rotayı optimize etmeden önce greedy en yakın komşu algoritması kullanarak optimize edilecek
+	 * yol için bir kolaylaştırma yapar. Bu greedy algoritma genelde en kısa yolu vermez ama en kısa yola
+	 * yakın yollar verir. Böylece genetik algoritmanın işi bir nevi kolaylaştırılmış olur.
+	 * <p>
+	 * Bu metodun rotayı optimize etmek için oluşturduğu PathOptimizer sınıfı başka bir threadda çalışmalı.
+	 * Çünkü optimizasyon işlemi sürekli ve maliyetli olacağı için UI threadını bloke eder ve kullanıcıya
+	 * geri dönüş yapılamaz, kullanıcı uygulamayı kontrol edemez.
+	 *
+	 * @param destinations gidilecek şehirler
+	 * @param listener     başka threadda çalışan PathOptimizer sınıfından gelecek cevapları dinleyecek nesne
+	 * @return oluşturulan PathOptimizer sınıfı
+	 */
 	public PathOptimizer findOptimizedPath(ArrayList<City> destinations, PathOptimizerListener listener)
 	{
 		destinations.add(0, cities[40]);
@@ -108,13 +138,6 @@ public class PathFinder
 		}
 
 		visited.add(cities[40]);
-
-		System.out.println("initial greedy path: ");
-		for (City x : visited)
-		{
-			System.out.print(x.getPlateNum() + " ");
-		}
-		System.out.println();
 
 		listener.onPathFound(this.findMultiPath(visited));
 
