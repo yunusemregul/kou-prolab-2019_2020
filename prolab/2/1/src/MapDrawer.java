@@ -23,10 +23,15 @@ public class MapDrawer
 	private Integer hoveredCity;
 	private Integer hoveredShowPath;
 
+	private Point dragStartingPoint = new Point(0, 0);
+	private Point bottomPanelDrawOffset = new Point(0, 0);
+
 	private ArrayList<Integer> selectedCities = new ArrayList<>();
 	private ArrayList<Integer> mainCities = new ArrayList<>();
 	private ArrayList<HashSet<Integer>> markedEdges = new ArrayList<>();
 	private ArrayList<Path> pathsSoFar = new ArrayList<>();
+	private int selectedCitiesSizeSave;
+	private int biggestSizedPathsSize = 0;
 	private int drawnPathIndex = 0;
 	private long lastPathFoundTime;
 
@@ -68,14 +73,37 @@ public class MapDrawer
 		{
 			public void mouseMoved(MouseEvent mouseEvent)
 			{
-				panel.repaint();
 				mouse = mouseEvent.getPoint();
+				panel.repaint();
+			}
+
+			@Override
+			public void mouseDragged(MouseEvent mouseEvent)
+			{
+				if (isPointInRectangle(dragStartingPoint, 0, 545 - 10, width, height - 545))
+				{
+					int xDiff = mouseEvent.getPoint().x - mouse.x;
+					int yDiff = mouseEvent.getPoint().y - mouse.y;
+					if (-(bottomPanelDrawOffset.x + xDiff) + 350 < biggestSizedPathsSize * 20)
+					{
+						bottomPanelDrawOffset.x += xDiff;
+						bottomPanelDrawOffset.x = Math.min(bottomPanelDrawOffset.x, 0);
+					}
+					if (-(bottomPanelDrawOffset.y + yDiff) + 180 < pathsSoFar.size() * 30)
+					{
+						bottomPanelDrawOffset.y += yDiff;
+						bottomPanelDrawOffset.y = Math.min(bottomPanelDrawOffset.y, 0);
+					}
+					mouse = mouseEvent.getPoint();
+					panel.repaint();
+				}
 			}
 		});
 		panel.addMouseListener(new MouseAdapter()
 		{
 			public void mousePressed(MouseEvent mouseEvent)
 			{
+				dragStartingPoint = mouseEvent.getPoint();
 				// eğer kullanıcı bir şehire tıkladıysa
 				if (hoveredCity != null)
 				{
@@ -83,6 +111,7 @@ public class MapDrawer
 					markedEdges.clear();
 					mainCities.clear();
 					selectedCities.add(hoveredCity);
+					selectedCitiesSizeSave = selectedCities.size();
 
 					if (optimizer != null && optimizer.isRunning())
 						optimizer.stop();
@@ -93,6 +122,7 @@ public class MapDrawer
 				{
 					if (hoveredButton.equals("ROTA BUL") && selectedCities.size() > 0)
 					{
+						bottomPanelDrawOffset = new Point(0, 0);
 						optimizer = null;
 
 						PathFinder pathFinder = new PathFinder(cities);
@@ -113,6 +143,9 @@ public class MapDrawer
 								{
 									pathsSoFar.add(0, path);
 									lastPathFoundTime = System.currentTimeMillis();
+									bottomPanelDrawOffset = new Point(0, 0);
+									if (path.cities.size() > biggestSizedPathsSize)
+										biggestSizedPathsSize = path.cities.size();
 								}
 
 								if (optimizer != null)
@@ -148,17 +181,18 @@ public class MapDrawer
 	}
 
 	/**
-	 * Mousenin ekrandaki bir alanın içinde olup olmadığını döndüren metot.
+	 * Bir noktanın ekrandaki bir alanın içinde olup olmadığını döndüren metot.
 	 *
-	 * @param x alanın x konumu
-	 * @param y alanın y konumu
-	 * @param w alanın genişliği
-	 * @param h alanın uzunluğu
+	 * @param point nokta
+	 * @param x     alanın x konumu
+	 * @param y     alanın y konumu
+	 * @param w     alanın genişliği
+	 * @param h     alanın uzunluğu
 	 * @return içindeyse true değilse false
 	 */
-	private boolean isMouseInRectangle(int x, int y, int w, int h)
+	private boolean isPointInRectangle(Point point, int x, int y, int w, int h)
 	{
-		return (mouse.x > x && mouse.y > y && mouse.x < x + w && mouse.y < y + h);
+		return (point.x > x && point.y > y && mouse.x < x + w && mouse.y < y + h);
 	}
 
 	/**
@@ -212,6 +246,7 @@ public class MapDrawer
 		}
 
 		hoveredCity = null;
+		Font font = new Font("", Font.PLAIN, 12);
 		// ikinci geçişte şehirlerin yuvarlaklarını ve plakalarını çiziyoruz
 		for (City city : cities)
 		{
@@ -223,7 +258,7 @@ public class MapDrawer
 					y = cityPos.y - size / 2;
 			Ellipse2D.Double circle = new Ellipse2D.Double(x, y, size, size);
 
-			if (isMouseInRectangle(x, y, size, size) && city.getPlateNum() != 41 && !selectedCities.contains(city.getPlateNum()))
+			if (isPointInRectangle(mouse, x, y, size, size) && city.getPlateNum() != 41 && !selectedCities.contains(city.getPlateNum()))
 			{
 				g2d.setColor(Color.RED);
 				hoveredCity = city.getPlateNum();
@@ -256,13 +291,13 @@ public class MapDrawer
 			g2d.fill(circle);
 
 			g2d.setColor(Color.WHITE);
-			Font font = new Font("", Font.PLAIN, 12);
 			g2d.setFont(font);
 			FontMetrics metrics = g2d.getFontMetrics(font);
 			String text = String.format("%02d", city.getPlateNum());
 			g2d.drawString(text, cityPos.x - metrics.stringWidth(text) / 2, cityPos.y + 4);
 		}
 
+		font = new Font("", Font.PLAIN, 11);
 		// üçüncü geçişte rota bulunduğunda kenarların üzerindeki adım sayısını yazıyoruz
 		for (City city : cities)
 		{
@@ -292,6 +327,7 @@ public class MapDrawer
 								str += "|" + (i + 1);
 						}
 					}
+					g2d.setFont(font);
 					g2d.drawString(str, (cityPos.x + tCityPos.x) / 2, (cityPos.y + tCityPos.y) / 2);
 				}
 			}
@@ -309,75 +345,53 @@ public class MapDrawer
 		hoveredShowPath = null;
 
 		g2d.setColor(new Color(44, 44, 44));
-		int x = 5, y = 555;
+		int x = 12, y = 545;
 		int w, h;
 
+		w = 25;
+		h = 185;
+		g2d.setColor(new Color(55, 55, 55));
+		g2d.fillRect(x, y, width - w - 210, h);
+		g2d.setColor(new Color(44, 44, 44));
+		g2d.fillRect(x, y, w, h);
+
+		x += w + 5;
+		y += 5;
 		g2d.setColor(Color.WHITE);
 		Font font = new Font("", Font.BOLD, 16);
 		Font fontSmaller = new Font("", Font.PLAIN, 12);
-		g2d.setFont(font);
+		g2d.setFont(fontSmaller);
 		FontMetrics metrics = g2d.getFontMetrics(font);
 		FontMetrics smetrics = g2d.getFontMetrics(fontSmaller);
-		for (int i = 0; i < Math.min(pathsSoFar.size(), 6); i++)
+		for (int i = 0; i < pathsSoFar.size(); i++)
 		{
 			ArrayList<City> pathCities = pathsSoFar.get(i).cities;
 			int size = 25;
-			for (int j = 0; j < pathCities.size(); j++)
-			{
-				City city = pathCities.get(j);
 
+			int sx = x;
+			int sy = y + (i * (size + 5) + 16) + bottomPanelDrawOffset.y;
+
+			Rectangle clip = new Rectangle(x - w - 5, y - 5, width - sx - 227, h);
+			g2d.setClip(clip);
+
+			g2d.setColor(new Color(50, 50, 50));
+			if (i % 2 == 0)
+				g2d.setColor(new Color(60, 60, 60));
+			if (i == drawnPathIndex)
 				g2d.setColor(Color.RED);
-
-				if (mainCities.contains(city.getPlateNum()))
-					g2d.setColor(Color.BLUE);
-
-				int cx, cy;
-				cx = x + j * (size + 9);
-				cy = y + (i * (size + 5));
-
-				Ellipse2D.Double circle = new Ellipse2D.Double(cx, cy, size, size);
-
-				if (city.getPlateNum() == 41)
-					g2d.setColor(new Color(21, 173, 72));
-
-				g2d.fill(circle);
-
-				g2d.setColor(Color.RED);
-				if (j != pathCities.size() - 1)
-					g2d.drawLine(cx + size, cy + size / 2, x + (j + 1) * (size + 9), cy + size / 2);
-
-				g2d.setColor(Color.WHITE);
-				g2d.setFont(fontSmaller);
-				g2d.drawString(String.format("%02d", city.getPlateNum()), cx + 4, cy + 16);
-			}
-
-			int sx = x + pathCities.size() * (size + 9), sy = y + (i * (size + 5) + 16);
-
-			g2d.setColor(Color.RED);
-			String costStr = (int) pathsSoFar.get(i).cost + "km";
-			g2d.drawRect(sx - 4, sy - 14, smetrics.stringWidth(costStr) + 8, 20);
+			g2d.fillRect(x - w - 5, sy - 21, w, 31);
 
 			g2d.setColor(Color.WHITE);
-			g2d.drawString(costStr, sx, sy);
-
-			sx += smetrics.stringWidth(costStr) + 12;
-
-			g2d.setColor(Color.RED);
-			String timeStr = pathsSoFar.get(i).findTime + "sn";
-			g2d.drawRect(sx - 4, sy - 14, smetrics.stringWidth(timeStr) + 8, 20);
-
-			g2d.setColor(Color.WHITE);
-			g2d.drawString(timeStr, sx, sy);
+			g2d.drawString((i + 1) + ".", x - w + 3, sy);
 
 			g2d.setColor(new Color(44, 44, 44));
 			String showStr = "☐ GÖSTER";
 			if (i == drawnPathIndex)
 			{
-				showStr = "☑ GÖSTERİLİYOR";
+				showStr = "☑ GÖSTER";
 				g2d.setColor(Color.RED);
 			}
-			sx = sx + smetrics.stringWidth(timeStr) + 8;
-			if (isMouseInRectangle(sx, sy - 14, smetrics.stringWidth(showStr) + 8, 20) && showStr.equals("☐ GÖSTER"))
+			if (isPointInRectangle(mouse, sx, sy - 14, smetrics.stringWidth(showStr) + 8, 20) && showStr.equals("☐ GÖSTER"))
 			{
 				showStr = "☑ GÖSTER";
 				g2d.setColor(Color.RED);
@@ -386,6 +400,71 @@ public class MapDrawer
 			g2d.fillRect(sx, sy - 14, smetrics.stringWidth(showStr) + 8, 20);
 			g2d.setColor(Color.WHITE);
 			g2d.drawString(showStr, sx + 4, sy);
+
+			sx = sx + smetrics.stringWidth(showStr) + 8 + 8;
+
+			g2d.setColor(new Color(44, 44, 44));
+			if (i == drawnPathIndex)
+				g2d.setColor(Color.RED);
+
+			String costStr = (int) pathsSoFar.get(i).cost + "km";
+			g2d.drawRect(sx - 4, sy - 14, smetrics.stringWidth(costStr) + 8, 20);
+
+			g2d.setColor(Color.WHITE);
+			g2d.drawString(costStr, sx, sy);
+
+			sx += smetrics.stringWidth(costStr) + 12;
+
+			g2d.setColor(new Color(44, 44, 44));
+			if (i == drawnPathIndex)
+				g2d.setColor(Color.RED);
+
+			String timeStr = pathsSoFar.get(i).findTime + "sn";
+			g2d.drawRect(sx - 4, sy - 14, smetrics.stringWidth(timeStr) + 8, 20);
+
+			g2d.setColor(Color.WHITE);
+			g2d.drawString(timeStr, sx, sy);
+
+			sx += smetrics.stringWidth(timeStr) + 10;
+
+			clip = new Rectangle(sx, y - 5, width - sx - 227, h);
+			g2d.setClip(clip);
+
+			for (int j = 0; j < pathCities.size(); j++)
+			{
+				City city = pathCities.get(j);
+
+				g2d.setColor(new Color(44, 44, 44));
+
+				if (i == drawnPathIndex)
+					g2d.setColor(Color.RED);
+
+				if (mainCities.contains(city.getPlateNum()) && i == drawnPathIndex)
+					g2d.setColor(Color.BLUE);
+
+				int cx, cy;
+				cx = sx + bottomPanelDrawOffset.x + j * (size + 9);
+				cy = y + bottomPanelDrawOffset.y + (i * (size + 5));
+
+				Ellipse2D.Double circle = new Ellipse2D.Double(cx, cy, size, size);
+
+				if (city.getPlateNum() == 41 && i == drawnPathIndex)
+					g2d.setColor(new Color(21, 173, 72));
+
+				g2d.fill(circle);
+
+				g2d.setColor(new Color(33, 33, 33));
+				if (i == drawnPathIndex)
+					g2d.setColor(Color.RED);
+				if (j != pathCities.size() - 1)
+					g2d.drawLine(cx + size, cy + size / 2, sx + bottomPanelDrawOffset.x + (j + 1) * (size + 9), cy + size / 2);
+
+				g2d.setColor(Color.WHITE);
+				g2d.setFont(fontSmaller);
+				g2d.drawString(String.format("%02d", city.getPlateNum()), cx + 4, cy + 16);
+			}
+
+			g2d.setClip(null);
 		}
 
 		g2d.setFont(font);
@@ -393,14 +472,14 @@ public class MapDrawer
 		w = 200;
 		h = 40;
 		x = width - w - 15;
-		y = 440;
+		y = 545;
 		String text = "ROTA BUL";
 
 		if (optimizer != null && optimizer.isRunning())
 			text = "DUR";
 
 		g2d.setColor(new Color(44, 44, 44));
-		if (isMouseInRectangle(x, y, w, h))
+		if (isPointInRectangle(mouse, x, y, w, h))
 		{
 			hoveredButton = text;
 			g2d.setColor(Color.RED);
@@ -411,27 +490,42 @@ public class MapDrawer
 		g2d.drawString(text, x + w / 2 - metrics.stringWidth(text) / 2, y + metrics.getHeight() + 7);
 
 		g2d.setFont(fontSmaller);
+
+		g2d.setColor(new Color(50, 50, 50));
+		g2d.fillRect(x, y + h, w, 185 - h);
+
+		x += 6;
+		g2d.setColor(Color.WHITE);
+
+		int yGap = smetrics.getHeight() + 4;
+		g2d.drawString(selectedCitiesSizeSave + " şehir seçildi.", x, y + h + metrics.getHeight());
 		if (optimizer != null && !markedEdges.isEmpty())
 		{
-			y += 57;
-			int yGap = smetrics.getHeight() + 4;
+			y += h + metrics.getHeight();
+			y += yGap;
 			g2d.drawString("Geçen süre: " + optimizer.secondsPastFromStart() + "sn", x, y);
 			y += yGap;
+			g2d.drawString(pathsSoFar.size() + " rota bulundu", x, y);
+			y += yGap;
 			if (optimizer.isRunning())
-				g2d.drawString("Rota geliştiriliyor..", x, y);
+				g2d.drawString("En iyi rota geliştiriliyor..", x, y);
 			else
 				g2d.drawString("Geliştirici durduruldu.", x, y);
 			y += yGap;
 			if ((int) (optimizer.getEndTime() - lastPathFoundTime) / 1000 > 8)
 			{
-				y += yGap / 4;
 				g2d.drawString("(Bulunan rota en iyisi", x, y);
 				y += yGap;
 				g2d.drawString("olabilir)", x, y);
 				y += yGap;
-				y += yGap / 4;
 			}
 			g2d.drawString("Jenerasyon: " + optimizer.getGenerationNumber(), x, y);
+		}
+		else
+		{
+			g2d.setColor(Color.WHITE);
+			if (selectedCities.size() < 1)
+				g2d.drawString("En az 1 şehir seçilmeli.", x, y + h + metrics.getHeight() + yGap);
 		}
 	}
 

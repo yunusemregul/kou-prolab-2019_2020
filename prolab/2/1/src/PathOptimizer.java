@@ -7,17 +7,16 @@ import java.util.Random;
  */
 public class PathOptimizer implements Runnable
 {
-	private final PathOptimizerListener listener;
-	private final PathFinder pathFinder;
+	private final PathOptimizerListener listener; // bu sınıftan gelecek cevapları dinleyen nesne
+	private final PathFinder pathFinder; // A* algoritmasını uygulayacak nesne
 
-	private final int populationSize = 300;
-	private double mutationRate = .4;
-
-	ArrayList<City>[] population = new ArrayList[populationSize];
-	private int generationNumber = 0;
-	private long startTime;
-	private long endTime;
-	private volatile boolean running = true;
+	private final int populationSize = 300; // popülasyon nüfusu
+	ArrayList<City>[] population = new ArrayList[populationSize]; // popülasyon
+	private double mutationRate = .4; // mutasyon şans oranı
+	private int generationNumber = 0; // kaçıncı jenerasyonda olduğumuz
+	private long startTime; // optimizerin çalışmaya başladığı zaman
+	private long endTime; // optimizerin durduğu zaman
+	private volatile boolean running = true; // optimizerin şuanda çalışıp çalışmadığı
 
 	float[] fitness = new float[populationSize];
 	private Path optimizedPath;
