@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,6 +10,18 @@ public class Main
 {
 	public static void main(String[] args) throws IOException
 	{
+		File costF = new File("res_mesafeler.txt");
+		File cityF = new File("res_sehirler.txt");
+
+		if (!costF.exists() || !cityF.exists())
+		{
+			if (!costF.exists())
+				System.out.println("res_mesafeler.txt dosyasi bulunamadi.");
+			if (!cityF.exists())
+				System.out.println("res_sehirler.txt dosyasi bulunamadi.");
+			return;
+		}
+
 		BufferedReader costsReader = new BufferedReader(new FileReader("res_mesafeler.txt"));
 		String line = costsReader.readLine();
 
@@ -72,7 +85,7 @@ public class Main
 						toAdd.setLng(Float.parseFloat(value));
 						break;
 					}
-					case "komşular":
+					case "komsular":
 					{
 						String[] adjacentsStr = value.split(",");
 						int[] adjacentsInt = new int[adjacentsStr.length];

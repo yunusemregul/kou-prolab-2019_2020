@@ -68,29 +68,28 @@ public class City
 
 	public int getPlateNum()
 	{
-		return plateNum;
+		return this.plateNum;
 	}
 
 	public String getName()
 	{
-		return name;
+		return this.name;
 	}
 
 	public float getLat()
 	{
-		return lat;
+		return this.lat;
 	}
 
 	public float getLng()
 	{
-		return lng;
+		return this.lng;
 	}
 
 	public int[] getConnected()
 	{
-		return connected;
+		return this.connected;
 	}
-
 
 	public void setPlateNum(int plateNum)
 	{

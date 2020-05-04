@@ -52,6 +52,7 @@ public class MapDrawer
 		frame.setTitle("Prolab 2 - 1");
 		frame.setSize(width, height);
 		frame.setLocationRelativeTo(null);
+		frame.setResizable(false);
 		frame.getContentPane().setBackground(new Color(66, 66, 66));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -225,7 +226,6 @@ public class MapDrawer
 		for (City city : cities)
 		{
 			Point cityPos = getCity2DPos(city);
-
 			for (int plate : city.getConnected())
 			{
 				g2d.setColor(new Color(33, 33, 33));
