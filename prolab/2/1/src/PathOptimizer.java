@@ -18,8 +18,8 @@ public class PathOptimizer implements Runnable
 	private long endTime; // optimizerin durduğu zaman
 	private volatile boolean running = true; // optimizerin şuanda çalışıp çalışmadığı
 
-	float[] fitness = new float[populationSize];
-	private Path optimizedPath;
+	final float[] fitness = new float[populationSize];
+	private final Path optimizedPath;
 
 	/**
 	 * PathOptimizer sınıfı yapıcı metodu.
@@ -140,7 +140,7 @@ public class PathOptimizer implements Runnable
 	 *
 	 * @return fitliği yüksek olan bir rota
 	 */
-	private ArrayList<City> pickOneFromPopulation()
+	private ArrayList<City> pickFit()
 	{
 		int index = 0;
 		float r = (float) Math.random();
@@ -163,10 +163,10 @@ public class PathOptimizer implements Runnable
 
 		for (int i = 0; i < populationSize; i++)
 		{
-			ArrayList<City> pathA = pickOneFromPopulation();
-			ArrayList<City> pathB = pickOneFromPopulation();
+			ArrayList<City> pathA = pickFit();
+			ArrayList<City> pathB = pickFit();
 			ArrayList<City> newPath = crossOver(pathA, pathB);
-			newPath = mutate(newPath);
+			mutate(newPath);
 			newPopulation[i] = newPath;
 		}
 

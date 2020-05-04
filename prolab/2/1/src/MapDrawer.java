@@ -26,16 +26,17 @@ public class MapDrawer
 	private Point dragStartingPoint = new Point(0, 0);
 	private Point bottomPanelDrawOffset = new Point(0, 0);
 
-	private ArrayList<Integer> selectedCities = new ArrayList<>();
 	private ArrayList<Integer> mainCities = new ArrayList<>();
-	private ArrayList<HashSet<Integer>> markedEdges = new ArrayList<>();
-	private ArrayList<Path> pathsSoFar = new ArrayList<>();
+	private final ArrayList<Integer> selectedCities = new ArrayList<>();
+	private final ArrayList<HashSet<Integer>> markedEdges = new ArrayList<>();
+	private final ArrayList<Path> pathsSoFar = new ArrayList<>();
+
 	private int selectedCitiesSizeSave;
 	private int biggestSizedPathsSize = 0;
 	private int drawnPathIndex = 0;
 	private long lastPathFoundTime;
 
-	private JPanel panel;
+	private final JPanel panel;
 	private PathOptimizer optimizer;
 
 	/**
@@ -247,6 +248,7 @@ public class MapDrawer
 
 		hoveredCity = null;
 		Font font = new Font("", Font.PLAIN, 12);
+		FontMetrics metrics = g2d.getFontMetrics(font);
 		// ikinci geçişte şehirlerin yuvarlaklarını ve plakalarını çiziyoruz
 		for (City city : cities)
 		{
@@ -292,9 +294,30 @@ public class MapDrawer
 
 			g2d.setColor(Color.WHITE);
 			g2d.setFont(font);
-			FontMetrics metrics = g2d.getFontMetrics(font);
 			String text = String.format("%02d", city.getPlateNum());
 			g2d.drawString(text, cityPos.x - metrics.stringWidth(text) / 2, cityPos.y + 4);
+		}
+
+		for (City city : cities)
+		{
+			if (hoveredCity != null && hoveredCity == city.getPlateNum())
+			{
+				int w = metrics.stringWidth(city.getName());
+				int size = 20 + city.getConnected().length * 2;
+
+				Point point = getCity2DPos(city);
+				point.y += size / 2 + 4 + (Math.max(0, mouse.y - point.y));
+				point.x = mouse.x - w / 2;
+
+				g2d.setColor(Color.RED);
+				if (mainCities.contains(city.getPlateNum()))
+					g2d.setColor(Color.BLUE);
+
+				g2d.fillRect(point.x, point.y, w, metrics.getHeight());
+				g2d.setFont(font);
+				g2d.setColor(Color.WHITE);
+				g2d.drawString(city.getName(), point.x, point.y + metrics.getHeight() - 4);
+			}
 		}
 
 		font = new Font("", Font.PLAIN, 11);
@@ -316,19 +339,19 @@ public class MapDrawer
 				{
 					g2d.setColor(Color.WHITE);
 
-					String str = "";
+					StringBuilder str = new StringBuilder();
 					for (int i = 0; i < markedEdges.size(); i++)
 					{
 						if (markedEdges.get(i) != null && markedEdges.get(i).equals(set))
 						{
-							if (str.isEmpty())
-								str += (i + 1);
+							if (str.length() == 0)
+								str.append(i + 1);
 							else
-								str += "|" + (i + 1);
+								str.append("|").append(i + 1);
 						}
 					}
 					g2d.setFont(font);
-					g2d.drawString(str, (cityPos.x + tCityPos.x) / 2, (cityPos.y + tCityPos.y) / 2);
+					g2d.drawString(str.toString(), (cityPos.x + tCityPos.x) / 2, (cityPos.y + tCityPos.y) / 2);
 				}
 			}
 		}

@@ -8,11 +8,11 @@ public class City
 {
 	public static HashMap<HashSet<Integer>, Integer> costs; // bir şehirden diğerine giden costları içerecek dizi
 
-	private final int plateNum; // plaka
-	private final String name; // şehir adı
-	private final float lat; // enlem
-	private final float lng; // boylam
-	private final int[] connected; // bağlı şehirler
+	private int plateNum; // plaka
+	private String name; // şehir adı
+	private float lat; // enlem
+	private float lng; // boylam
+	private int[] connected; // bağlı şehirler
 
 	/**
 	 * Şehir yapıcı metodu.
@@ -30,6 +30,11 @@ public class City
 		this.lat = lat;
 		this.lng = lng;
 		this.connected = connected;
+	}
+
+	public City()
+	{
+		this(-1, null, -1, -1, null);
 	}
 
 	/**
@@ -84,5 +89,31 @@ public class City
 	public int[] getConnected()
 	{
 		return connected;
+	}
+
+
+	public void setPlateNum(int plateNum)
+	{
+		this.plateNum = plateNum;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
+	public void setLat(float lat)
+	{
+		this.lat = lat;
+	}
+
+	public void setLng(float lng)
+	{
+		this.lng = lng;
+	}
+
+	public void setConnected(int[] connected)
+	{
+		this.connected = connected;
 	}
 }
