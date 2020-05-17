@@ -1,7 +1,7 @@
 class lzss_token
 {
     public:
-        unsigned flag : 1; // 1 bitlik flag, 1 olursa offset ve length, 0 olursa char ın kendisi
+        unsigned flag : 1;
         uint16_t offset_length;
         char c;
 

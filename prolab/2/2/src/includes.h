@@ -10,3 +10,4 @@ using std::vector;
 
 #include "lz77.h"
 #include "lzss.h"
+#include "huffman.h"
