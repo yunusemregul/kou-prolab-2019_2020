@@ -21,14 +21,29 @@ int main(void)
         char *test = file_read(f);
         
         printf("File size: %d bytes\n",strlen(test));
-        vector<lz77_token> encoded = lz77_encode(test);
-        printf("LZ77 encoded size: %d bytes\n",encoded.size()*2);
+        vector<lz77_token> lz77_encoded = lz77_encode(test);
+        
+        int lz77_encoded_size;
 
-        if(f=fopen("encoded.bin","wb"))
+        if(f=fopen("lz77_encoded.bin","wb+"))
         {
-            fwrite(&encoded[0], sizeof(lz77_token), encoded.size(), f);
+            lz77_encoded_size = lz77_write(lz77_encoded, f);
             fclose(f);
         }
+
+        printf("LZ77 encoded size: %d bytes\n",lz77_encoded_size);
+
+        vector<lzss_token> lzss_encoded = lzss_encode(test);
+
+        int lzss_encoded_size;
+
+        if(f=fopen("lzss_encoded.bin","wb+"))
+        {
+            lzss_encoded_size = lzss_write(lzss_encoded, f);
+            fclose(f);
+        }
+
+        printf("LZSS encoded size: %d bytes\n",lzss_encoded_size);
         
         printf("\n\n");
     }

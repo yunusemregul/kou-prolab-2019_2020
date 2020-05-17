@@ -9,4 +9,4 @@
 using std::vector;
 
 #include "lz77.h"
-#include "deflate.h"
+#include "lzss.h"

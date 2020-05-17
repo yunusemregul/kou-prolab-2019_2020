@@ -1,7 +1,7 @@
 #include "includes.h"
 
-#define OFFSET_BITS 5
-#define LENGTH_BITS 3
+#define OFFSET_BITS 12
+#define LENGTH_BITS 4
 
 #define OFFSET_MASK ((1 << (OFFSET_BITS)) - 1) << LENGTH_BITS
 #define LENGTH_MASK ((1 << (LENGTH_BITS)) - 1)
@@ -68,7 +68,7 @@ vector<lz77_token> lz77_encode(char* input)
                     break;
                 length++;
             }
-            if(length>=max_length)
+            if(length>max_length)
             {
                 max_length = length;
                 offset = (lookahead-search);
@@ -113,4 +113,18 @@ vector<char> lz77_decode(vector<lz77_token> encoded)
     }
 
     return decoded;
+}
+
+int lz77_write(vector<lz77_token> encoded, FILE* f)
+{
+    int total_written_bytes = 0;
+
+    for (int i = 0; i < encoded.size(); i++)
+    {
+        total_written_bytes += sizeof(encoded[i].offset_length) + sizeof(encoded[i].c);
+        fwrite(&encoded[i].offset_length, sizeof(encoded[i].offset_length), 1, f);
+        fwrite(&encoded[i].c, sizeof(encoded[i].c), 1, f);
+    }
+
+    return total_written_bytes;
 }
