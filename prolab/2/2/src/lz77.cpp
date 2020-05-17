@@ -6,25 +6,6 @@
 #define OFFSET_MASK ((1 << (OFFSET_BITS)) - 1) << LENGTH_BITS
 #define LENGTH_MASK ((1 << (LENGTH_BITS)) - 1)
 
-void print_bits(int a)
-{
-    int i;
-    int mul = 1;
-    
-    for(i=1; (mul<a); i++)
-        mul *= 2;
-
-    i = (i + 4-i%4);
-
-    for(i=i-1; i>=0; i--)
-    {
-        if(i>0 && ((i+1)%4)==0)
-            printf(" ");
-
-        printf("%d",(a & 1<<i) ? 1 : 0);
-    }
-}
-
 class token
 {
     public:
@@ -84,6 +65,9 @@ vector<token> encode(char* input)
 
         for(search = lookahead-1; search>=input; search--)
         {
+            if((lookahead-search)>=(OFFSET_MASK>>LENGTH_BITS))
+                break;
+
             int length = 0;
             for(char* match=search; *match==*(lookahead+(match-search)); match++)
             {
@@ -111,19 +95,59 @@ vector<token> encode(char* input)
     return encoded;
 }
 
+vector<char> decode(vector<token> encoded)
+{
+    vector<char> decoded;
+
+    for (token t:encoded)
+    {
+        if(t.get_offset()==0)
+            decoded.push_back(t.c);
+        else
+        {
+            int len = t.get_length();
+
+            while(len--)
+            {
+                decoded.push_back(*(decoded.end()-t.get_offset()));
+            }
+
+            decoded.push_back(t.c);
+        }
+    }
+
+    return decoded;
+}
+
+char *file_read(FILE *f)
+{
+    char *content;
+    fseek(f, 0, SEEK_END);
+    int size = ftell(f);
+    content = (char*)malloc(size);
+    fseek(f, 0, SEEK_SET);
+    fread(content, 1, size, f);
+    return content;
+}
+
 int main(void)
 {
-    char test[20] = "abracadabracadaaaaa";
-
-    vector<token> encoded = encode(test);
-
     FILE *f;
-
-    if(f=fopen("encoded.bin","wb"))
-    {
-        fwrite(&encoded[0], sizeof(token), encoded.size(), f);
-        fclose(f);
-    }
     
-    printf("\n\n");
+    if(f=fopen("metin.txt","r"))
+    {    
+        char *test = file_read(f);
+        
+        printf("File size: %d bytes\n",strlen(test));
+        vector<token> encoded = encode(test);
+        printf("LZ77 encoded size: %d bytes\n",encoded.size()*2);
+
+        if(f=fopen("encoded.bin","wb"))
+        {
+            fwrite(&encoded[0], sizeof(token), encoded.size(), f);
+            fclose(f);
+        }
+        
+        printf("\n\n");
+    }
 }
