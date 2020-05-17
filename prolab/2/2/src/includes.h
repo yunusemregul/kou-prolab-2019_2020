@@ -6,4 +6,7 @@
 #include <string.h>
 #include <vector>
 
-using std::vector; 
+using std::vector;
+
+#include "lz77.h"
+#include "deflate.h"
