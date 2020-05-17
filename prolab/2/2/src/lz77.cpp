@@ -1,7 +1,7 @@
 #include "includes.h"
 
-#define OFFSET_BITS 12
-#define LENGTH_BITS 4
+#define OFFSET_BITS 5
+#define LENGTH_BITS 3
 
 #define OFFSET_MASK ((1 << (OFFSET_BITS)) - 1) << LENGTH_BITS
 #define LENGTH_MASK ((1 << (LENGTH_BITS)) - 1)
@@ -25,10 +25,10 @@ void print_bits(int a)
     }
 }
 
-typedef class token
+class token
 {
     public:
-        uint16_t offset_length;
+        uint8_t offset_length;
         char c;
 
         token()
@@ -40,9 +40,9 @@ typedef class token
         void set_offset(int offset)
         {
             offset = (offset << LENGTH_BITS);
-            offset = (offset & OFFSET_MASK);
-            offset_length = (offset_length & LENGTH_MASK);
-            offset_length = (offset_length | offset);
+            offset = (offset & OFFSET_MASK); // safety
+            offset_length = (offset_length & LENGTH_MASK); // clean the offset value
+            offset_length = (offset_length | offset); // assign it
         }
 
         int get_offset()
@@ -52,23 +52,78 @@ typedef class token
 
         void set_length(int length)
         {
-            length = (length & LENGTH_MASK);
-            offset_length = (offset_length & OFFSET_MASK);
-            offset_length = (offset_length | length);
+            length = (length & LENGTH_MASK); // safety
+            offset_length = (offset_length & OFFSET_MASK); // clean the length value
+            offset_length = (offset_length | length); // assign it
         }
 
         int get_length()
         {
             return (offset_length & LENGTH_MASK);
         }
-} token;
+
+        // for debugging purposes
+        void print()
+        {
+            printf("(%d,%d,'%c')",get_offset(), get_length(), c);
+        }
+};
+
+vector<token> encode(char* input)
+{
+    char *lookahead, *search;
+
+    vector<token> encoded;
+
+    for(lookahead = input; lookahead < (input + strlen(input)); lookahead++)
+    {
+        token* to_insert = new token();
+
+        int max_length = 0;
+        int offset = 0;
+
+        for(search = lookahead-1; search>=input; search--)
+        {
+            int length = 0;
+            for(char* match=search; *match==*(lookahead+(match-search)); match++)
+            {
+                if((match-search)>=LENGTH_MASK)
+                    break;
+                if((lookahead+length+1)>=(input + strlen(input)))
+                    break;
+                length++;
+            }
+            if(length>max_length)
+            {
+                max_length = length;
+                offset = (lookahead-search);
+            }
+        }
+
+        to_insert->set_length(max_length);
+        to_insert->set_offset(offset);
+        lookahead += max_length;
+        to_insert->c = *lookahead;
+
+        encoded.push_back(*to_insert);
+    }
+
+    return encoded;
+}
 
 int main(void)
 {
-    token a;
-    a.set_offset(5);
-    a.set_offset(10);
-    a.set_length(2);
-    a.set_offset(8);
-    printf("%d %d\n\n",a.get_offset(),a.get_length());
+    char test[20] = "abracadabracadaaaaa";
+
+    vector<token> encoded = encode(test);
+
+    FILE *f;
+
+    if(f=fopen("encoded.bin","wb"))
+    {
+        fwrite(&encoded[0], sizeof(token), encoded.size(), f);
+        fclose(f);
+    }
+    
+    printf("\n\n");
 }
