@@ -117,49 +117,6 @@ vector<lzss_token> lzss_encode(char* input)
     return encoded;
 }
 
-vector<char> lzss_decode(vector<lzss_token> encoded)
-{
-    vector<char> decoded;
-
-    for (lzss_token t:encoded)
-    {
-        if(t.get_offset()==0)
-            decoded.push_back(t.c);
-        else
-        {
-            int len = t.get_length();
-
-            while(len--)
-            {
-                decoded.push_back(*(decoded.end()-t.get_offset()));
-            }
-
-            decoded.push_back(t.c);
-        }
-    }
-
-    return decoded;
-}
-
-void print_bits(int a)
-{
-    int i;
-    int mul = 1;
-    
-    for(i=1; (mul<a); i++)
-        mul *= 2;
-
-    i = (i + 4-i%4);
-
-    for(i=i-1; i>=0; i--)
-    {
-        if(i>0 && ((i+1)%4)==0)
-            printf(" ");
-
-        printf("%d",(a & 1<<i) ? 1 : 0);
-    }
-}
-
 int lzss_write(vector<lzss_token> encoded, FILE *f)
 {
     // önce flag leri yazıyoruz ama 8in katı olacak şekilde yazıyoruz

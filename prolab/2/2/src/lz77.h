@@ -16,5 +16,4 @@ class lz77_token
 };
 
 vector<lz77_token> lz77_encode(char* input);
-vector<char> lz77_decode(vector<lz77_token> encoded);
 int lz77_write(vector<lz77_token>, FILE *f);

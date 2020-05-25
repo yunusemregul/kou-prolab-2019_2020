@@ -20,7 +20,7 @@ int main(void)
     {    
         char *test = file_read(f);
         
-        printf("File size: %d bytes\n",strlen(test));
+        printf("Dosya boyutu: %d byte\n",strlen(test));
         vector<lz77_token> lz77_encoded = lz77_encode(test);
         
         int lz77_encoded_size;
@@ -30,8 +30,13 @@ int main(void)
             lz77_encoded_size = lz77_write(lz77_encoded, f);
             fclose(f);
         }
+        else
+        {
+            return 1;
+        }
+        
 
-        printf("LZ77 encoded size: %d bytes\n",lz77_encoded_size);
+        printf("LZ77 encoded boyut: %d byte\n",lz77_encoded_size);
 
         vector<lzss_token> lzss_encoded = lzss_encode(test);
 
@@ -42,9 +47,18 @@ int main(void)
             lzss_encoded_size = lzss_write(lzss_encoded, f);
             fclose(f);
         }
-
-        printf("LZSS encoded size: %d bytes\n",lzss_encoded_size);
+        else
+        {
+            return 1;
+        }
         
+
+        printf("LZSS encoded boyut: %d byte\n",lzss_encoded_size);
         printf("\n\n");
+    }
+    else
+    {
+        printf("metin.txt dosyasi acilamadi!\n");
+        return 1;
     }
 }

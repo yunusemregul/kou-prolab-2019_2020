@@ -20,5 +20,4 @@ class lzss_token
 };
 
 vector<lzss_token> lzss_encode(char* input);
-vector<char> lzss_decode(vector<lzss_token> encoded);
 int lzss_write(vector<lzss_token> encoded, FILE *f);

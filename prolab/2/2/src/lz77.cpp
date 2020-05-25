@@ -91,30 +91,6 @@ vector<lz77_token> lz77_encode(char* input)
     return encoded;
 }
 
-vector<char> lz77_decode(vector<lz77_token> encoded)
-{
-    vector<char> decoded;
-
-    for (lz77_token t:encoded)
-    {
-        if(t.get_offset()==0)
-            decoded.push_back(t.c);
-        else
-        {
-            int len = t.get_length();
-
-            while(len--)
-            {
-                decoded.push_back(*(decoded.end()-t.get_offset()));
-            }
-
-            decoded.push_back(t.c);
-        }
-    }
-
-    return decoded;
-}
-
 int lz77_write(vector<lz77_token> encoded, FILE* f)
 {
     int total_written_bytes = 0;
