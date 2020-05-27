@@ -1,7 +1,7 @@
-module com.yunusemregul.prolab. {
+module com.yunusemregul.prolab {
     requires javafx.controls;
     requires javafx.fxml;
 
-    opens com.yunusemregul.prolab. to javafx.fxml;
-    exports com.yunusemregul.prolab.;
+    opens com.yunusemregul.prolab to javafx.fxml;
+    exports com.yunusemregul.prolab;
 }
