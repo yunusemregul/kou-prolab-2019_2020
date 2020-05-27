@@ -2,10 +2,10 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -15,21 +15,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <BorderPane prefHeight="506.0" prefWidth="1000.0">
-         <left>
-            <Pane prefHeight="200.0" prefWidth="500.0" style="-fx-background-color: #333333;" BorderPane.alignment="CENTER">
-               <children>
-                  <BorderPane prefHeight="500.0" prefWidth="500.0">
-                     <center>
-                        <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
-                           <image>
-                              <Image url="@images/logo_main.png" />
-                           </image>
-                        </ImageView>
-                     </center>
-                  </BorderPane>
-               </children></Pane>
-         </left>
+      <BorderPane prefHeight="500.0" prefWidth="1000.0">
          <right>
             <BorderPane prefHeight="200.0" prefWidth="500.0" BorderPane.alignment="CENTER">
                <top>
@@ -56,9 +42,15 @@
                      <children>
                         <VBox alignment="CENTER" fillWidth="false" prefHeight="472.0" prefWidth="500.0">
                            <children>
+                              <TextField prefHeight="40.0" prefWidth="327.0" promptText="Ad" style="-fx-background-color: #333333; -fx-font-family: Segoe UI;" />
+                              <DatePicker prefHeight="40.0" prefWidth="327.0" promptText="Doğum Tarihi">
+                                 <VBox.margin>
+                                    <Insets top="13.0" />
+                                 </VBox.margin>
+                              </DatePicker>
                               <TextField prefHeight="40.0" prefWidth="327.0" promptText="Email" style="-fx-background-color: #333333; -fx-font-family: Segoe UI;">
                                  <VBox.margin>
-                                    <Insets />
+                                    <Insets top="13.0" />
                                  </VBox.margin>
                               </TextField>
                               <TextField prefHeight="40.0" prefWidth="327.0" promptText="Şifre">
@@ -66,7 +58,7 @@
                                     <Insets top="13.0" />
                                  </VBox.margin>
                               </TextField>
-                              <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="327.0" style="-fx-background-color: #4AC980; -fx-font-weight: 800; -fx-font-size: 18; -fx-font-family: Segoe UI;" text="GİRİŞ" textAlignment="CENTER" textFill="WHITE">
+                              <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="327.0" style="-fx-background-color: #4AC980; -fx-font-weight: 800; -fx-font-size: 18; -fx-font-family: Segoe UI;" text="KAYIT OL" textAlignment="CENTER" textFill="WHITE">
                                  <VBox.margin>
                                     <Insets top="13.0" />
                                  </VBox.margin>
@@ -78,14 +70,6 @@
                                  <VBox.margin>
                                     <Insets top="13.0" />
                                  </VBox.margin>
-                                 <children>
-                                    <Label fx:id="yokmu" contentDisplay="CENTER" text="Hesabın yok mu?" />
-                                    <Label fx:id="kaydol" text="Kayıt Ol">
-                                       <HBox.margin>
-                                          <Insets left="12.0" />
-                                       </HBox.margin>
-                                    </Label>
-                                 </children>
                               </HBox>
                            </children>
                         </VBox>
@@ -94,6 +78,24 @@
                </center>
             </BorderPane>
          </right>
+         <left>
+            <BorderPane prefHeight="500.0" prefWidth="570.0" BorderPane.alignment="CENTER">
+               <top>
+                  <Pane id="lefttoppanel" prefHeight="84.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <VBox alignment="CENTER" fillWidth="false" prefHeight="84.0" prefWidth="570.0">
+                           <children>
+                              <Label text="Sevdiğin 3 türü seç:" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </Pane>
+               </top>
+               <center>
+                  <ScrollPane prefHeight="200.0" prefWidth="200.0" styleClass="scrollpane" BorderPane.alignment="CENTER" />
+               </center>
+            </BorderPane>
+         </left>
       </BorderPane>
    </children>
 </AnchorPane>

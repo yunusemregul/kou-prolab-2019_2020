@@ -1,0 +1,67 @@
+.root
+{
+    -fx-font-family: "Segoe UI";
+}
+
+.text
+{
+    -fx-fill: #fff;
+}
+
+#lefttoppanel
+{
+    -fx-background-color: #222;
+}
+
+#lefttoppanel .text
+{
+    -fx-font-size: 27;
+}
+
+.text-field
+{
+    -fx-font-size: 18;
+    -fx-text-fill: #fff;
+    -fx-background-color: #333;
+}
+
+#hesabinyokmu
+{
+    -fx-font-size: 21;
+}
+
+#yokmu *
+{
+    -fx-fill: #888;
+}
+
+#kaydol *
+{
+    -fx-fill: #4AC980;
+    -fx-underline: true;
+}
+
+#topbar .button
+{
+    -fx-background-radius: 30px;
+    -fx-font-size: 8;
+    -fx-min-height: 16;
+    -fx-min-width: 16;
+    -fx-max-width: 16;
+    -fx-max-height: 16;
+}
+
+#closebutton
+{
+    -fx-background-color: #C9574A;
+}
+
+#minimizebutton
+{
+    -fx-background-color: #C9964A;
+}
+
+#lefttoppane
+{
+    -fx-background-color: #222222;
+}
