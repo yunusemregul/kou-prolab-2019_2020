@@ -10,28 +10,29 @@ import javafx.stage.Stage;
 
 public class GeneralController implements Initializable
 {
+
     public GeneralController()
     {
-        
+
     }
-    
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
-        
+
     }
-    
+
     @FXML
     public void close(ActionEvent e)
     {
-        Stage stage = (Stage)((Button)e.getSource()).getScene().getWindow();
+        Stage stage = (Stage) ((Button) e.getSource()).getScene().getWindow();
         stage.close();
     }
-    
+
     @FXML
     public void minimize(ActionEvent e)
     {
-        Stage stage = (Stage)((Button)e.getSource()).getScene().getWindow();
+        Stage stage = (Stage) ((Button) e.getSource()).getScene().getWindow();
         stage.setIconified(true);
     }
 }

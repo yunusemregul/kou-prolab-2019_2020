@@ -6,18 +6,19 @@ import javafx.fxml.FXML;
 
 public class LoginController extends GeneralController
 {
+
     public LoginController()
     {
 
     }
-    
+
     public void tryLogIn(ActionEvent e)
     {
-        
+
     }
-    
+
     public void openKayitOlMenu(ActionEvent e)
     {
-         
+
     }
 }
