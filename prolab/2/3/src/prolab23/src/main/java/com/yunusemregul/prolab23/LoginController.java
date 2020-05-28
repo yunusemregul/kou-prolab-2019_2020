@@ -11,7 +11,12 @@ public class LoginController extends GeneralController
 
     }
     
-    public void openKayitOl(ActionEvent e)
+    public void tryLogIn(ActionEvent e)
+    {
+        
+    }
+    
+    public void openKayitOlMenu(ActionEvent e)
     {
          
     }

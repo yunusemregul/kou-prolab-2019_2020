@@ -1,0 +1,75 @@
+Recep İvedik 6	Aksiyon ve Macera	Film
+Assassın's Creed	Aksiyon ve Macera, Bilim Kurgu ve Fantastik Yapımlar	Film
+Alaca Karanlık	Aksiyon ve Macera, Romantik	Film
+Yüzüklerin Efendisi İki Kule	Aksiyon ve Macera, Bilim Kurgu ve Fantastik Yapımlar	Film
+Maske	Aksiyon ve Macera, Bilim Kurgu ve Fantastik Yapımlar	Film
+Kara Şövalye	Aksiyon ve Macera, Bilim Kurgu ve Fantastik Yapımlar	Film
+Sherlock Holmes	Aksiyon ve Macera	Film
+Yüzüklerin Efendisi kralın Dönüşü	Aksiyon ve Macera, Bilim Kurgu ve Fantastik Yapımlar	Film
+Transformers Kayıp Çağ	Aksiyon ve Macera	Film
+Başlangıç	Aksiyon ve Macera	Film
+Interstellar	Aksiyon ve Macera, Drama	Film
+Harry Potter lüm Yadigarları	Aksiyon ve Macera, Bilim Kurgu ve Fantastik Yapımlar, Çocuk ve Aile	Film
+Jurassic World	Aksiyon ve Macera	Film
+Fantastik Canavarlar	Aksiyon ve Macera, Çocuk ve Aile	Film
+Ninja Kaplumbağalar	Aksiyon ve Macera, Bilim Kurgu ve Fantastik Yapımlar	Film
+Kuşlarla Dans	Belgesel	Film
+Mission Blue	Belgesel	Film
+Mercan Peşinde	Belgesel	Film
+Dream Big	Belgesel	Film
+Ay'daki Son Adam	Belgesel	Film
+Plastik Okyanus	Belgesel	Film
+Rakamlarla Tahmin	Belgesel	Film
+Ben Efsaneyim	Bilim Kurgu ve Fantastik Yapımlar	Film
+Arif V 216	Bilim Kurgu ve Fantastik Yapımlar, Komedi	Film
+pk	Bilim Kurgu ve Fantastik Yapımlar, Romantik	Film
+Örümcek Adam	Aksiyon ve Macera, Bilim Kurgu ve Fantastik Yapımlar	Film
+Jurassıc Park	Bilim Kurgu ve Fantastik Yapımlar, Aksiyon	Film
+Frankestein 	Bilim Kurgu ve Fantastik Yapımlar, Aksiyon, Korku	Film
+Gezegenimiz	Belgesel, Bilim ve Doğa	Film
+72 sevimli hayvan	Belgesel, Bilim ve Doğa	Film
+Kuşçular	Belgesel, Bilim ve Doğa	Film
+Marsta Keşif	Belgesel, Bilim ve Doğa	Film
+Gezegenimiz	Belgesel, Bilim ve Doğa	Film
+Pandemic	Belgesel, Bilim ve Doğa	Film
+Pokemon	Çocuk ve Aile	Film
+Şirinler	Çocuk ve Aile, Komedi	Film
+Charlie'nin Çikolata Fabrikası	Çocuk ve Aile, Komedi	Film
+Alvin ve Sincaplar	Çocuk ve Aile	Film
+Scooby-Doo	Çocuk ve Aile	Film
+Kung Fu Panda	Çocuk ve Aile, Aksiyon ve Macera	Film
+Mr. Bean Tatilde	Çocuk ve Aile	Film
+Shrek 	Çocuk ve Aile, Komedi	Film
+Mega Zeka	Çocuk ve Aile, Komedi	Film
+Bizi Hatırla	Drama	Film
+Delibal	Drama, Romantik	Film
+Kardeşim Benim	Drama, Komedi	Film
+Dangal	Drama	Film
+Yerçekimi	Bilim Kurgu, Drama	Film
+Jaws	Gerilim	Film
+Da Vinci Şifresi	Gerilim	Film
+Marwel' Iron Fist	Aksiyon ve Macera	Dizi
+Ejderhalar	Çocuk ve Aile, Aksiyon ve Macera	Dizi
+Diriliş Ertuğrul	Aksiyon ve Macera	Dizi
+Trol Avcıları: Arcadia Hikayeleri	Çocuk ve Aile, Aksiyon ve Macera	Dizi
+How I met your mother	Romantik	Dizi
+Leyla ile Mecnun	Romantik	Dizi
+Beni Böyle Sev	Drama, Romantik	Dizi
+Patron Bebek Yine İş başında	Çocuk ve Aile, Komedi	Dizi
+Atiye	Aksiyon ve Macera, Romantik	Dizi
+Maşa ve Koca Ayı	Çocuk ve Aile	Dizi
+Sünger Bob	Çocuk ve Aile, Komedi	Dizi
+Stranger Tings	Aksiyon ve Macera, Korku	Dizi
+The Originals	Drama, Korku	Dizi
+Angry Birds	Çocuk ve Aile, Komedi	Dizi
+Criminal	Gerilim	Dizi
+Beyblade	Anime, Çocuk ve Aile	Dizi
+Sonic X 	Anime, Aksiyon ve Macera	Dizi
+Kung Fu Panda Muhteşem Sırlar	Aksiyon ve Macera	Dizi
+The Blacklist	Aksiyon ve Macera, Gerilim	Dizi
+Dünyanın En Sıra Dışı Evleri	Reality Program	
+Car Masters	Reality Program	
+Büyük Tasarımlar	Reality Program	
+Basketball or Nothing	Reality Program	Tv Show
+The Big Family Cooking	Reality Program	Tv Show
+Sıradışı Kulübeler	Reality Program	Tv Show
