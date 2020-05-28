@@ -82,7 +82,7 @@
                                  </VBox.margin>
                                  <children>
                                     <Label fx:id="yokmu" contentDisplay="CENTER" text="Hesabın yok mu?" />
-                                    <Hyperlink fx:id="kaydol" onAction="#openKayitOl" text="Kayıt Ol">
+                                    <Hyperlink fx:id="kaydol" onAction="#openKayitOlMenu" text="Kayıt Ol">
                                        <HBox.margin>
                                           <Insets left="8.0" />
                                        </HBox.margin>

@@ -7,18 +7,29 @@ import javafx.fxml.FXML;
 public class LoginController extends GeneralController
 {
 
-    public LoginController()
-    {
+	public LoginController()
+	{
 
-    }
+	}
 
-    public void tryLogIn(ActionEvent e)
-    {
+	/**
+	 * Login ekranında Giriş butonuna tıklandığında çağırılır. Kullanıcının
+	 * girdiği kullanıcı adı ve şifre ile giriş yapmaya çalışır.
+	 *
+	 * @param e ActionEvent
+	 */
+	public void tryLogIn(ActionEvent e)
+	{
 
-    }
+	}
 
-    public void openKayitOlMenu(ActionEvent e)
-    {
+	/**
+	 * Login ekranında Kayıt Ol butonuna tıklandığında çağırılır.
+	 *
+	 * @param e ActionEvent
+	 */
+	public void openKayitOlMenu(ActionEvent e)
+	{
 
-    }
+	}
 }
