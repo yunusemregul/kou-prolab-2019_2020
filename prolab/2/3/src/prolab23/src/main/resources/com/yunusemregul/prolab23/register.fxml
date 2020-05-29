@@ -3,32 +3,35 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.yunusemregul.prolab23.RegisterController">
    <children>
       <BorderPane prefHeight="500.0" prefWidth="1000.0">
          <right>
-            <BorderPane prefHeight="200.0" prefWidth="500.0" BorderPane.alignment="CENTER">
+            <BorderPane prefHeight="200.0" prefWidth="430.0" BorderPane.alignment="CENTER">
                <top>
                   <Pane fx:id="topbar" prefHeight="28.0" prefWidth="200.0" style="-fx-background-color: #222222;" BorderPane.alignment="CENTER">
                      <children>
-                        <HBox alignment="CENTER_RIGHT" fillHeight="false" prefHeight="28.0" prefWidth="500.0">
+                        <HBox alignment="CENTER_RIGHT" fillHeight="false" prefHeight="28.0" prefWidth="420.0">
                            <children>
-                              <Button fx:id="minimizebutton" mnemonicParsing="false">
+                              <Button fx:id="minimizebutton" mnemonicParsing="false" onAction="#minimize">
                                  <HBox.margin>
                                     <Insets right="5.0" />
                                  </HBox.margin>
                               </Button>
-                              <Button fx:id="closebutton" mnemonicParsing="false">
+                              <Button fx:id="closebutton" mnemonicParsing="false" onAction="#close">
                                  <HBox.margin>
                                     <Insets right="5.0" />
                                  </HBox.margin>
@@ -40,25 +43,30 @@
                <center>
                   <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #444444;" BorderPane.alignment="CENTER">
                      <children>
-                        <VBox alignment="CENTER" fillWidth="false" prefHeight="472.0" prefWidth="500.0">
+                        <VBox alignment="CENTER" fillWidth="false" prefHeight="472.0" prefWidth="420.0">
                            <children>
-                              <TextField prefHeight="40.0" prefWidth="327.0" promptText="Ad" style="-fx-background-color: #333333; -fx-font-family: Segoe UI;" />
-                              <DatePicker prefHeight="40.0" prefWidth="327.0" promptText="Doğum Tarihi">
+                              <TextField fx:id="entry_ad" prefHeight="40.0" prefWidth="327.0" promptText="Ad" style="-fx-background-color: #333333; -fx-font-family: Segoe UI;" />
+                              <DatePicker fx:id="entry_birthdate" prefHeight="40.0" prefWidth="327.0" promptText="Doğum Tarihi">
                                  <VBox.margin>
                                     <Insets top="13.0" />
                                  </VBox.margin>
                               </DatePicker>
-                              <TextField prefHeight="40.0" prefWidth="327.0" promptText="Email" style="-fx-background-color: #333333; -fx-font-family: Segoe UI;">
+                              <TextField fx:id="entry_email" prefHeight="40.0" prefWidth="327.0" promptText="Email" style="-fx-background-color: #333333; -fx-font-family: Segoe UI;">
                                  <VBox.margin>
                                     <Insets top="13.0" />
                                  </VBox.margin>
                               </TextField>
-                              <TextField prefHeight="40.0" prefWidth="327.0" promptText="Şifre">
+                              <PasswordField fx:id="entry_pass" prefHeight="40.0" prefWidth="327.0" promptText="Şifre">
                                  <VBox.margin>
                                     <Insets top="13.0" />
                                  </VBox.margin>
-                              </TextField>
-                              <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="327.0" style="-fx-background-color: #4AC980; -fx-font-weight: 800; -fx-font-size: 18; -fx-font-family: Segoe UI;" text="KAYIT OL" textAlignment="CENTER" textFill="WHITE">
+                              </PasswordField>
+                              <PasswordField fx:id="entry_pass_check" prefHeight="40.0" prefWidth="327.0" promptText="Şifre Tekrar">
+                                 <VBox.margin>
+                                    <Insets top="13.0" />
+                                 </VBox.margin>
+                              </PasswordField>
+                              <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#tryRegister" prefHeight="40.0" prefWidth="327.0" style="-fx-background-color: #4AC980; -fx-font-weight: 800; -fx-font-size: 18; -fx-font-family: Segoe UI;" text="KAYIT OL" textAlignment="CENTER" textFill="WHITE">
                                  <VBox.margin>
                                     <Insets top="13.0" />
                                  </VBox.margin>
@@ -67,6 +75,14 @@
                                  </font>
                               </Button>
                               <HBox fx:id="hesabinyokmu" alignment="CENTER" prefHeight="28.0" prefWidth="327.0">
+                                 <children>
+                                    <Label fx:id="yokmu" contentDisplay="CENTER" text="Hesabın var mı?" />
+                                    <Hyperlink fx:id="hyperlink_girisyap" onAction="#openLoginMenu" text="Giriş Yap">
+                                       <HBox.margin>
+                                          <Insets left="8.0" />
+                                       </HBox.margin>
+                                    </Hyperlink>
+                                 </children>
                                  <VBox.margin>
                                     <Insets top="13.0" />
                                  </VBox.margin>
@@ -79,7 +95,7 @@
             </BorderPane>
          </right>
          <left>
-            <BorderPane prefHeight="500.0" prefWidth="570.0" BorderPane.alignment="CENTER">
+            <BorderPane prefHeight="500.0" prefWidth="580.0" BorderPane.alignment="CENTER">
                <top>
                   <Pane id="lefttoppanel" prefHeight="84.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                      <children>
@@ -92,7 +108,17 @@
                   </Pane>
                </top>
                <center>
-                  <ScrollPane prefHeight="200.0" prefWidth="200.0" styleClass="scrollpane" BorderPane.alignment="CENTER" />
+                  <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <content>
+                        <VBox fx:id="vBox" alignment="CENTER" fillWidth="false">
+                           <children>
+                              <GridPane fx:id="gPane" alignment="CENTER">
+                                 <VBox.margin>
+                                    <Insets left="12.0" top="12.0" />
+                                 </VBox.margin></GridPane>
+                           </children>
+                        </VBox>
+                     </content></ScrollPane>
                </center>
             </BorderPane>
          </left>

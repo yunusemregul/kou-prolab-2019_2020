@@ -63,12 +63,12 @@
                                     <Insets />
                                  </VBox.margin>
                               </TextField>
-                              <PasswordField prefHeight="40.0" prefWidth="327.0" promptText="Şifre">
+                              <PasswordField fx:id="entry_pass" prefHeight="40.0" prefWidth="327.0" promptText="Şifre">
                                  <VBox.margin>
                                     <Insets top="13.0" />
                                  </VBox.margin>
                               </PasswordField>
-                              <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="327.0" style="-fx-background-color: #4AC980; -fx-font-weight: 800; -fx-font-size: 18; -fx-font-family: Segoe UI;" text="GİRİŞ" textAlignment="CENTER" textFill="WHITE">
+                              <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#tryLogIn" prefHeight="40.0" prefWidth="327.0" style="-fx-background-color: #4AC980; -fx-font-weight: 800; -fx-font-size: 18; -fx-font-family: Segoe UI;" text="GİRİŞ" textAlignment="CENTER" textFill="WHITE">
                                  <VBox.margin>
                                     <Insets top="13.0" />
                                  </VBox.margin>
@@ -82,7 +82,7 @@
                                  </VBox.margin>
                                  <children>
                                     <Label fx:id="yokmu" contentDisplay="CENTER" text="Hesabın yok mu?" />
-                                    <Hyperlink fx:id="kaydol" onAction="#openKayitOlMenu" text="Kayıt Ol">
+                                    <Hyperlink fx:id="hyperlink_kayitol" onAction="#openKayitOlMenu" text="Kayıt Ol">
                                        <HBox.margin>
                                           <Insets left="8.0" />
                                        </HBox.margin>

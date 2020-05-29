@@ -13,7 +13,7 @@ import javafx.stage.Stage;
  * küçültme butonları tüm ekranlarda olacağı için bu butonların yapacağı işlem
  * bu sınıf tarafından sağlanır.
  */
-public class GeneralController implements Initializable
+public class GeneralController
 {
 
 	public GeneralController()
@@ -21,10 +21,10 @@ public class GeneralController implements Initializable
 
 	}
 
-	@Override
-	public void initialize(URL url, ResourceBundle resourceBundle)
+	@FXML
+	public void initialize()
 	{
-
+		
 	}
 
 	/**

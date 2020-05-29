@@ -9,7 +9,7 @@ public class LoginController extends GeneralController
 
 	public LoginController()
 	{
-
+		
 	}
 
 	/**
@@ -30,6 +30,13 @@ public class LoginController extends GeneralController
 	 */
 	public void openKayitOlMenu(ActionEvent e)
 	{
-
+		try
+		{
+			App.setRoot("register");
+		}
+		catch (IOException exception)
+		{
+			exception.printStackTrace();
+		}
 	}
 }

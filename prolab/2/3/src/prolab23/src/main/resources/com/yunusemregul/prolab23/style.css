@@ -1,21 +1,12 @@
 .root
 {
     -fx-font-family: "Segoe UI";
+    -fx-outer-border: #222;
 }
 
 .text
 {
     -fx-fill: #fff;
-}
-
-#lefttoppanel
-{
-    -fx-background-color: #222;
-}
-
-#lefttoppanel .text
-{
-    -fx-font-size: 27;
 }
 
 .text-field
@@ -35,10 +26,15 @@
     -fx-fill: #888;
 }
 
-#kaydol *
+.hyperlink *
 {
     -fx-fill: #4AC980;
     -fx-underline: true;
+}
+
+.button
+{
+    -fx-background-color: #222;
 }
 
 #topbar .button
@@ -64,4 +60,78 @@
 #lefttoppane
 {
     -fx-background-color: #222222;
+}
+
+#lefttoppanel
+{
+    -fx-background-color: #222;
+}
+
+#lefttoppanel .text
+{
+    -fx-font-size: 27;
+}
+
+.scroll-pane > .viewport 
+{
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+}
+
+.scroll-pane
+{
+    -fx-background-color: #333;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.scroll-pane > *
+{
+    -fx-background-color: #222;
+}
+
+.scroll-pane:focused 
+{
+    -fx-background-insets: 0;
+}
+
+.scroll-pane .corner 
+{
+    -fx-background-insets: 0;
+}
+
+.date-picker > *
+{
+    -fx-background-insets: 0 0 0 0;
+}
+
+.date-picker > .arrow-button
+{
+    -fx-background-color: #222;
+}
+
+.date-picker-popup *
+{
+    -fx-background-color: #333;
+}
+
+#button_favmovies
+{
+    -fx-background-color: #444;
+    -fx-font-size: 16;
+}
+
+#button_favmovies_selected
+{
+    -fx-background-color: #444;
+    -fx-font-size: 16;
+    -fx-border-color: #4AC980;
+    -fx-border-width: 3;
+    -fx-border-radius: 3;
+}
+
+#pane_favmovies_disabled
+{
+    -fx-background-color: #222;
+    -fx-background-radius: 3;
 }
