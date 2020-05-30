@@ -110,12 +110,25 @@
                <center>
                   <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                      <content>
-                        <VBox fx:id="vBox" alignment="CENTER" fillWidth="false">
+                        <VBox>
                            <children>
-                              <GridPane fx:id="gPane" alignment="CENTER">
+                              <VBox fx:id="vbox_movietypes" alignment="CENTER" fillWidth="false">
+                                 <children>
+                                    <GridPane fx:id="gPane" alignment="CENTER">
+                                       <VBox.margin>
+                                          <Insets left="12.0" top="12.0" />
+                                       </VBox.margin>
+                                    </GridPane>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </VBox>
+                              <VBox fx:id="vbox_mostliked" fillWidth="false">
                                  <VBox.margin>
                                     <Insets left="12.0" top="12.0" />
-                                 </VBox.margin></GridPane>
+                                 </VBox.margin>
+                              </VBox>
                            </children>
                         </VBox>
                      </content></ScrollPane>

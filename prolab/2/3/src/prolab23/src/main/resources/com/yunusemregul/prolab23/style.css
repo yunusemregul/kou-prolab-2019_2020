@@ -135,3 +135,24 @@
     -fx-background-color: #222;
     -fx-background-radius: 3;
 }
+
+#best_two_box
+{
+    -fx-background-color: #333;
+}
+
+#best_two_box > *
+{
+    -fx-font-weight: 700;
+}
+
+#stars_box
+{
+    -fx-background-color: #222;
+}
+
+#stars_box *
+{
+    -fx-fill: #C9964A;
+    -fx-font-weight: 600;
+}
