@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.StageStyle;
 
@@ -19,12 +20,13 @@ public class App extends Application
 	@Override
 	public void start(Stage stage) throws IOException
 	{
-		Font.loadFont(App.class.getResource("fonts/segoeui.ttf").toExternalForm(), 10);
+		Font.loadFont(App.class.getResourceAsStream("fonts/segoeui.ttf"), 10);
 
 		scene = new Scene(loadFXML("login"));
 		scene.getStylesheets().add(App.class.getResource("style.css").toExternalForm());
 		stage.setScene(scene);
 		stage.initStyle(StageStyle.TRANSPARENT);
+		stage.getIcons().add(new Image(App.class.getResourceAsStream("images/app_icon.png")));
 		stage.show();
 
 		data = new DataManager();

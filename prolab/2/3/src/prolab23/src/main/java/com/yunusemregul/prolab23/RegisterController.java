@@ -37,6 +37,7 @@ public class RegisterController extends GeneralController
 	 * Kayıt Ol menüsü açıldığında çağrılan metot.
 	 */
 	@FXML
+	@Override
 	public void initialize()
 	{
 		// Datadan film/dizi türlerini çekiyoruz

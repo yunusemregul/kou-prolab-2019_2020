@@ -12,6 +12,18 @@ public class DataManager
 
 	public Connection conn = null;
 
+	public DataManager()
+	{
+		try
+		{
+			Class.forName("org.sqlite.JDBC");
+		}
+		catch (ClassNotFoundException e)
+		{
+			System.out.println("org.sqlite.JDBC bulunamadi!");
+		}
+	}
+	
 	public void connect()
 	{
 		try
@@ -46,7 +58,7 @@ public class DataManager
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
