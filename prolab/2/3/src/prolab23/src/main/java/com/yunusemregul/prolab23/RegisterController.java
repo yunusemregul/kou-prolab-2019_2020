@@ -1,6 +1,5 @@
 package com.yunusemregul.prolab23;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,8 +11,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -117,7 +114,7 @@ public class RegisterController extends GeneralController
 	{
 		VBox mainBox = new VBox();
 		mainBox.setPrefWidth(550);
-		mainBox.setPadding(new Insets(8, 8 , 8, 8));
+		mainBox.setPadding(new Insets(8, 8, 8, 8));
 		mainBox.setId("button_favmovies");
 		mainBox.setAlignment(Pos.CENTER_LEFT);
 		VBox.setMargin(mainBox, new Insets(12, 0, 0, 0));
@@ -128,30 +125,29 @@ public class RegisterController extends GeneralController
 		HBox bests = new HBox();
 		bests.setAlignment(Pos.CENTER_LEFT);
 		VBox.setMargin(bests, new Insets(8, 0, 0, 0));
-		
+
 		HashMap<String, Float> bestTwo = App.data.getTopTwoForTur(type);
-		
+
 		for (Map.Entry entry : bestTwo.entrySet())
 		{
 			HBox bestBox = new HBox();
 			bestBox.setAlignment(Pos.CENTER_LEFT);
 			bestBox.setId("best_two_box");
 			bestBox.setPrefHeight(32);
-			
+
 			HBox starsBox = new HBox();
 			starsBox.setId("stars_box");
 			starsBox.setAlignment(Pos.CENTER_LEFT);
-		
-			Label starsLabel = new Label(""+entry.getValue());
+
+			Label starsLabel = new Label("" + entry.getValue());
 			HBox.setMargin(starsLabel, new Insets(0, 0, 0, 8));
 			starsBox.getChildren().add(starsLabel);
-			
+
 			ImageView starsIcon = new ImageView();
-			
-			
-			Label name = new Label(""+entry.getKey());
+
+			Label name = new Label("" + entry.getKey());
 			HBox.setMargin(name, new Insets(0, 8, 0, 8));
-			
+
 			bestBox.getChildren().add(starsBox);
 			bestBox.getChildren().add(name);
 			bests.getChildren().add(bestBox);

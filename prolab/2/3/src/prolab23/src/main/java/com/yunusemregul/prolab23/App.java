@@ -10,9 +10,6 @@ import java.io.IOException;
 import javafx.scene.text.Font;
 import javafx.stage.StageStyle;
 
-/**
- * JavaFX App
- */
 public class App extends Application
 {
 
@@ -29,7 +26,7 @@ public class App extends Application
 		stage.setScene(scene);
 		stage.initStyle(StageStyle.TRANSPARENT);
 		stage.show();
-		
+
 		data = new DataManager();
 		data.connect();
 	}
