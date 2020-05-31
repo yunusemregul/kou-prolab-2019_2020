@@ -158,3 +158,39 @@
     -fx-fill: #C9964A;
     -fx-font-weight: 400;
 }
+
+#mainmenu_topbar_button
+{
+    -fx-font-size: 24;
+}
+
+#mainmenu_search, #mainmenu_user
+{
+    -fx-background-color: #222;
+    -fx-background-radius: 3;
+}
+
+#mainmenu_search .text-field, #mainmenu_search .button
+{
+    -fx-font-size: 18;
+    -fx-text-fill: #fff;
+    -fx-background-color: #222;
+}
+
+#mainmenu_user *
+{
+    -fx-fill: #fff;
+    -fx-font-size: 18;
+}
+
+#mainmenu_user .button
+{
+    -fx-font-size: 20;
+}
+
+#button_logoff
+{
+    -fx-background-image: url("images/icon_quit.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}

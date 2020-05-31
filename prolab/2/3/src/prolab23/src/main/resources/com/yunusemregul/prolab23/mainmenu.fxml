@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.yunusemregul.prolab23.LoginController">
+   <children>
+      <BorderPane prefHeight="768.0" prefWidth="1366.0">
+         <top>
+            <Pane fx:id="topbar" prefHeight="28.0" prefWidth="1366.0" style="-fx-background-color: #222222;" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" fillHeight="false" prefHeight="28.0" prefWidth="1366.0">
+                     <children>
+                        <Button fx:id="minimizebutton" mnemonicParsing="false" onAction="#minimize">
+                           <HBox.margin>
+                              <Insets right="5.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="closebutton" mnemonicParsing="false" onAction="#close">
+                           <HBox.margin>
+                              <Insets right="5.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children>
+            </Pane>
+         </top>
+         <center>
+            <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #333;" BorderPane.alignment="CENTER">
+               <children>
+                  <BorderPane prefHeight="50.0" prefWidth="1366.0">
+                     <left>
+                        <HBox alignment="CENTER_LEFT" prefHeight="50.0" BorderPane.alignment="CENTER">
+                           <padding>
+                              <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
+                           </padding>
+                           <children>
+                              <Button id="mainmenu_topbar_button" mnemonicParsing="false" prefHeight="50.0" text="FİLMLER" />
+                              <Button id="mainmenu_topbar_button" mnemonicParsing="false" prefHeight="50.0" text="DİZİLER">
+                                 <HBox.margin>
+                                    <Insets left="12.0" />
+                                 </HBox.margin>
+                              </Button>
+                              <Button id="mainmenu_topbar_button" mnemonicParsing="false" prefHeight="50.0" text="TÜMÜ">
+                                 <HBox.margin>
+                                    <Insets left="12.0" />
+                                 </HBox.margin>
+                              </Button>
+                              <HBox id="mainmenu_search" alignment="CENTER_LEFT" prefHeight="45.0">
+                                 <HBox.margin>
+                                    <Insets left="12.0" />
+                                 </HBox.margin>
+                                 <children>
+                                    <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true" smooth="false">
+                                       <image>
+                                          <Image url="@images/icon_ara.png" />
+                                       </image>
+                                       <HBox.margin>
+                                          <Insets left="12.0" />
+                                       </HBox.margin>
+                                    </ImageView>
+                                    <TextField promptText="Ara">
+                                       <HBox.margin>
+                                          <Insets left="12.0" />
+                                       </HBox.margin>
+                                    </TextField>
+                                    <Button mnemonicParsing="false" text="TÜR" />
+                                    <Button mnemonicParsing="false" text="FİLM ADI" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                     </left>
+                     <right>
+                        <BorderPane id="mainmenu_user" prefHeight="45.0" prefWidth="295.0" BorderPane.alignment="CENTER">
+                           <BorderPane.margin>
+                              <Insets bottom="12.0" right="12.0" top="12.0" />
+                           </BorderPane.margin>
+                           <left>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                                 <image>
+                                    <Image url="@images/icon_user.png" />
+                                 </image>
+                                 <BorderPane.margin>
+                                    <Insets left="12.0" />
+                                 </BorderPane.margin>
+                              </ImageView>
+                           </left>
+                           <center>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" BorderPane.alignment="CENTER" />
+                           </center>
+                           <right>
+                              <Button id="button_logoff" mnemonicParsing="false" prefHeight="24.0" BorderPane.alignment="CENTER">
+                                 <BorderPane.margin>
+                                    <Insets right="12.0" />
+                                 </BorderPane.margin>
+                              </Button>
+                           </right>
+                        </BorderPane>
+                     </right>
+                  </BorderPane>
+               </children>
+            </VBox>
+         </center>
+      </BorderPane>
+   </children>
+</AnchorPane>

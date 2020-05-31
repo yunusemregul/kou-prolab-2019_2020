@@ -17,8 +17,8 @@ public class DataManager
 	public String lastError = "";
 
 	/**
-	 * DataManager constructor metodu.
-	 * SQLite driver sınıfına ulaşılamadığında hata veriyor.
+	 * DataManager constructor metodu. SQLite driver sınıfına ulaşılamadığında
+	 * hata veriyor.
 	 */
 	public DataManager()
 	{
@@ -39,7 +39,7 @@ public class DataManager
 	 * düşündüğümden Singleton patternini kullandım. Bu metot eğer bir
 	 * DataManager oluşturulmadıysa oluşturup, oluşturulduysa var olan
 	 * DataManager i döndürüyor.
-	 * 
+	 *
 	 * Sadece 1 tane DataManager olmazsa database üzerinde birden çok connection
 	 * olmasından 'database is locked' hatası alınabilir.
 	 *
@@ -216,7 +216,30 @@ public class DataManager
 	public boolean loginUser(String email, String pass)
 	{
 		String hashedPass = MD5(pass);
-		
-		
+
+		String sql = "SELECT ad FROM Kullanici WHERE email = ? AND sifre_hash = ?";
+
+		try (PreparedStatement stat = conn.prepareStatement(sql))
+		{
+			stat.setObject(1, email);
+			stat.setObject(2, hashedPass);
+
+			ResultSet result = stat.executeQuery();
+
+			if (result.next())
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		catch (SQLException e)
+		{
+			System.out.println(e.getMessage());
+			lastError = e.getMessage();
+			return false;
+		}
 	}
 }

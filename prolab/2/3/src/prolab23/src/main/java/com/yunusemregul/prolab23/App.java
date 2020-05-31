@@ -15,18 +15,29 @@ public class App extends Application
 {
 
 	private static Scene scene;
+	private static Stage lastStage;
 
 	@Override
 	public void start(Stage stage) throws IOException
 	{
 		Font.loadFont(App.class.getResourceAsStream("fonts/segoeui.ttf"), 10);
 
-		scene = new Scene(loadFXML("login"));
+		loadScene(stage, "login");
+	}
+	
+	static void loadScene(Stage stage, String sceneName) throws IOException
+	{
+		if(lastStage!=null)
+			lastStage.close();
+		
+		scene = new Scene(loadFXML(sceneName));
 		scene.getStylesheets().add(App.class.getResource("style.css").toExternalForm());
 		stage.setScene(scene);
 		stage.initStyle(StageStyle.TRANSPARENT);
 		stage.getIcons().add(new Image(App.class.getResourceAsStream("images/app_icon.png")));
 		stage.show();
+		
+		lastStage = stage;
 	}
 
 	static void setRoot(String fxml) throws IOException
