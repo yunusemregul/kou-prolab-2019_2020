@@ -15,7 +15,6 @@ public class App extends Application
 {
 
 	private static Scene scene;
-	public static DataManager data;
 
 	@Override
 	public void start(Stage stage) throws IOException
@@ -28,9 +27,6 @@ public class App extends Application
 		stage.initStyle(StageStyle.TRANSPARENT);
 		stage.getIcons().add(new Image(App.class.getResourceAsStream("images/app_icon.png")));
 		stage.show();
-
-		data = new DataManager();
-		data.connect();
 	}
 
 	static void setRoot(String fxml) throws IOException

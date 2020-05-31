@@ -45,7 +45,7 @@
                      <children>
                         <VBox alignment="CENTER" fillWidth="false" prefHeight="472.0" prefWidth="420.0">
                            <children>
-                              <TextField fx:id="entry_ad" prefHeight="40.0" prefWidth="327.0" promptText="Ad" style="-fx-background-color: #333333; -fx-font-family: Segoe UI;" />
+                              <TextField fx:id="entry_name" prefHeight="40.0" prefWidth="327.0" promptText="Ad" style="-fx-background-color: #333333; -fx-font-family: Segoe UI;" />
                               <DatePicker fx:id="entry_birthdate" prefHeight="40.0" prefWidth="327.0" promptText="Doğum Tarihi">
                                  <VBox.margin>
                                     <Insets top="13.0" />
@@ -61,7 +61,7 @@
                                     <Insets top="13.0" />
                                  </VBox.margin>
                               </PasswordField>
-                              <PasswordField fx:id="entry_pass_check" prefHeight="40.0" prefWidth="327.0" promptText="Şifre Tekrar">
+                              <PasswordField fx:id="entry_pass_again" prefHeight="40.0" prefWidth="327.0" promptText="Şifre Tekrar">
                                  <VBox.margin>
                                     <Insets top="13.0" />
                                  </VBox.margin>
@@ -108,15 +108,15 @@
                   </Pane>
                </top>
                <center>
-                  <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                  <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                      <content>
                         <VBox>
                            <children>
-                              <VBox fx:id="vbox_movietypes" alignment="CENTER" fillWidth="false">
+                              <VBox fx:id="vbox_movietypes" fillWidth="false">
                                  <children>
                                     <GridPane fx:id="gPane" alignment="CENTER">
                                        <VBox.margin>
-                                          <Insets left="12.0" top="12.0" />
+                                          <Insets />
                                        </VBox.margin>
                                     </GridPane>
                                  </children>
@@ -124,9 +124,9 @@
                                     <Insets />
                                  </VBox.margin>
                               </VBox>
-                              <VBox fx:id="vbox_mostliked" fillWidth="false">
+                              <VBox fx:id="vbox_mostliked" alignment="CENTER" fillWidth="false">
                                  <VBox.margin>
-                                    <Insets left="12.0" top="12.0" />
+                                    <Insets top="12.0" />
                                  </VBox.margin>
                               </VBox>
                            </children>

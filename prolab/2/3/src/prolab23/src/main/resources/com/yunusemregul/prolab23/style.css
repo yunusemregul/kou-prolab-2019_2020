@@ -82,7 +82,7 @@
 {
     -fx-background-color: #333;
     -fx-background-insets: 0;
-    -fx-padding: 0;
+    -fx-padding: 12 12 12 12;
 }
 
 .scroll-pane > *
@@ -136,23 +136,25 @@
     -fx-background-radius: 3;
 }
 
-#best_two_box
+#box_moviestars
 {
     -fx-background-color: #333;
+    -fx-background-radius: 3;
 }
 
-#best_two_box > *
+#box_moviestars > *
 {
-    -fx-font-weight: 700;
+    -fx-font-weight: 600;
 }
 
-#stars_box
+#box_moviestars_score
 {
     -fx-background-color: #222;
+    -fx-background-radius: 3;
 }
 
-#stars_box *
+#box_moviestars_score *
 {
     -fx-fill: #C9964A;
-    -fx-font-weight: 600;
+    -fx-font-weight: 400;
 }

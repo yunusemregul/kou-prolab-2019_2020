@@ -1,6 +1,8 @@
 package com.yunusemregul.prolab23;
 
+import com.yunusemregul.prolab23.components.MovieStars;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,9 +11,13 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -24,6 +30,17 @@ public class RegisterController extends GeneralController
 	private VBox vbox_mostliked;
 	@FXML
 	private GridPane gPane;
+
+	@FXML
+	private TextField entry_name;
+	@FXML
+	private DatePicker entry_birthdate;
+	@FXML
+	private TextField entry_email;
+	@FXML
+	private PasswordField entry_pass;
+	@FXML
+	private PasswordField entry_pass_again;
 
 	private Button[] selectedTypes = new Button[3];
 	private int stIndex = 0;
@@ -41,7 +58,7 @@ public class RegisterController extends GeneralController
 	public void initialize()
 	{
 		// Datadan film/dizi türlerini çekiyoruz
-		ArrayList<String> turler = App.data.getTurler();
+		ArrayList<String> turler = DataManager.getInstance().getTurler();
 
 		// Türleri kullanıcının en sevdiği türleri seçebilmesi için buton olarak ekliyoruz.
 		for (int i = 0; i < turler.size(); i++)
@@ -114,7 +131,7 @@ public class RegisterController extends GeneralController
 	public void onFavtypeSelected(String type)
 	{
 		VBox mainBox = new VBox();
-		mainBox.setPrefWidth(550);
+		mainBox.setPrefWidth(542);
 		mainBox.setPadding(new Insets(8, 8, 8, 8));
 		mainBox.setId("button_favmovies");
 		mainBox.setAlignment(Pos.CENTER_LEFT);
@@ -127,31 +144,30 @@ public class RegisterController extends GeneralController
 		bests.setAlignment(Pos.CENTER_LEFT);
 		VBox.setMargin(bests, new Insets(8, 0, 0, 0));
 
-		HashMap<String, Float> bestTwo = App.data.getTopTwoForTur(type);
+		HashMap<String, Float> bestTwo = DataManager.getInstance().getTopTwoForTur(type);
 
-		for (Map.Entry entry : bestTwo.entrySet())
+		if (bestTwo.size() > 0)
 		{
-			HBox bestBox = new HBox();
-			bestBox.setAlignment(Pos.CENTER_LEFT);
-			bestBox.setId("best_two_box");
-			bestBox.setPrefHeight(32);
+			int count = 0;
+			for (Map.Entry entry : bestTwo.entrySet())
+			{
+				MovieStars box = new MovieStars();
+				box.setInfo(entry.getKey().toString(), "" + entry.getValue());
 
-			HBox starsBox = new HBox();
-			starsBox.setId("stars_box");
-			starsBox.setAlignment(Pos.CENTER_LEFT);
+				if (count > 0)
+				{
+					HBox.setMargin(box, new Insets(0, 0, 0, 12));
+				}
 
-			Label starsLabel = new Label("" + entry.getValue());
-			HBox.setMargin(starsLabel, new Insets(0, 0, 0, 8));
-			starsBox.getChildren().add(starsLabel);
-
-			ImageView starsIcon = new ImageView();
-
-			Label name = new Label("" + entry.getKey());
-			HBox.setMargin(name, new Insets(0, 8, 0, 8));
-
-			bestBox.getChildren().add(starsBox);
-			bestBox.getChildren().add(name);
-			bests.getChildren().add(bestBox);
+				bests.getChildren().add(box);
+				count++;
+			}
+		}
+		else
+		{
+			Label no_entries = new Label("Henüz yeteri kadar puan verilmemiş!");
+			bests.setAlignment(Pos.CENTER);
+			bests.getChildren().add(no_entries);
 		}
 
 		mainBox.getChildren().add(bests);
@@ -177,7 +193,50 @@ public class RegisterController extends GeneralController
 	 */
 	public void tryRegister(ActionEvent e)
 	{
+		String name = entry_name.getText();
+		String birthdate = entry_birthdate.getValue().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+		String email = entry_email.getText();
+		String pass = entry_pass.getText();
+		String pass_again = entry_pass_again.getText();
 
+		if (name.length() == 0 || birthdate.length() == 0 || email.length() == 0 || pass.length() == 0 || !pass.equals(pass_again))
+		{
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Kayıt Olurken Hata");
+			String content = "";
+
+			if (name.length() == 0)
+			{
+				content += "Ad bölümü boş olamaz!\n";
+			}
+
+			if (birthdate.length() == 0)
+			{
+				content += "Doğum günü bölümü boş olamaz!\n";
+			}
+
+			if (email.length() == 0)
+			{
+				content += "Email bölümü boş olamaz!\n";
+			}
+
+			if (pass.length() == 0)
+			{
+				content += "Şifre bölümü boş olamaz!\n";
+			}
+			else
+			{
+				if (!pass.equals(pass_again))
+				{
+					content += "Şifreler eşleşmiyor!";
+				}
+			}
+			alert.setContentText(content);
+			alert.show();
+			return;
+		}
+
+		DataManager.getInstance().registerUser(name, birthdate, email, pass);
 	}
 
 	/**

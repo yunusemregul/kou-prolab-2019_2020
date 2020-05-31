@@ -9,8 +9,8 @@ import java.util.HashMap;
  */
 public class DataManager
 {
-
-	public Connection conn = null;
+	private static DataManager instance = null;
+	private Connection conn = null;
 
 	public DataManager()
 	{
@@ -22,6 +22,18 @@ public class DataManager
 		{
 			System.out.println("org.sqlite.JDBC bulunamadi!");
 		}
+		
+		connect();
+	}
+	
+	public static DataManager getInstance()
+	{
+		if (instance == null)
+		{
+			instance = new DataManager();
+		}
+		
+		return instance;
 	}
 	
 	public void connect()
@@ -92,5 +104,10 @@ public class DataManager
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public void registerUser(String name, String birthdate, String email, String pass)
+	{
+		
 	}
 }
