@@ -236,7 +236,31 @@ public class RegisterController extends GeneralController
 			return;
 		}
 
-		DataManager.getInstance().registerUser(name, birthdate, email, pass);
+		boolean success = DataManager.getInstance().registerUser(name, email, pass, birthdate);
+
+		if (success)
+		{
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle("Kayıt Başarılı");
+			alert.setContentText("Kayıt başarılı, giriş yapabilirsiniz.");
+			alert.showAndWait();
+			openLoginMenu(null);
+		}
+		else
+		{
+			String error = DataManager.getInstance().lastError;
+			
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Kayıt Olurken Hata");
+			alert.setContentText("SQL tarafında beklenmedik bir hata oluştu:\n" + error);
+			
+			if(error.contains("UNIQUE constraint failed: Kullanici.email"))
+			{
+				alert.setContentText("Zaten bu email ile daha önceden kaydolunmuş!");
+			}
+
+			alert.show();
+		}
 	}
 
 	/**
