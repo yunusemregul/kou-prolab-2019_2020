@@ -113,11 +113,12 @@ public class DataManager
 	 */
 	public HashMap<String, Float> getTopTwoForTur(String tur)
 	{
-		String sql = "SELECT Program.ad, KullaniciProgram.puan FROM Program "
-				+ "INNER JOIN KullaniciProgram ON Program.id = KullaniciProgram.program_id "
-				+ "INNER JOIN ProgramTur ON ProgramTur.program_id = Program.id "
+		String sql = "SELECT Program.ad, AVG(KullaniciProgram.puan) AS puan FROM Program "
+				+ "JOIN KullaniciProgram ON Program.id = KullaniciProgram.program_id "
+				+ "JOIN ProgramTur ON ProgramTur.program_id = Program.id "
 				+ "WHERE ProgramTur.tur_id = (SELECT Tur.id FROM Tur WHERE Tur.ad = ?) "
-				+ "ORDER BY KullaniciProgram.puan DESC LIMIT 2";
+				+ "GROUP BY Program.ad "
+				+ "ORDER BY puan DESC LIMIT 2";
 
 		try (PreparedStatement stat = conn.prepareStatement(sql))
 		{
@@ -134,6 +135,42 @@ public class DataManager
 			}
 
 			return adpuan;
+		}
+		catch (SQLException e)
+		{
+			System.out.println(e.getMessage());
+			lastError = e.getMessage();
+			return null;
+		}
+	}
+
+	public ArrayList<Movie> getMovies()
+	{
+		String sql = "SELECT Program.ad, AVG(KullaniciProgram.puan) AS puan, GROUP_CONCAT(DISTINCT Tur.ad) AS tur, Program.tip FROM Program "
+				+ "LEFT JOIN KullaniciProgram ON Program.id = KullaniciProgram.program_id "
+				+ "JOIN ProgramTur ON ProgramTur.program_id = Program.id "
+				+ "JOIN Tur ON Tur.id = ProgramTur.tur_id "
+				+ "GROUP BY Program.ad";
+
+		try (Statement stat = conn.createStatement())
+		{
+			ResultSet result = stat.executeQuery(sql);
+
+			ArrayList<Movie> movies = new ArrayList<Movie>();
+
+			while (result.next())
+			{
+				Movie movie = new Movie(
+						result.getString("ad"),
+						String.format("%.1f", result.getFloat("puan")).replace(",", "."),
+						result.getString("tur"),
+						result.getString("tip")
+				);
+
+				movies.add(movie);
+			}
+
+			return movies;
 		}
 		catch (SQLException e)
 		{

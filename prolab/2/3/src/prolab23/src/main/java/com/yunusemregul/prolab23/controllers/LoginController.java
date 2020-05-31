@@ -1,5 +1,7 @@
-package com.yunusemregul.prolab23;
+package com.yunusemregul.prolab23.controllers;
 
+import com.yunusemregul.prolab23.App;
+import com.yunusemregul.prolab23.DataManager;
 import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

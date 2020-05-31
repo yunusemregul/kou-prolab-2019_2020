@@ -1,4 +1,4 @@
-package com.yunusemregul.prolab23;
+package com.yunusemregul.prolab23.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

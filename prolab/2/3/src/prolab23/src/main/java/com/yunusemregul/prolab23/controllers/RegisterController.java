@@ -1,5 +1,7 @@
-package com.yunusemregul.prolab23;
+package com.yunusemregul.prolab23.controllers;
 
+import com.yunusemregul.prolab23.App;
+import com.yunusemregul.prolab23.DataManager;
 import com.yunusemregul.prolab23.components.MovieStars;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
@@ -137,7 +139,7 @@ public class RegisterController extends GeneralController
 		mainBox.setAlignment(Pos.CENTER_LEFT);
 		VBox.setMargin(mainBox, new Insets(12, 0, 0, 0));
 
-		Label lab = new Label(type + " türünün en iyi ikisi: ");
+		Label lab = new Label(type + " türünün en iyileri: ");
 		mainBox.getChildren().add(lab);
 
 		HBox bests = new HBox();
@@ -152,7 +154,7 @@ public class RegisterController extends GeneralController
 			for (Map.Entry entry : bestTwo.entrySet())
 			{
 				MovieStars box = new MovieStars();
-				box.setInfo(entry.getKey().toString(), "" + entry.getValue());
+				box.setInfo(entry.getKey().toString(), String.format("%.1f", entry.getValue()).replace(",", "."));
 
 				if (count > 0)
 				{
@@ -249,12 +251,12 @@ public class RegisterController extends GeneralController
 		else
 		{
 			String error = DataManager.getInstance().lastError;
-			
+
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Kayıt Olurken Hata");
 			alert.setContentText("SQL tarafında beklenmedik bir hata oluştu:\n" + error);
-			
-			if(error.contains("UNIQUE constraint failed: Kullanici.email"))
+
+			if (error.contains("UNIQUE constraint failed: Kullanici.email"))
 			{
 				alert.setContentText("Zaten bu email ile daha önceden kaydolunmuş!");
 			}

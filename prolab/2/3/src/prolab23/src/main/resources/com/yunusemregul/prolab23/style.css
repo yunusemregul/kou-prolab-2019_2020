@@ -194,3 +194,42 @@
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
 }
+
+#box_movie
+{
+    -fx-background-color: #222;
+}
+
+#box_movie *
+{
+    -fx-fill: #fff;
+}
+
+#box_movie_name
+{
+    -fx-font-size: 20;
+    -fx-font-weight: 800;
+}
+
+#box_movie_type
+{
+    -fx-font-size: 20;
+}
+
+#box_movie_score
+{
+    -fx-font-size: 25;
+    -fx-fill: #C9964A;
+}
+
+#box_movie_kind
+{
+    -fx-font-size: 25;
+}
+
+#box_movie_watch
+{
+    -fx-font-size: 25;
+    -fx-background-color: #664AC9;
+    -fx-background-radius: 0;
+}

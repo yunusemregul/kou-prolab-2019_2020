@@ -25,7 +25,7 @@ public class App extends Application
 		loadScene(stage, "login");
 	}
 	
-	static void loadScene(Stage stage, String sceneName) throws IOException
+	public static void loadScene(Stage stage, String sceneName) throws IOException
 	{
 		if(lastStage!=null)
 			lastStage.close();
@@ -40,12 +40,12 @@ public class App extends Application
 		lastStage = stage;
 	}
 
-	static void setRoot(String fxml) throws IOException
+	public static void setRoot(String fxml) throws IOException
 	{
 		scene.setRoot(loadFXML(fxml));
 	}
 
-	static Parent loadFXML(String fxml) throws IOException
+	public static Parent loadFXML(String fxml) throws IOException
 	{
 		FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
 		return fxmlLoader.load();
