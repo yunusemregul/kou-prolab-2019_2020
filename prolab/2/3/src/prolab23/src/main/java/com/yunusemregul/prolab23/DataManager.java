@@ -3,6 +3,7 @@ package com.yunusemregul.prolab23;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -146,7 +147,7 @@ public class DataManager
 
 	public ArrayList<Movie> getMovies()
 	{
-		String sql = "SELECT Program.ad, AVG(KullaniciProgram.puan) AS puan, GROUP_CONCAT(DISTINCT Tur.ad) AS tur, Program.tip FROM Program "
+		String sql = "SELECT Program.id, Program.ad, AVG(KullaniciProgram.puan) AS puan, GROUP_CONCAT(DISTINCT Tur.ad) AS tur, Program.tip, Program.bolum_sayisi, Program.uzunluk FROM Program "
 				+ "LEFT JOIN KullaniciProgram ON Program.id = KullaniciProgram.program_id "
 				+ "JOIN ProgramTur ON ProgramTur.program_id = Program.id "
 				+ "JOIN Tur ON Tur.id = ProgramTur.tur_id "
@@ -161,10 +162,13 @@ public class DataManager
 			while (result.next())
 			{
 				Movie movie = new Movie(
+						result.getInt("id"),
 						result.getString("ad"),
 						String.format("%.1f", result.getFloat("puan")).replace(",", "."),
 						result.getString("tur"),
-						result.getString("tip")
+						result.getString("tip"),
+						result.getInt("bolum_sayisi"),
+						result.getInt("uzunluk")
 				);
 
 				movies.add(movie);
@@ -254,7 +258,7 @@ public class DataManager
 	{
 		String hashedPass = MD5(pass);
 
-		String sql = "SELECT ad FROM Kullanici WHERE email = ? AND sifre_hash = ?";
+		String sql = "SELECT id, ad FROM Kullanici WHERE email = ? AND sifre_hash = ?";
 
 		try (PreparedStatement stat = conn.prepareStatement(sql))
 		{
@@ -265,6 +269,8 @@ public class DataManager
 
 			if (result.next())
 			{
+				User.getInstance().id = result.getInt("id");
+				User.getInstance().name = result.getString("ad");
 				return true;
 			}
 			else
@@ -277,6 +283,102 @@ public class DataManager
 			System.out.println(e.getMessage());
 			lastError = e.getMessage();
 			return false;
+		}
+	}
+
+	public void saveMovie(User user)
+	{
+		String sql = "SELECT kullanici_id FROM KullaniciProgram WHERE kullanici_id = ? AND program_id = ?";
+
+		try (PreparedStatement stat = conn.prepareStatement(sql))
+		{
+			stat.setObject(1, user.id);
+			stat.setObject(2, user.getMovie().id);
+			ResultSet result = stat.executeQuery();
+
+			SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd.MM.yyyy");
+			Date date = new Date(System.currentTimeMillis());
+
+			if (result.next())
+			{
+				sql = "UPDATE KullaniciProgram SET izleme_tarihi = ?, izleme_suresi = ?, kalinan_bolum = ?, puan = ? WHERE kullanici_id = ? AND program_id = ?";
+				try (PreparedStatement newstat = conn.prepareStatement(sql))
+				{
+					newstat.setObject(1, formatter.format(date));
+					newstat.setObject(2, user.watchTime);
+					newstat.setObject(3, user.chapter);
+					newstat.setObject(4, user.rate == -1 ? null : user.rate);
+					newstat.setObject(5, user.id);
+					newstat.setObject(6, user.getMovie().id);
+					newstat.executeUpdate();
+				}
+				catch (SQLException e)
+				{
+					System.out.println(e.getMessage());
+					lastError = e.getMessage();
+					return;
+				}
+			}
+			else
+			{
+				sql = "INSERT INTO KullaniciProgram VALUES (?, ?, ?, ?, ?, ?)";
+				try (PreparedStatement newstat = conn.prepareStatement(sql))
+				{
+					newstat.setObject(1, user.id);
+					newstat.setObject(2, user.getMovie().id);
+
+					newstat.setObject(3, formatter.format(date));
+					newstat.setObject(4, user.watchTime);
+					newstat.setObject(5, user.chapter);
+					newstat.setObject(6, user.rate == -1 ? null : user.rate);
+					newstat.executeUpdate();
+				}
+				catch (SQLException e)
+				{
+					System.out.println(e.getMessage());
+					lastError = e.getMessage();
+					return;
+				}
+			}
+		}
+		catch (SQLException e)
+		{
+			System.out.println(e.getMessage());
+			lastError = e.getMessage();
+			return;
+		}
+
+	}
+
+	public void loadMovie(User user)
+	{
+		String sql = "SELECT izleme_suresi, kalinan_bolum, puan FROM KullaniciProgram WHERE kullanici_id = ? AND program_id = ?";
+
+		try (PreparedStatement stat = conn.prepareStatement(sql))
+		{
+			stat.setObject(1, user.id);
+			stat.setObject(2, user.getMovie().id);
+			ResultSet result = stat.executeQuery();
+
+			if (result.next())
+			{
+				user.watchTime = result.getInt("izleme_suresi");
+				user.chapter = result.getInt("kalinan_bolum");
+				user.rate = result.getInt("puan");
+				user.rate = result.wasNull() ? -1 : user.rate;
+			}
+			else
+			{
+				user.watchTime = 0;
+				user.chapter = 1;
+				user.rate = -1;
+			}
+		}
+		catch (SQLException e)
+		{
+			System.out.println(e.getMessage());
+			lastError = e.getMessage();
+			return;
 		}
 	}
 }

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.yunusemregul.prolab23.controllers.WatchmenuController">
+   <children>
+      <BorderPane prefHeight="768.0" prefWidth="1366.0">
+         <top>
+            <Pane fx:id="topbar" prefHeight="28.0" prefWidth="1366.0" style="-fx-background-color: #222222;" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" fillHeight="false" prefHeight="28.0" prefWidth="1366.0">
+                     <children>
+                        <Button fx:id="minimizebutton" mnemonicParsing="false" onAction="#minimize">
+                           <HBox.margin>
+                              <Insets right="5.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="closebutton" mnemonicParsing="false" onAction="#close">
+                           <HBox.margin>
+                              <Insets right="5.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children>
+            </Pane>
+         </top>
+         <center>
+            <HBox prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #333;" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox prefHeight="200.0" prefWidth="1038.0" style="-fx-background-color: #333;">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <children>
+                        <StackPane prefHeight="715.0" prefWidth="1038.0">
+                           <children>
+                              <StackPane prefHeight="150.0" prefWidth="1038.0" style="-fx-background-color: #222;" StackPane.alignment="BOTTOM_CENTER">
+                                 <children>
+                                    <ProgressBar prefWidth="1005.0" progress="0.0" StackPane.alignment="BOTTOM_CENTER">
+                                       <StackPane.margin>
+                                          <Insets bottom="8.0" />
+                                       </StackPane.margin>
+                                    </ProgressBar>
+                                    <Slider StackPane.alignment="BOTTOM_CENTER">
+                                       <StackPane.margin>
+                                          <Insets bottom="8.0" left="12.0" right="12.0" />
+                                       </StackPane.margin>
+                                    </Slider>
+                                 </children>
+                              </StackPane>
+                              <Text id="watch_time" strokeType="OUTSIDE" strokeWidth="0.0" text="00:00 / 00:00" textAlignment="RIGHT" StackPane.alignment="BOTTOM_RIGHT">
+                                 <StackPane.margin>
+                                    <Insets bottom="24.0" right="16.0" />
+                                 </StackPane.margin>
+                              </Text>
+                              <Button id="button_watch" fx:id="button_watch" mnemonicParsing="false" onAction="#watch" prefHeight="600.0" prefWidth="1038.0" />
+                           </children>
+                        </StackPane>
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="200.0" prefWidth="290.0">
+                     <HBox.margin>
+                        <Insets left="12.0" />
+                     </HBox.margin>
+                     <children>
+                        <BorderPane id="mainmenu_user" prefHeight="45.0" prefWidth="295.0">
+                           <left>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                                 <image>
+                                    <Image url="@images/icon_user.png" />
+                                 </image>
+                                 <BorderPane.margin>
+                                    <Insets left="12.0" />
+                                 </BorderPane.margin>
+                              </ImageView>
+                           </left>
+                           <center>
+                              <Text fx:id="user_name" strokeType="OUTSIDE" strokeWidth="0.0" text="KULLANICI ADI" BorderPane.alignment="CENTER" />
+                           </center>
+                           <right>
+                              <Button id="button_logoff" mnemonicParsing="false" onAction="#logOff" BorderPane.alignment="CENTER">
+                                 <BorderPane.margin>
+                                    <Insets right="12.0" />
+                                 </BorderPane.margin>
+                              </Button>
+                           </right>
+                        </BorderPane>
+                        <Button id="button_go_to_mainmenu" mnemonicParsing="false" onAction="#openMainmenu" prefHeight="45.0" prefWidth="295.0" text="ANA MENÜ">
+                           <VBox.margin>
+                              <Insets top="12.0" />
+                           </VBox.margin>
+                        </Button>
+                        <BorderPane prefHeight="600.0" prefWidth="200.0" style="-fx-background-color: #222;">
+                           <VBox.margin>
+                              <Insets top="12.0" />
+                           </VBox.margin>
+                           <center>
+                              <VBox id="box_movie" alignment="CENTER" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                 <children>
+                                    <Text id="box_movie_name" fx:id="movie_name" strokeType="OUTSIDE" strokeWidth="0.0" text="FİLM ADI" textAlignment="CENTER" wrappingWidth="200.0" />
+                                    <Text id="box_movie_type" fx:id="movie_type" strokeType="OUTSIDE" strokeWidth="0.0" text="TÜR" textAlignment="CENTER" wrappingWidth="200.0" />
+                                    <HBox alignment="CENTER" prefHeight="32.0">
+                                       <children>
+                                          <Text id="box_movie_score" fx:id="movie_score" strokeType="OUTSIDE" strokeWidth="0.0" text="PUAN" />
+                                          <ImageView fitHeight="150.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@images/icon_star_24_24.png" />
+                                             </image>
+                                             <HBox.margin>
+                                                <Insets left="8.0" />
+                                             </HBox.margin>
+                                          </ImageView>
+                                       </children>
+                                    </HBox>
+                                    <Text id="box_movie_kind" fx:id="movie_kind" strokeType="OUTSIDE" strokeWidth="0.0" text="TİP" textAlignment="CENTER" wrappingWidth="200.0" />
+                                    <Text id="box_movie_kind" strokeType="OUTSIDE" strokeWidth="0.0" text="PUAN VER:" textAlignment="CENTER">
+                                       <VBox.margin>
+                                          <Insets top="32.0" />
+                                       </VBox.margin>
+                                    </Text>
+                                    <Spinner prefHeight="20.0">
+                                       <VBox.margin>
+                                          <Insets top="8.0" />
+                                       </VBox.margin>
+                                    </Spinner>
+                                 </children>
+                              </VBox>
+                           </center>
+                           <bottom>
+                              <BorderPane prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #664AC9;" BorderPane.alignment="CENTER">
+                                 <left>
+                                    <Button id="button_chapter_previous" mnemonicParsing="false" onAction="#previousChapter" BorderPane.alignment="CENTER">
+                                       <BorderPane.margin>
+                                          <Insets left="6.0" />
+                                       </BorderPane.margin>
+                                    </Button>
+                                 </left>
+                                 <right>
+                                    <Button id="button_chapter_next" mnemonicParsing="false" onAction="#nextChapter" BorderPane.alignment="CENTER">
+                                       <BorderPane.margin>
+                                          <Insets right="6.0" />
+                                       </BorderPane.margin>
+                                    </Button>
+                                 </right>
+                                 <center>
+                                    <Text fx:id="chapter" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-fill: #fff; -fx-font-size: 20;" text="BÖLÜM 1/1" BorderPane.alignment="CENTER" />
+                                 </center>
+                              </BorderPane>
+                           </bottom>
+                        </BorderPane>
+                     </children>
+                  </VBox>
+               </children>
+               <padding>
+                  <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
+               </padding>
+            </HBox>
+         </center>
+      </BorderPane>
+   </children>
+</AnchorPane>

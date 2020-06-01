@@ -1,5 +1,7 @@
 package com.yunusemregul.prolab23.controllers;
 
+import com.yunusemregul.prolab23.App;
+import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -46,5 +48,18 @@ public class GeneralController
 	{
 		Stage stage = (Stage) ((Button) e.getSource()).getScene().getWindow();
 		stage.setIconified(true);
+	}
+
+	@FXML
+	public void logOff()
+	{
+		try
+		{
+			App.loadScene(new Stage(), "login");
+		}
+		catch (IOException exception)
+		{
+			exception.printStackTrace();
+		}
 	}
 }

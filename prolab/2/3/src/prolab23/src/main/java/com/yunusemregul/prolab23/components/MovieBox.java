@@ -2,9 +2,11 @@ package com.yunusemregul.prolab23.components;
 
 import com.yunusemregul.prolab23.App;
 import com.yunusemregul.prolab23.Movie;
+import com.yunusemregul.prolab23.controllers.MainmenuController;
 import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 
@@ -19,6 +21,10 @@ public class MovieBox extends BorderPane
 	private Text movie_score;
 	@FXML
 	private Text movie_kind;
+	@FXML
+	public Button button_watch;
+
+	private Movie movie;
 
 	public MovieBox()
 	{
@@ -38,20 +44,27 @@ public class MovieBox extends BorderPane
 
 	public void setInfo(Movie movie)
 	{
+		this.movie = movie;
+
 		String type = "";
-		
+
 		String[] types = movie.type.split(",");
-		
+
 		for (String t : types)
 		{
 			type += (t.contains(" ") ? t.split(" ")[0] : t) + "\n";
 		}
-		
+
 		type = type.trim();
-		
+
 		movie_name.setText(movie.name);
 		movie_type.setText(type);
-		movie_score.setText(movie.score+"/10");
+		movie_score.setText(movie.score + "/10");
 		movie_kind.setText(movie.kind.equals("") ? "Belirtilmemiş" : movie.kind);
+	}
+
+	public void watchMovie()
+	{
+		MainmenuController.openWatchmenu(movie);
 	}
 }

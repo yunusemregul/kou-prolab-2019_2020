@@ -37,6 +37,6 @@
          </children></VBox>
    </center>
    <bottom>
-      <Button id="box_movie_watch" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" text="İZLE" BorderPane.alignment="CENTER" />
+      <Button id="box_movie_watch" fx:id="button_watch" mnemonicParsing="false" onAction="#watchMovie" prefHeight="40.0" prefWidth="200.0" text="İZLE" BorderPane.alignment="CENTER" />
    </bottom>
 </fx:root>

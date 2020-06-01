@@ -234,3 +234,61 @@
     -fx-background-color: #664AC9;
     -fx-background-radius: 0;
 }
+
+#button_watch
+{
+    -fx-background-image: url("images/icon_play.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+#button_stop
+{
+    -fx-background-image: url("images/icon_stop.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+#button_go_to_mainmenu
+{
+    -fx-font-size: 24;
+    -fx-fill: #fff;
+}
+
+#watch_time
+{
+    -fx-fill: #fff;
+    -fx-font-size: 20;
+}
+
+.progress-bar > .bar 
+{
+    -fx-background-color: #333;
+    -fx-background-insets: 1 1 2 1;
+    -fx-padding: 6;
+}
+
+.slider .track {
+    -fx-background-color:null;
+    -fx-background-insets: 1 0 -1 0, 0, 1;
+    -fx-background-radius: 2.5, 2.5, 1.5;
+    -fx-padding: 2.5;
+}
+
+#button_chapter_previous, #button_chapter_next
+{
+    -fx-background-color: null;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-padding: 14;
+}
+
+#button_chapter_previous
+{
+    -fx-background-image: url("images/icon_bolum_before.png");
+}
+
+#button_chapter_next
+{
+    -fx-background-image: url("images/icon_bolum_next.png");
+}

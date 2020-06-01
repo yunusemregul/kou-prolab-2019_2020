@@ -1,8 +1,11 @@
 package com.yunusemregul.prolab23.controllers;
 
+import com.yunusemregul.prolab23.App;
 import com.yunusemregul.prolab23.DataManager;
 import com.yunusemregul.prolab23.Movie;
+import com.yunusemregul.prolab23.User;
 import com.yunusemregul.prolab23.components.MovieBox;
+import java.io.IOException;
 import java.util.ArrayList;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -10,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 
 public class MainmenuController extends GeneralController
 {
@@ -23,21 +27,24 @@ public class MainmenuController extends GeneralController
 	private Button button_series;
 	@FXML
 	private Button button_all;
-	
+
 	@FXML
 	private Button button_search_movie_name;
 	@FXML
 	private Button button_search_type;
 	
 	@FXML
+	private Text user_name;
+
+	@FXML
 	private TextField search_field;
 
 	private ArrayList<Movie> movies;
 	private ArrayList<Movie> shownMovies;
-	
+
 	private Button selectedKind;
 	private Button selectedSearchType;
-	
+
 	private String searchString = "";
 
 	public MainmenuController()
@@ -49,6 +56,7 @@ public class MainmenuController extends GeneralController
 	@Override
 	public void initialize()
 	{
+		user_name.setText(User.getInstance().name);
 		movies = DataManager.getInstance().getMovies();
 		shownMovies = new ArrayList<>();
 
@@ -63,36 +71,53 @@ public class MainmenuController extends GeneralController
 				showOnlySearched();
 			}
 		});
-		
+
 		selectSearchType(button_search_movie_name);
 	}
-	
+
+	public static void openWatchmenu(Movie movie)
+	{
+		User.getInstance().setMovie(movie);
+		try
+		{
+			App.setRoot("watchmenu");
+		}
+		catch (IOException exception)
+		{
+			exception.printStackTrace();
+		}
+	}
+
 	public void selectSearchType(Button selected)
 	{
-		if(selectedSearchType!=null)
+		if (selectedSearchType != null)
+		{
 			selectedSearchType.setStyle("");
-		
+		}
+
 		selected.setStyle("-fx-background-color: #664AC9;");
 		selectedSearchType = selected;
 	}
-	
+
 	public void searchType()
 	{
 		selectSearchType(button_search_type);
 	}
-	
+
 	public void searchMovieName()
 	{
 		selectSearchType(button_search_movie_name);
 	}
-	
+
 	public void showOnlySearched()
 	{
-		if(searchString.length()==0)
+		if (searchString.length() == 0)
+		{
 			return;
-		
+		}
+
 		mainmenu_gridpane.getChildren().clear();
-		
+
 		int count = 0;
 		for (Movie movie : shownMovies)
 		{
@@ -100,7 +125,7 @@ public class MainmenuController extends GeneralController
 			{
 				continue;
 			}
-			
+
 			if (selectedSearchType.getText().equals("FİLM ADI") && !movie.name.toLowerCase().contains(searchString))
 			{
 				continue;
@@ -141,15 +166,17 @@ public class MainmenuController extends GeneralController
 
 			count++;
 		}
-		
+
 		showOnlySearched();
 	}
 
 	private void selectKind(Button selected)
 	{
-		if(selectedKind!=null)
+		if (selectedKind != null)
+		{
 			selectedKind.setStyle("");
-		
+		}
+
 		selected.setStyle("-fx-background-color: #664AC9;");
 		selectedKind = selected;
 	}

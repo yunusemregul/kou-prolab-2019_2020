@@ -99,10 +99,10 @@
                               </ImageView>
                            </left>
                            <center>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" BorderPane.alignment="CENTER" />
+                              <Text fx:id="user_name" strokeType="OUTSIDE" strokeWidth="0.0" text="KULLANICI ADI" BorderPane.alignment="CENTER" />
                            </center>
                            <right>
-                              <Button id="button_logoff" mnemonicParsing="false" BorderPane.alignment="CENTER">
+                              <Button id="button_logoff" mnemonicParsing="false" onAction="#logOff" BorderPane.alignment="CENTER">
                                  <BorderPane.margin>
                                     <Insets right="12.0" />
                                  </BorderPane.margin>
