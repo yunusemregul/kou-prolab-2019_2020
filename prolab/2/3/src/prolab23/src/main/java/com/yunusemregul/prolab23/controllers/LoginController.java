@@ -10,13 +10,16 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Giriş ekranının kontrollerini sağlayan sınıf.
+ */
 public class LoginController extends GeneralController
 {
 
 	@FXML
-	private TextField entry_email;
+	private TextField entry_email; // Giriş ekranındaki email giriş alanı
 	@FXML
-	private PasswordField entry_pass;
+	private PasswordField entry_pass; // Giriş ekranındaki şifre giriş alanı
 
 	public LoginController()
 	{
@@ -24,14 +27,15 @@ public class LoginController extends GeneralController
 	}
 
 	/**
-	 * Login ekranında Giriş butonuna tıklandığında çağırılır. Kullanıcının
-	 * girdiği kullanıcı adı ve şifre ile giriş yapmaya çalışır.
+	 * Login ekranında Giriş butonuna tıklandığında çağırılır. Kullanıcının girdiği
+	 * kullanıcı adı ve şifre ile giriş yapmaya çalışır.
 	 */
 	public void tryLogIn()
 	{
-		String email = entry_email.getText();
-		String pass = entry_pass.getText();
+		String email = entry_email.getText(); // Kullanıcının girdiği email
+		String pass = entry_pass.getText(); // Kullanıcının girdiği şifre
 
+		// Eğer email ya da şifre boşsa hata bildirimi göster
 		if (email.length() == 0 || pass.length() == 0)
 		{
 			Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -53,19 +57,21 @@ public class LoginController extends GeneralController
 			return;
 		}
 
+		// Kullanıcının girdiği bilgilerin datada olup olmadığına bak
 		boolean success = DataManager.getInstance().loginUser(email, pass);
 
+		// Giriş işlemi başarılıysa
 		if (success)
 		{
 			try
 			{
-				App.loadScene(new Stage(), "mainmenu");
+				App.loadScene(new Stage(), "mainmenu"); // Ana menü ekranını aç
 			} catch (IOException exception)
 			{
 				exception.printStackTrace();
 			}
 		}
-		else
+		else // Giriş işlemi başarılı değilse
 		{
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Giriş Yaparken Hata");
@@ -81,7 +87,7 @@ public class LoginController extends GeneralController
 	{
 		try
 		{
-			App.setRoot("register");
+			App.setRoot("register"); // Kayıt ol ekranını aç
 		} catch (IOException exception)
 		{
 			exception.printStackTrace();

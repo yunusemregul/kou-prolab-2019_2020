@@ -8,18 +8,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Database ile ilgili işlemlerden sorumlu sınıf.
+ * Database ile ilgili işlemlerden sorumlu sınıf. Tüm uygulama genelinde 1 tane türetilmiş
+ * ve olması aynı anda databaseye birden çok bağlantı olmaması için Singleton paterninde.
  */
 public class DataManager
 {
-
-	private static DataManager instance = null;
-	public String lastError = "";
-	private Connection conn = null;
+	private static DataManager instance = null; // Tek instancesi
+	public String lastError = ""; // Alınan en son hata
+	private Connection conn = null; // Bağlantı
 
 	/**
-	 * DataManager constructor metodu. SQLite driver sınıfına ulaşılamadığında
-	 * hata veriyor.
+	 * DataManager constructor metodu. SQLite driver sınıfına ulaşılamadığında hata
+	 * veriyor.
 	 */
 	public DataManager()
 	{
@@ -36,12 +36,11 @@ public class DataManager
 
 	/**
 	 * Tüm uygulama genelinde 1 tane DataManager olmasının daha iyi olacağını
-	 * düşündüğümden Singleton patternini kullandım. Bu metot eğer bir
-	 * DataManager oluşturulmadıysa oluşturup, oluşturulduysa var olan
-	 * DataManager i döndürüyor.
-	 * <p>
-	 * Sadece 1 tane DataManager olmazsa database üzerinde birden çok connection
-	 * olmasından 'database is locked' hatası alınabilir.
+	 * düşündüğümden Singleton patternini kullandım. Bu metot eğer bir DataManager
+	 * oluşturulmadıysa oluşturup, oluşturulduysa var olan DataManager i döndürüyor.
+	 *
+	 * Sadece 1 tane DataManager olmazsa databaseye birden çok bağlantı kurulabilir ve
+	 * kurulmasına gerek yok, 'database locked' gibi sorunlar çıkartabilir.
 	 *
 	 * @return DataManager
 	 */
@@ -64,8 +63,7 @@ public class DataManager
 		{
 			String url = "jdbc:sqlite:data.db";
 			conn = DriverManager.getConnection(url);
-
-			System.out.println("Connection to SQLite has been established.");
+			System.out.println("Databaseye baglanti basarili.");
 		} catch (SQLException e)
 		{
 			System.out.println(e.getMessage());
@@ -84,11 +82,12 @@ public class DataManager
 		{
 			ResultSet result = stat.executeQuery("SELECT ad FROM Tur");
 
+			// Bulunan tüm türler
 			ArrayList<String> turler = new ArrayList<String>();
 
 			while (result.next())
 			{
-				turler.add(result.getString("ad"));
+				turler.add(result.getString("ad")); // türleri tüm türlere ekle
 			}
 
 			return turler;
@@ -101,8 +100,7 @@ public class DataManager
 	}
 
 	/**
-	 * Belirli bir tür için en iyi puanlı iki filmi ve puanlarını döndüren
-	 * metot.
+	 * Belirli bir tür için en iyi puanlı iki filmi ve puanlarını döndüren metot.
 	 *
 	 * @param tur tür
 	 * @return key leri film adı, value leri film puanı olan HashMap
@@ -137,6 +135,11 @@ public class DataManager
 		}
 	}
 
+	/**
+	 * Tüm filmleri döndüren metot.
+	 *
+	 * @return
+	 */
 	public ArrayList<Movie> getMovies()
 	{
 		String sql = "SELECT Program.id, Program.ad, AVG(KullaniciProgram.puan) AS puan, GROUP_CONCAT(DISTINCT Tur.ad) AS tur, Program.tip, Program.bolum_sayisi, Program.uzunluk FROM Program "
@@ -176,13 +179,15 @@ public class DataManager
 	}
 
 	/**
-	 * Kullanıcı şifrelerini databasede düz halde saklamak güvenlik açısından
-	 * çok sıkıntılı bir şey olduğundan kullanıcı şifrelerini hashlenmiş halde
-	 * saklıyoruz. Normalde bcrypt gibi algoritmalar kullanılmalı ama bu proje
-	 * için MD5 kullandım.
-	 * <p>
-	 * Bu proje için gerekli olmayabilir ama alışkanlık oluşması ve özen
-	 * açısından önemli.
+	 * Kullanıcı şifrelerini databasede düz halde saklamak güvenlik açısından çok
+	 * sıkıntılı bir şey olduğundan kullanıcı şifrelerini hashlenmiş halde saklıyoruz.
+	 * Normalde bcrypt gibi algoritmalar kullanılmalı ama bu proje için MD5 kullandım.
+	 *
+	 * Bu proje için gerekli olmayabilir ama alışkanlık oluşması ve özen açısından önemli
+	 * olduğunu düşünüyorum.
+	 *
+	 * Bu metodu kendim yazmadım, kaynak:
+	 * https://howtodoinjava.com/security/how-to-generate-secure-password-hash-md5-sha-pbkdf2-bcrypt-examples/
 	 *
 	 * @param pass hashlenecek şifre
 	 * @return hashlenmiş şifre
@@ -223,11 +228,13 @@ public class DataManager
 	public boolean registerUser(String name, String email, String pass, String birthdate)
 	{
 		String sql = "INSERT INTO Kullanici (ad, email, sifre_hash, dogum_tarihi) VALUES (?, ?, ?, ?)";
+
 		try (PreparedStatement stat = conn.prepareStatement(sql))
 		{
 			stat.setObject(1, name);
 			stat.setObject(2, email);
 
+			// Kullanıcının şifresini MD5 ile hashleyip sakla
 			String hashedPass = MD5(pass);
 
 			stat.setObject(3, hashedPass);
@@ -243,8 +250,17 @@ public class DataManager
 		return true;
 	}
 
+	/**
+	 * Verilen email ve şifre bilgilerinin databasede bulunup bulunmadığını kontrol eden
+	 * metot.
+	 *
+	 * @param email email
+	 * @param pass  şifre
+	 * @return giriş başarılı mı değil mi
+	 */
 	public boolean loginUser(String email, String pass)
 	{
+		// Şifreleri hashlenmiş şekilde sakladığım için verilen şifreyi hashliyoruz ve ona göre databasede arıyoruz
 		String hashedPass = MD5(pass);
 
 		String sql = "SELECT id, ad FROM Kullanici WHERE email = ? AND sifre_hash = ?";
@@ -256,8 +272,10 @@ public class DataManager
 
 			ResultSet result = stat.executeQuery();
 
+			// Eğer bilgiler tutuyorsa
 			if (result.next())
 			{
+				// Giriş yapmış kullanıcının bilgilerini belirle
 				User.getInstance().id = result.getInt("id");
 				User.getInstance().name = result.getString("ad");
 				return true;
@@ -274,10 +292,18 @@ public class DataManager
 		}
 	}
 
+	/**
+	 * Kullanıcının hangi filmde hangi bölümde ve kaçıncı dakikada kaldığını kaydeden
+	 * metot. Eğer kullanıcının filmle ilgili kaydı yoksa yeni bir kayıt oluşturur. Kaydı
+	 * varsa olan kayıttaki bilgileri günceller.
+	 *
+	 * @param user bilgileri kaydedilecek kullanıcı
+	 */
 	public void saveMovie(User user)
 	{
 		String sql = "SELECT kullanici_id FROM KullaniciProgram WHERE kullanici_id = ? AND program_id = ?";
 
+		// Kullanıcının bu filmle ilgili kaydı var mı?
 		try (PreparedStatement stat = conn.prepareStatement(sql))
 		{
 			stat.setObject(1, user.id);
@@ -287,6 +313,7 @@ public class DataManager
 			SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd.MM.yyyy");
 			Date date = new Date(System.currentTimeMillis());
 
+			// Kullanıcının filmle ilgili kaydı var ise olan kaydı güncelle
 			if (result.next())
 			{
 				sql = "UPDATE KullaniciProgram SET izleme_tarihi = ?, izleme_suresi = ?, kalinan_bolum = ?, puan = ? WHERE kullanici_id = ? AND program_id = ?";
@@ -306,7 +333,7 @@ public class DataManager
 					return;
 				}
 			}
-			else
+			else // Kullanıcının filmle ilgili kaydı yok ise yeni bir kayıt oluştur
 			{
 				sql = "INSERT INTO KullaniciProgram VALUES (?, ?, ?, ?, ?, ?)";
 				try (PreparedStatement newstat = conn.prepareStatement(sql))
@@ -335,6 +362,11 @@ public class DataManager
 
 	}
 
+	/**
+	 * Datadan kullanıcının filmle ilgili kaydını yükleyen metot.
+	 *
+	 * @param user bilgileri yüklenecek kullanıcı
+	 */
 	public void loadMovie(User user)
 	{
 		String sql = "SELECT izleme_suresi, kalinan_bolum, puan FROM KullaniciProgram WHERE kullanici_id = ? AND program_id = ?";
@@ -345,6 +377,7 @@ public class DataManager
 			stat.setObject(2, user.getMovie().id);
 			ResultSet result = stat.executeQuery();
 
+			// Eğer datada kaydı varsa kayıttaki bilgileri yükle
 			if (result.next())
 			{
 				user.watchTime = result.getInt("izleme_suresi");
@@ -352,7 +385,7 @@ public class DataManager
 				user.rate = result.getInt("puan");
 				user.rate = result.wasNull() ? -1 : user.rate;
 			}
-			else
+			else // Kaydı yoksa default bilgileri yükle
 			{
 				user.watchTime = 0;
 				user.chapter = 1;

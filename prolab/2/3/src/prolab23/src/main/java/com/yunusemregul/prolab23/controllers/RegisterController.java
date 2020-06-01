@@ -22,25 +22,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Kayıt olma ekranının kontrollerini sağlayan sınıf.
+ */
 public class RegisterController extends GeneralController
 {
 
-	private final Button[] selectedTypes = new Button[3];
+	private final Button[] selectedTypes = new Button[3]; // Seçilmiş en sevilen türler
 	@FXML
 	private VBox vbox_mostliked;
 	@FXML
-	private GridPane gPane;
+	private GridPane grid_pane;
 	@FXML
-	private TextField entry_name;
+	private TextField entry_name; // Ad girişi
 	@FXML
-	private DatePicker entry_birthdate;
+	private DatePicker entry_birthdate; // Doğum tarihi girişi
 	@FXML
-	private TextField entry_email;
+	private TextField entry_email; // Email girişi
 	@FXML
-	private PasswordField entry_pass;
+	private PasswordField entry_pass; // Şifre girişi
 	@FXML
-	private PasswordField entry_pass_again;
-	private int stIndex = 0;
+	private PasswordField entry_pass_again; // Şifre tekrar girişi
+
+	private int stIndex = 0; // En sevilen tür dizisinde hangi indexte olduğumuz
 
 	public RegisterController()
 	{
@@ -103,25 +107,27 @@ public class RegisterController extends GeneralController
 				}
 			});
 
-			gPane.setVgap(12);
-			gPane.setHgap(17);
-			gPane.addRow(i / 3, but);
+			grid_pane.setVgap(12);
+			grid_pane.setHgap(17);
+			grid_pane.addRow(i / 3, but);
 		}
 
+		// En sevilen türler 3 ün katı olmadığı zaman boş olması yerine yerlerine siyah panel koymak için
 		for (int i = 0; i < 3 - (turler.size() % 3); i++)
 		{
 			Pane pane = new Pane();
 			pane.setId("pane_favmovies_disabled");
 			pane.setPrefSize(170, 40);
-			gPane.setVgap(12);
-			gPane.setHgap(17);
-			gPane.addRow(turler.size() / 3, pane);
+
+			grid_pane.setVgap(12);
+			grid_pane.setHgap(17);
+			grid_pane.addRow(turler.size() / 3, pane);
 		}
 	}
 
 	/**
-	 * Kayıt Ol menüsünde kullanıcı beğendiği bir filmi seçtiğinde en yüksek
-	 * puanlı filmleri listeleyen metot.
+	 * Kayıt Ol menüsünde kullanıcı beğendiği bir filmi seçtiğinde en yüksek puanlı
+	 * filmleri listeleyen metot.
 	 *
 	 * @param type seçilen en sevilen tip
 	 */
@@ -141,8 +147,10 @@ public class RegisterController extends GeneralController
 		bests.setAlignment(Pos.CENTER_LEFT);
 		VBox.setMargin(bests, new Insets(8, 0, 0, 0));
 
+		// Türe göre en sevilen iki filmi datadan al
 		HashMap<String, Float> bestTwo = DataManager.getInstance().getTopTwoForTur(type);
 
+		// Eğer en sevilen filmler varsa göster
 		if (bestTwo.size() > 0)
 		{
 			int count = 0;
@@ -160,7 +168,7 @@ public class RegisterController extends GeneralController
 				count++;
 			}
 		}
-		else
+		else // En sevilen filmler kullanıcılar puan girmediğinden dolayı oluşmadıysa ilgili mesajı göster
 		{
 			Label no_entries = new Label("Henüz yeteri kadar puan verilmemiş!");
 			bests.setAlignment(Pos.CENTER);
@@ -172,10 +180,9 @@ public class RegisterController extends GeneralController
 	}
 
 	/**
-	 * En sevilen 3 tip seçilirken kullanıcı 3. den sonra yeni bir tip seçerse
-	 * en sevilen tipler sıfırlanır ve tekrar seçim yapması beklenir,
-	 * sıfırlandığında bu metot çağrılır ve en yüksek puanlı filmleri gösteren
-	 * listeyi temizler.
+	 * En sevilen 3 tip seçilirken kullanıcı 3. den sonra yeni bir tip seçerse en sevilen
+	 * tipler sıfırlanır ve tekrar seçim yapması beklenir, sıfırlandığında bu metot
+	 * çağrılır ve en yüksek puanlı filmleri gösteren listeyi temizler.
 	 */
 	public void onFavtypeCleared()
 	{
@@ -183,8 +190,8 @@ public class RegisterController extends GeneralController
 	}
 
 	/**
-	 * Kayıt Ol ekranında Kayıt Ol butonuna tıklandığında çağırılır.
-	 * Kullanıcının girdiği bilgilerle yeni bir kullanıcı kayıt etmeye çalışır.
+	 * Kayıt Ol ekranında Kayıt Ol butonuna tıklandığında çağırılır. Kullanıcının girdiği
+	 * bilgilerle yeni bir kullanıcı kayıt etmeye çalışır.
 	 */
 	public void tryRegister()
 	{
@@ -194,6 +201,7 @@ public class RegisterController extends GeneralController
 		String pass = entry_pass.getText();
 		String pass_again = entry_pass_again.getText();
 
+		// Eğer girişlerden herhangi biri boşsa ya da girilen şifreler uyuşmuyorsa ilgili hata mesajını göster
 		if (name.length() == 0 || birthdate.length() == 0 || email.length() == 0 || pass.length() == 0 || !pass.equals(pass_again))
 		{
 			Alert alert = new Alert(AlertType.ERROR);
@@ -231,8 +239,10 @@ public class RegisterController extends GeneralController
 			return;
 		}
 
+		// Kullanıcının girdiği bilgilerle dataya kullanıcı kaydetmeyi dene
 		boolean success = DataManager.getInstance().registerUser(name, email, pass, birthdate);
 
+		// Eğer kayıt başarılı olursa
 		if (success)
 		{
 			Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -250,7 +260,7 @@ public class RegisterController extends GeneralController
 				exception.printStackTrace();
 			}
 		}
-		else
+		else // Kullanıcı dataya kaydı başarılı değilse
 		{
 			String error = DataManager.getInstance().lastError;
 
@@ -258,6 +268,7 @@ public class RegisterController extends GeneralController
 			alert.setTitle("Kayıt Olurken Hata");
 			alert.setContentText("SQL tarafında beklenmedik bir hata oluştu:\n" + error);
 
+			// Eğer hata kullanıcının emailinin önceden kayıt edilmiş olmasıysa
 			if (error.contains("UNIQUE constraint failed: Kullanici.email"))
 			{
 				alert.setContentText("Zaten bu email ile daha önceden kaydolunmuş!");
@@ -274,7 +285,7 @@ public class RegisterController extends GeneralController
 	{
 		try
 		{
-			App.setRoot("login");
+			App.setRoot("login"); // Giriş ekranını göster
 		} catch (IOException exception)
 		{
 			exception.printStackTrace();

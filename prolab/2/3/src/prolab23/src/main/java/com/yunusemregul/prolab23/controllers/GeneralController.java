@@ -11,15 +11,19 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 /**
- * GUI ile alakalı genel kontrolleri sağlayan sınıf. Örneğin GUI yi kapatma ve
- * küçültme butonları tüm ekranlarda olacağı için bu butonların yapacağı işlem
- * bu sınıf tarafından sağlanır.
+ * GUI ile alakalı genel kontrolleri sağlayan sınıf. Örneğin GUI yi kapatma ve küçültme
+ * butonları tüm ekranlarda olacağı için bu butonların yapacağı işlem bu sınıf tarafından
+ * sağlanır.
  */
 public class GeneralController
 {
-	double startY = 0;
-	double xOffset = 0;
-	double yOffset = 0;
+	/**
+	 * Pencerelere tıklandığında nereye tıklandığını tutan değişkenler. Pencerelerin
+	 * sürüklenebilir olmasını sağlamak için.
+	 */
+	private double startY = 0;
+	private double xOffset = 0;
+	private double yOffset = 0;
 
 	public GeneralController()
 	{
@@ -33,7 +37,7 @@ public class GeneralController
 	}
 
 	/**
-	 * Çerçevedeki kırmızı yuvarlak kapatma tuşuna basınca çağırılır.
+	 * Çerçevedeki kırmızı yuvarlak kapatma tuşuna basınca çağırılır. Uygulamayı kapatır.
 	 *
 	 * @param e ActionEvent
 	 */
@@ -46,7 +50,8 @@ public class GeneralController
 	}
 
 	/**
-	 * Çerçevedeki sarı yuvarlak küçültme tuşuna basınca çağırılır.
+	 * Çerçevedeki sarı yuvarlak küçültme tuşuna basınca çağırılır. Uygulama penceresini
+	 * küçültmeye yarar.
 	 *
 	 * @param e ActionEvent
 	 */
@@ -57,11 +62,17 @@ public class GeneralController
 		stage.setIconified(true);
 	}
 
+
+	/**
+	 * Kullanıcı adının yanındaki çıkış butonuna tıkladığında çağrılan metot. Kullanıcı
+	 * hesabından çıkış yapmaya yarıyor.
+	 */
 	@FXML
 	public void logOff()
 	{
 		try
 		{
+			// Hesaptan çıkış yapınca giriş ekranı gösterilir
 			App.loadScene(new Stage(), "login");
 		} catch (IOException exception)
 		{
@@ -69,6 +80,13 @@ public class GeneralController
 		}
 	}
 
+	/**
+	 * Uygulamada açılan pencerelerin üst kısmından tutularak sürüklenmesini sağlayan
+	 * metot. İlk başta ilk tıklanan yer kaydedilir, sürükleme işlemi ile de ilk tıklanan
+	 * yere göre pencere hareket ettirilir.
+	 *
+	 * @param e tıklama eventi
+	 */
 	@FXML
 	public void mousePressed(MouseEvent e)
 	{
@@ -78,9 +96,17 @@ public class GeneralController
 		startY = e.getY();
 	}
 
+	/**
+	 * Uygulamada açılan pencerelerin üst kısmından tutularak sürüklenmesini sağlayan
+	 * metot. İlk başta ilk tıklanan yer kaydedilir, sürükleme işlemi ile de ilk tıklanan
+	 * yere göre pencere hareket ettirilir.
+	 *
+	 * @param e tıklama eventi
+	 */
 	@FXML
 	public void mouseDragged(MouseEvent e)
 	{
+		// Pencerenin üst kısmından tutulduğundan emin oluyoruz
 		if (startY > 27)
 			return;
 

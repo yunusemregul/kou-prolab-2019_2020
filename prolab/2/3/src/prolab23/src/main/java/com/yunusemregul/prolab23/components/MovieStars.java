@@ -8,6 +8,11 @@ import javafx.scene.layout.HBox;
 
 import java.io.IOException;
 
+/**
+ * Kayıt ekranında 3 adet favori tür seçince seçilen türlerin en iyi iki filmini ve
+ * puanlarını gösteren kutuyu yöneten sınıf.
+ */
+
 public class MovieStars extends HBox
 {
 

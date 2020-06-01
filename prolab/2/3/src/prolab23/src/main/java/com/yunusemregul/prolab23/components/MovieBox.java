@@ -11,6 +11,10 @@ import javafx.scene.text.Text;
 
 import java.io.IOException;
 
+/**
+ * Ana menüde altında İZLE butonu olan film kutularının kontrolünü sağlayan sınıf.
+ */
+
 public class MovieBox extends BorderPane
 {
 

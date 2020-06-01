@@ -2,7 +2,7 @@ package com.yunusemregul.prolab23;
 
 /**
  * Giriş yapmış kullanıcıyı temsil eden sınıf.
- * <p>
+ *
  * Sadece 1 tane giriş yapmış kullanıcı olabileceği için DataManager ile benzer
  * şekilde uygulama genelinde sadece 1 tane instancesi bulunması için Singleton
  * patternini kullandım.
