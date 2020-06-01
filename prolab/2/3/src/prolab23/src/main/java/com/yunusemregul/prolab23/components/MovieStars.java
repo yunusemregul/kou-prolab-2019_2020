@@ -1,12 +1,12 @@
 package com.yunusemregul.prolab23.components;
 
 import com.yunusemregul.prolab23.App;
-import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+
+import java.io.IOException;
 
 public class MovieStars extends HBox
 {
@@ -25,13 +25,12 @@ public class MovieStars extends HBox
 		try
 		{
 			fxmlLoader.load();
-		}
-		catch (IOException exception)
+		} catch (IOException exception)
 		{
 			throw new RuntimeException(exception);
 		}
 	}
-	
+
 	public void setInfo(String name, String stars)
 	{
 		movie_name.setText(name);

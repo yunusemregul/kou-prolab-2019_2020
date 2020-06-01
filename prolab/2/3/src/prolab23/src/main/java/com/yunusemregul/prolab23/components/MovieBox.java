@@ -3,16 +3,19 @@ package com.yunusemregul.prolab23.components;
 import com.yunusemregul.prolab23.App;
 import com.yunusemregul.prolab23.Movie;
 import com.yunusemregul.prolab23.controllers.MainmenuController;
-import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 
+import java.io.IOException;
+
 public class MovieBox extends BorderPane
 {
 
+	@FXML
+	public Button button_watch;
 	@FXML
 	private Text movie_name;
 	@FXML
@@ -21,9 +24,6 @@ public class MovieBox extends BorderPane
 	private Text movie_score;
 	@FXML
 	private Text movie_kind;
-	@FXML
-	public Button button_watch;
-
 	private Movie movie;
 
 	public MovieBox()
@@ -35,8 +35,7 @@ public class MovieBox extends BorderPane
 		try
 		{
 			fxmlLoader.load();
-		}
-		catch (IOException exception)
+		} catch (IOException exception)
 		{
 			throw new RuntimeException(exception);
 		}

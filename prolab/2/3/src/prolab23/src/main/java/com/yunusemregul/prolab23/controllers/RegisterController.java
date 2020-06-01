@@ -3,37 +3,33 @@ package com.yunusemregul.prolab23.controllers;
 import com.yunusemregul.prolab23.App;
 import com.yunusemregul.prolab23.DataManager;
 import com.yunusemregul.prolab23.components.MovieStars;
-import java.io.IOException;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class RegisterController extends GeneralController
 {
 
+	private final Button[] selectedTypes = new Button[3];
 	@FXML
 	private VBox vbox_mostliked;
 	@FXML
 	private GridPane gPane;
-
 	@FXML
 	private TextField entry_name;
 	@FXML
@@ -44,8 +40,6 @@ public class RegisterController extends GeneralController
 	private PasswordField entry_pass;
 	@FXML
 	private PasswordField entry_pass_again;
-
-	private Button[] selectedTypes = new Button[3];
 	private int stIndex = 0;
 
 	public RegisterController()
@@ -111,7 +105,7 @@ public class RegisterController extends GeneralController
 
 			gPane.setVgap(12);
 			gPane.setHgap(17);
-			gPane.addRow((int) (i / 3), but);
+			gPane.addRow(i / 3, but);
 		}
 
 		for (int i = 0; i < 3 - (turler.size() % 3); i++)
@@ -121,7 +115,7 @@ public class RegisterController extends GeneralController
 			pane.setPrefSize(170, 40);
 			gPane.setVgap(12);
 			gPane.setHgap(17);
-			gPane.addRow((int) (turler.size() / 3), pane);
+			gPane.addRow(turler.size() / 3, pane);
 		}
 	}
 
@@ -191,10 +185,8 @@ public class RegisterController extends GeneralController
 	/**
 	 * Kayıt Ol ekranında Kayıt Ol butonuna tıklandığında çağırılır.
 	 * Kullanıcının girdiği bilgilerle yeni bir kullanıcı kayıt etmeye çalışır.
-	 *
-	 * @param e ActionEvent
 	 */
-	public void tryRegister(ActionEvent e)
+	public void tryRegister()
 	{
 		String name = entry_name.getText();
 		String birthdate = entry_birthdate.getValue().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
@@ -253,8 +245,7 @@ public class RegisterController extends GeneralController
 			try
 			{
 				App.loadScene(new Stage(), "mainmenu");
-			}
-			catch (IOException exception)
+			} catch (IOException exception)
 			{
 				exception.printStackTrace();
 			}
@@ -278,16 +269,13 @@ public class RegisterController extends GeneralController
 
 	/**
 	 * Kayıt Ol ekranında Giriş Yap butonuna tıklandığında çağırılır.
-	 *
-	 * @param e ActionEvent
 	 */
-	public void openLoginMenu(ActionEvent e)
+	public void openLoginMenu()
 	{
 		try
 		{
 			App.setRoot("login");
-		}
-		catch (IOException exception)
+		} catch (IOException exception)
 		{
 			exception.printStackTrace();
 		}

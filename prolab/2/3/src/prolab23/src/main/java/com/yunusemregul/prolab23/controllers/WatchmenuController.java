@@ -3,28 +3,24 @@ package com.yunusemregul.prolab23.controllers;
 import com.yunusemregul.prolab23.App;
 import com.yunusemregul.prolab23.Movie;
 import com.yunusemregul.prolab23.User;
-import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Slider;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
+
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class WatchmenuController extends GeneralController
 {
 
+	Timer timer;
 	@FXML
 	private Button button_watch;
-
 	@FXML
 	private Text user_name;
-
 	@FXML
 	private Text movie_name;
 	@FXML
@@ -33,26 +29,18 @@ public class WatchmenuController extends GeneralController
 	private Text movie_score;
 	@FXML
 	private Text movie_kind;
-
 	@FXML
 	private Spinner rate_spinner;
-
 	@FXML
 	private Slider slider_time;
-
 	@FXML
 	private ProgressBar progressbar_time;
-
 	@FXML
 	private Text text_time;
-
 	@FXML
 	private Text chapter;
-
 	private Movie movie;
 	private boolean isWatching = false;
-
-	Timer timer;
 
 	public WatchmenuController()
 	{
@@ -92,7 +80,7 @@ public class WatchmenuController extends GeneralController
 		slider_time.valueProperty().addListener(new ChangeListener<Number>()
 		{
 			public void changed(ObservableValue<? extends Number> ov,
-					Number old_val, Number new_val)
+								Number old_val, Number new_val)
 			{
 				user.watchTime = new_val.intValue();
 				progressbar_time.setProgress(new_val.doubleValue() / user.getMovie().length);
@@ -181,9 +169,9 @@ public class WatchmenuController extends GeneralController
 			return;
 		}
 
-		if(isWatching)
+		if (isWatching)
 			watch();
-		
+
 		user.watchTime = 0;
 		setSlider();
 		user.chapter--;
@@ -199,8 +187,8 @@ public class WatchmenuController extends GeneralController
 		{
 			return;
 		}
-		
-		if(isWatching)
+
+		if (isWatching)
 			watch();
 
 		user.watchTime = 0;
@@ -216,8 +204,7 @@ public class WatchmenuController extends GeneralController
 		try
 		{
 			App.setRoot("mainmenu");
-		}
-		catch (IOException exception)
+		} catch (IOException exception)
 		{
 			exception.printStackTrace();
 		}

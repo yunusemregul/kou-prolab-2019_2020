@@ -1,13 +1,14 @@
 package com.yunusemregul.prolab23.controllers;
 
 import com.yunusemregul.prolab23.App;
-import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 /**
  * GUI ile alakalı genel kontrolleri sağlayan sınıf. Örneğin GUI yi kapatma ve
@@ -62,8 +63,7 @@ public class GeneralController
 		try
 		{
 			App.loadScene(new Stage(), "login");
-		}
-		catch (IOException exception)
+		} catch (IOException exception)
 		{
 			exception.printStackTrace();
 		}
@@ -81,9 +81,9 @@ public class GeneralController
 	@FXML
 	public void mouseDragged(MouseEvent e)
 	{
-		if(startY>27)
+		if (startY > 27)
 			return;
-		
+
 		Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
 		stage.setX(e.getScreenX() + xOffset);
 		stage.setY(e.getScreenY() + yOffset);

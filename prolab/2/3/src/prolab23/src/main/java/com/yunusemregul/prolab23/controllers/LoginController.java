@@ -2,13 +2,13 @@ package com.yunusemregul.prolab23.controllers;
 
 import com.yunusemregul.prolab23.App;
 import com.yunusemregul.prolab23.DataManager;
-import java.io.IOException;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class LoginController extends GeneralController
 {
@@ -26,10 +26,8 @@ public class LoginController extends GeneralController
 	/**
 	 * Login ekranında Giriş butonuna tıklandığında çağırılır. Kullanıcının
 	 * girdiği kullanıcı adı ve şifre ile giriş yapmaya çalışır.
-	 *
-	 * @param e ActionEvent
 	 */
-	public void tryLogIn(ActionEvent e)
+	public void tryLogIn()
 	{
 		String email = entry_email.getText();
 		String pass = entry_pass.getText();
@@ -62,8 +60,7 @@ public class LoginController extends GeneralController
 			try
 			{
 				App.loadScene(new Stage(), "mainmenu");
-			}
-			catch (IOException exception)
+			} catch (IOException exception)
 			{
 				exception.printStackTrace();
 			}
@@ -79,16 +76,13 @@ public class LoginController extends GeneralController
 
 	/**
 	 * Login ekranında Kayıt Ol butonuna tıklandığında çağırılır.
-	 *
-	 * @param e ActionEvent
 	 */
-	public void openKayitOlMenu(ActionEvent e)
+	public void openKayitOlMenu()
 	{
 		try
 		{
 			App.setRoot("register");
-		}
-		catch (IOException exception)
+		} catch (IOException exception)
 		{
 			exception.printStackTrace();
 		}

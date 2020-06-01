@@ -14,8 +14,8 @@ public class DataManager
 {
 
 	private static DataManager instance = null;
-	private Connection conn = null;
 	public String lastError = "";
+	private Connection conn = null;
 
 	/**
 	 * DataManager constructor metodu. SQLite driver sınıfına ulaşılamadığında
@@ -26,8 +26,7 @@ public class DataManager
 		try
 		{
 			Class.forName("org.sqlite.JDBC");
-		}
-		catch (ClassNotFoundException e)
+		} catch (ClassNotFoundException e)
 		{
 			System.out.println("org.sqlite.JDBC bulunamadi!");
 		}
@@ -40,7 +39,7 @@ public class DataManager
 	 * düşündüğümden Singleton patternini kullandım. Bu metot eğer bir
 	 * DataManager oluşturulmadıysa oluşturup, oluşturulduysa var olan
 	 * DataManager i döndürüyor.
-	 *
+	 * <p>
 	 * Sadece 1 tane DataManager olmazsa database üzerinde birden çok connection
 	 * olmasından 'database is locked' hatası alınabilir.
 	 *
@@ -67,8 +66,7 @@ public class DataManager
 			conn = DriverManager.getConnection(url);
 
 			System.out.println("Connection to SQLite has been established.");
-		}
-		catch (SQLException e)
+		} catch (SQLException e)
 		{
 			System.out.println(e.getMessage());
 			lastError = e.getMessage();
@@ -88,16 +86,13 @@ public class DataManager
 
 			ArrayList<String> turler = new ArrayList<String>();
 
-			int count = 0;
 			while (result.next())
 			{
 				turler.add(result.getString("ad"));
-				count++;
 			}
 
 			return turler;
-		}
-		catch (SQLException e)
+		} catch (SQLException e)
 		{
 			System.out.println(e.getMessage());
 			lastError = e.getMessage();
@@ -128,16 +123,13 @@ public class DataManager
 
 			HashMap<String, Float> adpuan = new HashMap<String, Float>();
 
-			int count = 0;
 			while (result.next())
 			{
 				adpuan.put(result.getString("ad"), result.getFloat("puan"));
-				count++;
 			}
 
 			return adpuan;
-		}
-		catch (SQLException e)
+		} catch (SQLException e)
 		{
 			System.out.println(e.getMessage());
 			lastError = e.getMessage();
@@ -175,8 +167,7 @@ public class DataManager
 			}
 
 			return movies;
-		}
-		catch (SQLException e)
+		} catch (SQLException e)
 		{
 			System.out.println(e.getMessage());
 			lastError = e.getMessage();
@@ -189,7 +180,7 @@ public class DataManager
 	 * çok sıkıntılı bir şey olduğundan kullanıcı şifrelerini hashlenmiş halde
 	 * saklıyoruz. Normalde bcrypt gibi algoritmalar kullanılmalı ama bu proje
 	 * için MD5 kullandım.
-	 *
+	 * <p>
 	 * Bu proje için gerekli olmayabilir ama alışkanlık oluşması ve özen
 	 * açısından önemli.
 	 *
@@ -207,13 +198,12 @@ public class DataManager
 			byte[] bytes = md.digest();
 
 			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < bytes.length; i++)
+			for (byte aByte : bytes)
 			{
-				sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+				sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
 			}
 			hashed = sb.toString();
-		}
-		catch (NoSuchAlgorithmException e)
+		} catch (NoSuchAlgorithmException e)
 		{
 			e.printStackTrace();
 		}
@@ -224,9 +214,9 @@ public class DataManager
 	/**
 	 * Bir kullanıcıyı databaseye kayıt etmek için çağrılan metot.
 	 *
-	 * @param name kullanıcı ismi
-	 * @param email emaili
-	 * @param pass şifresi
+	 * @param name      kullanıcı ismi
+	 * @param email     emaili
+	 * @param pass      şifresi
 	 * @param birthdate doğum tarihi
 	 * @return kayıt başarılıysa true değilse false
 	 */
@@ -243,8 +233,7 @@ public class DataManager
 			stat.setObject(3, hashedPass);
 			stat.setObject(4, birthdate);
 			stat.executeUpdate();
-		}
-		catch (SQLException e)
+		} catch (SQLException e)
 		{
 			System.out.println(e.getMessage());
 			lastError = e.getMessage();
@@ -277,8 +266,7 @@ public class DataManager
 			{
 				return false;
 			}
-		}
-		catch (SQLException e)
+		} catch (SQLException e)
 		{
 			System.out.println(e.getMessage());
 			lastError = e.getMessage();
@@ -311,8 +299,7 @@ public class DataManager
 					newstat.setObject(5, user.id);
 					newstat.setObject(6, user.getMovie().id);
 					newstat.executeUpdate();
-				}
-				catch (SQLException e)
+				} catch (SQLException e)
 				{
 					System.out.println(e.getMessage());
 					lastError = e.getMessage();
@@ -332,16 +319,14 @@ public class DataManager
 					newstat.setObject(5, user.chapter);
 					newstat.setObject(6, user.rate == -1 ? null : user.rate);
 					newstat.executeUpdate();
-				}
-				catch (SQLException e)
+				} catch (SQLException e)
 				{
 					System.out.println(e.getMessage());
 					lastError = e.getMessage();
 					return;
 				}
 			}
-		}
-		catch (SQLException e)
+		} catch (SQLException e)
 		{
 			System.out.println(e.getMessage());
 			lastError = e.getMessage();
@@ -373,8 +358,7 @@ public class DataManager
 				user.chapter = 1;
 				user.rate = -1;
 			}
-		}
-		catch (SQLException e)
+		} catch (SQLException e)
 		{
 			System.out.println(e.getMessage());
 			lastError = e.getMessage();

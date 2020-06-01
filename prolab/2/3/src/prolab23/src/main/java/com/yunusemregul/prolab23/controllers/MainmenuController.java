@@ -5,8 +5,6 @@ import com.yunusemregul.prolab23.DataManager;
 import com.yunusemregul.prolab23.Movie;
 import com.yunusemregul.prolab23.User;
 import com.yunusemregul.prolab23.components.MovieBox;
-import java.io.IOException;
-import java.util.ArrayList;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -14,6 +12,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class MainmenuController extends GeneralController
 {
@@ -32,7 +33,7 @@ public class MainmenuController extends GeneralController
 	private Button button_search_movie_name;
 	@FXML
 	private Button button_search_type;
-	
+
 	@FXML
 	private Text user_name;
 
@@ -50,6 +51,18 @@ public class MainmenuController extends GeneralController
 	public MainmenuController()
 	{
 
+	}
+
+	public static void openWatchmenu(Movie movie)
+	{
+		User.getInstance().setMovie(movie);
+		try
+		{
+			App.setRoot("watchmenu");
+		} catch (IOException exception)
+		{
+			exception.printStackTrace();
+		}
 	}
 
 	@FXML
@@ -73,19 +86,6 @@ public class MainmenuController extends GeneralController
 		});
 
 		selectSearchType(button_search_movie_name);
-	}
-
-	public static void openWatchmenu(Movie movie)
-	{
-		User.getInstance().setMovie(movie);
-		try
-		{
-			App.setRoot("watchmenu");
-		}
-		catch (IOException exception)
-		{
-			exception.printStackTrace();
-		}
 	}
 
 	public void selectSearchType(Button selected)
@@ -136,7 +136,7 @@ public class MainmenuController extends GeneralController
 
 			mainmenu_gridpane.setVgap(20);
 			mainmenu_gridpane.setHgap(20);
-			mainmenu_gridpane.addRow(((int) (count / 6)), box);
+			mainmenu_gridpane.addRow(count / 6, box);
 
 			count++;
 		}
@@ -160,7 +160,7 @@ public class MainmenuController extends GeneralController
 
 			mainmenu_gridpane.setVgap(20);
 			mainmenu_gridpane.setHgap(20);
-			mainmenu_gridpane.addRow(((int) (count / 6)), box);
+			mainmenu_gridpane.addRow(count / 6, box);
 
 			shownMovies.add(movie);
 
