@@ -292,3 +292,8 @@
 {
     -fx-background-image: url("images/icon_bolum_next.png");
 }
+
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-background-color: #111;
+}

@@ -4,9 +4,12 @@ import com.yunusemregul.prolab23.App;
 import com.yunusemregul.prolab23.Movie;
 import com.yunusemregul.prolab23.User;
 import java.io.IOException;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.text.Text;
 
 public class WatchmenuController extends GeneralController
@@ -28,11 +31,11 @@ public class WatchmenuController extends GeneralController
 	private Text movie_kind;
 
 	@FXML
-	private HBox rate_stars;
-	
+	private Spinner rate_spinner;
+
 	@FXML
 	private Text chapter;
-	
+
 	private Movie movie;
 	private boolean isWatching = false;
 
@@ -47,6 +50,23 @@ public class WatchmenuController extends GeneralController
 	{
 		User user = User.getInstance();
 		user_name.setText(user.name);
+
+		rate_spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10));
+
+		rate_spinner.valueProperty().addListener(new ChangeListener()
+		{
+			@Override
+			public void changed(ObservableValue observable, Object oldValue, Object newValue)
+			{
+				user.rate = (int) newValue;
+				User.getInstance().saveMovieData();
+			}
+		});
+
+		if (user.rate != -1)
+		{
+			rate_spinner.getValueFactory().setValue(user.rate);
+		}
 
 		this.movie = user.getMovie();
 

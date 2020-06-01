@@ -132,7 +132,7 @@
                                           <Insets top="32.0" />
                                        </VBox.margin>
                                     </Text>
-                                    <Spinner prefHeight="20.0">
+                                    <Spinner fx:id="rate_spinner" prefHeight="20.0">
                                        <VBox.margin>
                                           <Insets top="8.0" />
                                        </VBox.margin>
