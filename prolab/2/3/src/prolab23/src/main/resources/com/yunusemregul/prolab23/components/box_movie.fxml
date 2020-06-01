@@ -11,7 +11,7 @@
 
 <fx:root id="box_movie" fx:id="box_movie" prefHeight="300.0" prefWidth="200.0" stylesheets="@../style.css" type="javafx.scene.layout.BorderPane" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <top>
-      <Text id="box_movie_name" fx:id="movie_name" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" wrappingWidth="200.0" BorderPane.alignment="CENTER">
+      <Text id="box_movie_name" fx:id="movie_name" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" wrappingWidth="180.0" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets top="8.0" />
          </BorderPane.margin></Text>

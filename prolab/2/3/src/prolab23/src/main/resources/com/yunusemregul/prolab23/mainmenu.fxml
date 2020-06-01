@@ -47,18 +47,18 @@
                               <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
                            </padding>
                            <children>
-                              <Button id="mainmenu_topbar_button" mnemonicParsing="false" prefHeight="50.0" text="FİLMLER" />
-                              <Button id="mainmenu_topbar_button" mnemonicParsing="false" prefHeight="50.0" text="DİZİLER">
+                              <Button id="mainmenu_topbar_button" fx:id="button_movies" mnemonicParsing="false" onAction="#showOnlyMovies" prefHeight="50.0" text="FİLMLER" />
+                              <Button id="mainmenu_topbar_button" fx:id="button_series" mnemonicParsing="false" onAction="#showOnlySeries" prefHeight="50.0" text="DİZİLER">
                                  <HBox.margin>
                                     <Insets left="12.0" />
                                  </HBox.margin>
                               </Button>
-                              <Button id="mainmenu_topbar_button" mnemonicParsing="false" prefHeight="50.0" text="TÜMÜ">
+                              <Button id="mainmenu_topbar_button" fx:id="button_all" mnemonicParsing="false" onAction="#showAll" prefHeight="50.0" text="TÜMÜ">
                                  <HBox.margin>
                                     <Insets left="12.0" />
                                  </HBox.margin>
                               </Button>
-                              <HBox id="mainmenu_search" alignment="CENTER_LEFT" prefHeight="45.0">
+                              <HBox id="mainmenu_search" alignment="CENTER_LEFT" fillHeight="false" prefHeight="45.0">
                                  <HBox.margin>
                                     <Insets left="12.0" />
                                  </HBox.margin>
@@ -71,13 +71,13 @@
                                           <Insets left="12.0" />
                                        </HBox.margin>
                                     </ImageView>
-                                    <TextField promptText="Ara">
+                                    <TextField fx:id="search_field" promptText="Ara">
                                        <HBox.margin>
                                           <Insets left="12.0" />
                                        </HBox.margin>
                                     </TextField>
-                                    <Button mnemonicParsing="false" text="TÜR" />
-                                    <Button mnemonicParsing="false" text="FİLM ADI" />
+                                    <Button fx:id="button_search_type" mnemonicParsing="false" onAction="#searchType" prefHeight="45.0" text="TÜR" />
+                                    <Button fx:id="button_search_movie_name" mnemonicParsing="false" onAction="#searchMovieName" prefHeight="45.0" text="FİLM ADI" />
                                  </children>
                               </HBox>
                            </children>

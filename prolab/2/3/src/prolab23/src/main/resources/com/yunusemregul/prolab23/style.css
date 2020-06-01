@@ -175,6 +175,7 @@
     -fx-font-size: 18;
     -fx-text-fill: #fff;
     -fx-background-color: #222;
+    -fx-background-radius: 0;
 }
 
 #mainmenu_user *
