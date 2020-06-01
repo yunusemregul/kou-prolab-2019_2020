@@ -24,6 +24,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 public class RegisterController extends GeneralController
 {
@@ -244,9 +245,19 @@ public class RegisterController extends GeneralController
 		{
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			alert.setTitle("Kayıt Başarılı");
-			alert.setContentText("Kayıt başarılı, giriş yapabilirsiniz.");
+			alert.setContentText("Kayıt başarılı, otomatik giriş yaptınız.");
 			alert.showAndWait();
-			openLoginMenu(null);
+
+			DataManager.getInstance().loginUser(email, pass);
+
+			try
+			{
+				App.loadScene(new Stage(), "mainmenu");
+			}
+			catch (IOException exception)
+			{
+				exception.printStackTrace();
+			}
 		}
 		else
 		{

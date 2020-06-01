@@ -263,16 +263,23 @@
 
 .progress-bar > .bar 
 {
-    -fx-background-color: #333;
-    -fx-background-insets: 1 1 2 1;
+    -fx-background-color: #664AC9;
+    -fx-background-insets: 0 0 0 0;
     -fx-padding: 6;
 }
 
-.slider .track {
+.slider .track 
+{
     -fx-background-color:null;
     -fx-background-insets: 1 0 -1 0, 0, 1;
     -fx-background-radius: 2.5, 2.5, 1.5;
     -fx-padding: 2.5;
+}
+
+.slider .thumb
+{
+    -fx-background-color: #7757e6;
+    -fx-padding: 9;
 }
 
 #button_chapter_previous, #button_chapter_next
@@ -294,6 +301,12 @@
 }
 
 .spinner .increment-arrow-button,
-.spinner .decrement-arrow-button {
+.spinner .decrement-arrow-button 
+{
     -fx-background-color: #111;
+}
+
+.spinner
+{
+    -fx-focus-color: transparent;
 }

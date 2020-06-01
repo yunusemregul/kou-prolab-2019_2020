@@ -4,10 +4,14 @@ import com.yunusemregul.prolab23.App;
 import com.yunusemregul.prolab23.Movie;
 import com.yunusemregul.prolab23.User;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.text.Text;
@@ -34,10 +38,21 @@ public class WatchmenuController extends GeneralController
 	private Spinner rate_spinner;
 
 	@FXML
+	private Slider slider_time;
+
+	@FXML
+	private ProgressBar progressbar_time;
+
+	@FXML
+	private Text text_time;
+
+	@FXML
 	private Text chapter;
 
 	private Movie movie;
 	private boolean isWatching = false;
+
+	Timer timer;
 
 	public WatchmenuController()
 	{
@@ -52,7 +67,6 @@ public class WatchmenuController extends GeneralController
 		user_name.setText(user.name);
 
 		rate_spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10));
-
 		rate_spinner.valueProperty().addListener(new ChangeListener()
 		{
 			@Override
@@ -60,6 +74,29 @@ public class WatchmenuController extends GeneralController
 			{
 				user.rate = (int) newValue;
 				User.getInstance().saveMovieData();
+			}
+		});
+
+		double sliderWidth = 1000;
+
+		slider_time.setMin(0);
+		slider_time.setMax(user.getMovie().length);
+		slider_time.setMinWidth(sliderWidth);
+		slider_time.setMaxWidth(sliderWidth);
+
+		progressbar_time.setMinWidth(sliderWidth);
+		progressbar_time.setMaxWidth(sliderWidth);
+
+		setSlider();
+
+		slider_time.valueProperty().addListener(new ChangeListener<Number>()
+		{
+			public void changed(ObservableValue<? extends Number> ov,
+					Number old_val, Number new_val)
+			{
+				user.watchTime = new_val.intValue();
+				progressbar_time.setProgress(new_val.doubleValue() / user.getMovie().length);
+				text_time.setText(String.format("%02d:00 / %02d:00", user.watchTime, user.getMovie().length));
 			}
 		});
 
@@ -88,6 +125,14 @@ public class WatchmenuController extends GeneralController
 		chapter.setText("BÖLÜM " + user.chapter + "/" + movie.chapterCount);
 	}
 
+	public void setSlider()
+	{
+		User user = User.getInstance();
+		slider_time.setValue(user.watchTime);
+		progressbar_time.setProgress((double) user.watchTime / user.getMovie().length);
+		text_time.setText(String.format("%02d:00 / %02d:00", user.watchTime, user.getMovie().length));
+	}
+
 	public void watch()
 	{
 		isWatching = !isWatching;
@@ -95,10 +140,34 @@ public class WatchmenuController extends GeneralController
 		if (isWatching)
 		{
 			button_watch.setId("button_stop");
+
+			this.timer = new Timer();
+
+			timer.scheduleAtFixedRate(new TimerTask()
+			{
+				@Override
+				public void run()
+				{
+					User user = User.getInstance();
+					if (user.watchTime < movie.length)
+					{
+						user.watchTime++;
+						setSlider();
+						user.saveMovieData();
+					}
+					else
+					{
+						timer.cancel();
+						timer.purge();
+					}
+				}
+			}, 1000, 1000);
 		}
 		else
 		{
 			button_watch.setId("button_watch");
+			timer.cancel();
+			timer.purge();
 		}
 
 		User.getInstance().saveMovieData();
@@ -112,6 +181,11 @@ public class WatchmenuController extends GeneralController
 			return;
 		}
 
+		if(isWatching)
+			watch();
+		
+		user.watchTime = 0;
+		setSlider();
 		user.chapter--;
 		chapter.setText("BÖLÜM " + user.chapter + "/" + movie.chapterCount);
 
@@ -125,7 +199,12 @@ public class WatchmenuController extends GeneralController
 		{
 			return;
 		}
+		
+		if(isWatching)
+			watch();
 
+		user.watchTime = 0;
+		setSlider();
 		user.chapter++;
 		chapter.setText("BÖLÜM " + user.chapter + "/" + movie.chapterCount);
 

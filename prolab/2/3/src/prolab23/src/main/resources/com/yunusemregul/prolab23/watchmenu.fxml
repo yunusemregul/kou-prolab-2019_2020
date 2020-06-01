@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.yunusemregul.prolab23.controllers.WatchmenuController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseDragged="#mouseDragged" onMousePressed="#mousePressed" prefHeight="768.0" prefWidth="1366.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.yunusemregul.prolab23.controllers.WatchmenuController">
    <children>
       <BorderPane prefHeight="768.0" prefWidth="1366.0">
          <top>
@@ -50,19 +50,19 @@
                            <children>
                               <StackPane prefHeight="150.0" prefWidth="1038.0" style="-fx-background-color: #222;" StackPane.alignment="BOTTOM_CENTER">
                                  <children>
-                                    <ProgressBar prefWidth="1005.0" progress="0.0" StackPane.alignment="BOTTOM_CENTER">
+                                    <ProgressBar fx:id="progressbar_time" prefWidth="1005.0" progress="0.0" StackPane.alignment="BOTTOM_CENTER">
                                        <StackPane.margin>
-                                          <Insets bottom="8.0" />
+                                          <Insets bottom="10.0" />
                                        </StackPane.margin>
                                     </ProgressBar>
-                                    <Slider StackPane.alignment="BOTTOM_CENTER">
+                                    <Slider fx:id="slider_time" StackPane.alignment="BOTTOM_CENTER">
                                        <StackPane.margin>
                                           <Insets bottom="8.0" left="12.0" right="12.0" />
                                        </StackPane.margin>
                                     </Slider>
                                  </children>
                               </StackPane>
-                              <Text id="watch_time" strokeType="OUTSIDE" strokeWidth="0.0" text="00:00 / 00:00" textAlignment="RIGHT" StackPane.alignment="BOTTOM_RIGHT">
+                              <Text id="watch_time" fx:id="text_time" strokeType="OUTSIDE" strokeWidth="0.0" text="00:00 / 00:00" textAlignment="RIGHT" StackPane.alignment="BOTTOM_RIGHT">
                                  <StackPane.margin>
                                     <Insets bottom="24.0" right="16.0" />
                                  </StackPane.margin>

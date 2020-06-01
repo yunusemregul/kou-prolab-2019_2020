@@ -4,7 +4,9 @@ import com.yunusemregul.prolab23.App;
 import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 /**
@@ -14,6 +16,9 @@ import javafx.stage.Stage;
  */
 public class GeneralController
 {
+	double startY = 0;
+	double xOffset = 0;
+	double yOffset = 0;
 
 	public GeneralController()
 	{
@@ -36,6 +41,7 @@ public class GeneralController
 	{
 		Stage stage = (Stage) ((Button) e.getSource()).getScene().getWindow();
 		stage.close();
+		System.exit(0);
 	}
 
 	/**
@@ -61,5 +67,25 @@ public class GeneralController
 		{
 			exception.printStackTrace();
 		}
+	}
+
+	@FXML
+	public void mousePressed(MouseEvent e)
+	{
+		Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+		xOffset = stage.getX() - e.getScreenX();
+		yOffset = stage.getY() - e.getScreenY();
+		startY = e.getY();
+	}
+
+	@FXML
+	public void mouseDragged(MouseEvent e)
+	{
+		if(startY>27)
+			return;
+		
+		Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+		stage.setX(e.getScreenX() + xOffset);
+		stage.setY(e.getScreenY() + yOffset);
 	}
 }
