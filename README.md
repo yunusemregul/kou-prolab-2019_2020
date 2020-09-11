@@ -1,7 +1,9 @@
 # Kocaeli Üniversitesi - Ödevlerim
 
 ## Programlama Laboratuvarı - 1
-
+<details>
+ <summary>1. Proje (3 BOYUTLU GÖRÜNTÜ DOSYALARI PROJESİ)</summary>
+  
 ### 1. Proje ([/prolab/1/1](https://github.com/yunusemregul/kou/blob/master/prolab/1/1/))
 
 #### 3 BOYUTLU GÖRÜNTÜ DOSYALARI PROJESİ
@@ -19,7 +21,11 @@ Projede C programlama dilini kullandım. Detaylı açıklamalarım [proje raporu
 
 Çözümümden görüntüler:
 ![1](https://github.com/yunusemregul/kou/blob/master/prolab/1/1/README_pics/1.png?raw=true)
+</details>
 
+<details open>
+  <summary>2. Proje (POKEMON KART OYUNU)</summary>
+  
 ### 2. Proje ([/prolab/1/2](https://github.com/yunusemregul/kou/blob/master/prolab/1/2/))
 
 #### POKEMON KART OYUNU
@@ -34,6 +40,11 @@ Projede Java programlama dilini ve Swing kütüphanesini kullandım. Detaylı a�
 ![1](https://github.com/yunusemregul/kou/blob/master/prolab/1/2/README_pics/1.png?raw=true)
 ![2](https://github.com/yunusemregul/kou/blob/master/prolab/1/2/README_pics/2.png?raw=true)
 
+</details>
+
+<details>
+  <summary>3. Proje (BAĞLI LİSTE UYGULAMASI)</summary>
+  
 ### 3. Proje ([/prolab/1/3](https://github.com/yunusemregul/kou/blob/master/prolab/1/3/))
 
 #### BAĞLI LİSTE UYGULAMASI
@@ -51,8 +62,13 @@ Projede C programlama dilini kullandım. Detaylı açıklamalarım [proje raporu
 Çözümümden görüntüler:
 ![1](https://github.com/yunusemregul/kou/blob/master/prolab/1/3/README_pics/1.png?raw=true)
 
+</details>
+
 ## Programlama Laboratuvarı - 2
 
+<details open>
+  <summary>1. Proje (GEZGİN KARGO PROBLEMİ)</summary>
+  
 ### 1. Proje ([/prolab/2/1](https://github.com/yunusemregul/kou/blob/master/prolab/2/1/))
 
 #### GEZGİN KARGO PROBLEMİ
@@ -66,6 +82,11 @@ Projeyi Java programlama dili, Swing kütüphanesi ve genetik algoritma kullanar
 ![2](https://github.com/yunusemregul/kou/blob/master/prolab/2/1/README_pics/4.png?raw=true)
 ![3](https://github.com/yunusemregul/kou/blob/master/prolab/2/1/README_pics/5.png?raw=true)
 
+</details>
+
+<details>
+  <summary>2. Proje (LZ77, LZSS, DEFLATE SIKIŞTIRMA ALGORİTMALARI)</summary>
+
 ### 2. Proje ([/prolab/2/2](https://github.com/yunusemregul/kou/blob/master/prolab/2/2/))
 
 #### LZ77, LZSS, DEFLATE SIKIŞTIRMA ALGORİTMALARI
@@ -75,6 +96,11 @@ Bu projede karakter tabanlı LZ77, DEFLATE sıkıştırma algoritmaları kullan�
 Projeye teslime 1 gün kala başladım ve DEFLATE algoritmasını anlamam zor oldu bu yüzden bu kısmı yetişmedi, eksik kalan tek ödevim oldu. LZ77 ve LZSS algoritmalarını içeriyor.
 
 Projede C++ programlama dilini kullandım. Detaylı açıklamalarım [proje raporumda](https://github.com/yunusemregul/kou/blob/master/prolab/2/2/rapor.pdf) bulunabilir.
+
+</details>
+
+<details open>
+  <summary>3. Proje (NETFLIX)</summary>
 
 ### 3. Proje ([/prolab/2/3](https://github.com/yunusemregul/kou/blob/master/prolab/2/3/))
 
@@ -95,3 +121,5 @@ Projeyi Java programlama dilini, SQLite driver ve JavaFX kütüphanesini kullana
 ![2](https://github.com/yunusemregul/kou/blob/master/prolab/2/3/README_pics/2.png?raw=true)
 ![3](https://github.com/yunusemregul/kou/blob/master/prolab/2/3/README_pics/3.png?raw=true)
 ![4](https://github.com/yunusemregul/kou/blob/master/prolab/2/3/README_pics/4.png?raw=true)
+
+</details>
