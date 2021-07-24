@@ -1,4 +1,4 @@
-# Kocaeli Üniversitesi - Ödevlerim
+# Kocaeli Üniversitesi - Programlama Laboratuvarı Ödevlerim
 
 ## Programlama Laboratuvarı - 1
 <details>
